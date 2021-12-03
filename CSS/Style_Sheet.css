@@ -1,0 +1,17 @@
+body {
+  background-color: #00D0D0;
+}
+
+h1 {
+  text-align: center;
+  font-size: 30px;
+  border: #F0F030;
+  border-style: double;
+  background-color: #00A0F0;
+  color: #F0F030;
+}
+
+p {
+  text-align: left;
+  margin-left: 20px;
+}
