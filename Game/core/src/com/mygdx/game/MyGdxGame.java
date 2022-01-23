@@ -115,16 +115,31 @@ public class MyGdxGame extends ApplicationAdapter {
 		float currentRotation = sprite.getRotation();
 		switch (i) {
 			case 1:
-				sprite.setRotation((float) (currentRotation + (0-currentRotation) * 0.1));
+				if (currentRotation > 180){
+					sprite.setRotation((float) (currentRotation + (360 - currentRotation) * 0.1));
+				}
+				else {
+					sprite.setRotation((float) (currentRotation + (0 - currentRotation) * 0.1));
+				}
 				break;
 			case 2:
 				sprite.setRotation((float) (currentRotation + (180-currentRotation) * 0.1));
 				break;
 			case 3:
-				sprite.setRotation((float) (currentRotation + (270-currentRotation) * 0.1));
+				if (currentRotation < 90){
+					sprite.setRotation((float) (currentRotation + (-90 - currentRotation) * 0.1));
+				}
+				else {
+					sprite.setRotation((float) (currentRotation + (270 - currentRotation) * 0.1));
+				}
 				break;
 			case 4:
-				sprite.setRotation((float) (currentRotation + (90-currentRotation) * 0.1));
+				if (currentRotation > 270){
+					sprite.setRotation((float) (currentRotation + (450 - currentRotation) * 0.1));
+				}
+				else {
+					sprite.setRotation((float) (currentRotation + (90 - currentRotation) * 0.1));
+				}
 				break;
 		}
 	}
