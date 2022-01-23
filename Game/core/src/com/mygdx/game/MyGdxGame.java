@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 
 import static com.mygdx.game.utils.Constants.PPM;
+import static java.lang.Math.toRadians;
 
 public class MyGdxGame extends ApplicationAdapter {
 	private SpriteBatch batch;
@@ -41,15 +42,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		sprite.setPosition(0,0);
 		sprite.setSize(128,64);
 		sprite.setOrigin(64, 32);
-		sprite.setRotation(270);
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, w / scale, h / scale);
+		//camera.position =new Vector3(0, 0) ;
 
 		world = new World(new Vector2(0, 0f), false);
 		b2dr = new Box2DDebugRenderer();
 
-		player = createBox(0 , 0, 64, 128, false);
+		player = createBox(0 , 0, 128, 64, false);
 		platform = createBox(-8 , -10, 128, 32, true);
 	}
 
@@ -63,7 +64,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		sprite.setPosition(player.getPosition().x * PPM - (img.getWidth() / scale) + 32, player.getPosition().y * PPM  - (img.getHeight() / scale) +16);
 		batch.begin();
 		sprite.draw(batch);
-		//batch.draw(img,player.getPosition().x * PPM - (img.getWidth() / scale), player.getPosition().y * PPM  - (img.getHeight() / scale));
 		batch.end();
 	}
 
@@ -107,7 +107,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			verticalforce -= 1;
 			updateRotation(4);
 		}
-		player.setLinearVelocity(horizontalforce * 5, verticalforce * 5);
+		player.setLinearVelocity(horizontalforce * 500, verticalforce * 500);
 
 	}
 
@@ -121,9 +121,11 @@ public class MyGdxGame extends ApplicationAdapter {
 				else {
 					sprite.setRotation((float) (currentRotation + (0 - currentRotation) * 0.1));
 				}
+				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
 				break;
 			case 2:
 				sprite.setRotation((float) (currentRotation + (180-currentRotation) * 0.1));
+				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
 				break;
 			case 3:
 				if (currentRotation < 90){
@@ -132,6 +134,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				else {
 					sprite.setRotation((float) (currentRotation + (270 - currentRotation) * 0.1));
 				}
+				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
 				break;
 			case 4:
 				if (currentRotation > 270){
@@ -140,19 +143,21 @@ public class MyGdxGame extends ApplicationAdapter {
 				else {
 					sprite.setRotation((float) (currentRotation + (90 - currentRotation) * 0.1));
 				}
+				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
 				break;
 		}
 	}
 
 	public void cameraUpdate(float delta) {
-		Vector3 position = camera.position;
+		Vector3 cameraPosition = camera.position;
 
-		position.x = player.getPosition().x * PPM;
-		position.y = player.getPosition().y * PPM;
-		camera.position.set(position);
+		cameraPosition.x = cameraPosition.x + (player.getPosition().x - cameraPosition.x) * 0.1f * PPM;
+		cameraPosition.y = cameraPosition.y + (player.getPosition().y - cameraPosition.y) * 0.1f * PPM;
+		camera.position.set(cameraPosition);
 
 		camera.update();
 	}
+
 
 	public Body createBox(int x, int y, int width, int height, boolean isStatic) {
 		Body pBody;
