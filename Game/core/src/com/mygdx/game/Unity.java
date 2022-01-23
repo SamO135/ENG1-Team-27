@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -27,6 +28,7 @@ import static java.lang.Math.toRadians;
 
 public class Unity extends ApplicationAdapter {
 	private SpriteBatch batch;
+	private SpriteBatch HUDbatch;
 	private Texture img;
 	private Sprite sprite;
 	private BitmapFont font;
@@ -41,6 +43,9 @@ public class Unity extends ApplicationAdapter {
 	private World world;
 	private Body player;
 	private Body platform;
+	
+	float PlunderInfoTextWidth;
+	float PlunderInfoTextHeight;
 
 	enum Screen{
 		Home, MAIN_GAME;
@@ -53,14 +58,28 @@ public class Unity extends ApplicationAdapter {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 
+		//batches
 		batch = new SpriteBatch();
+		HUDbatch = new SpriteBatch();
+		
 		img = new Texture("PirateShip3Mast.png");
+		
+		//initialise fonts
+		font = new BitmapFont();
+		font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		font.getData().setScale(2);
+		
+		GlyphLayout PlunderInfoTextLayout = new GlyphLayout(font, "Plunder: ");
+		PlunderInfoTextWidth = PlunderInfoTextLayout.width;
+		PlunderInfoTextHeight = PlunderInfoTextLayout.height;
 
+		//initialise sprites
 		sprite = new Sprite(img);
 		sprite.setPosition(0,0);
 		sprite.setSize(128,64);
 		sprite.setOrigin(64, 32);
 
+		//initialise camera
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, w / scale, h / scale);
 
@@ -75,7 +94,6 @@ public class Unity extends ApplicationAdapter {
 
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("Collision-layer").getObjects());
 
-		font = new BitmapFont();
 		Gdx.input.setInputProcessor(new InputAdapter() {
 
 			@Override
@@ -115,6 +133,14 @@ public class Unity extends ApplicationAdapter {
 			batch.begin();
 			sprite.draw(batch);
 			batch.end();
+			
+			//draw overlay objects
+			HUDbatch.begin();
+			
+			font.draw(HUDbatch, "Plunder: ", Math.round(Gdx.graphics.getWidth()-(PlunderInfoTextWidth*1.2)), 
+					Math.round(Gdx.graphics.getHeight()-(PlunderInfoTextHeight*1.2)));
+			
+			HUDbatch.end();
 		}
 	}
 

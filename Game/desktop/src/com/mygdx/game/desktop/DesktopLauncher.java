@@ -12,7 +12,7 @@ public class DesktopLauncher {
 		config.height = 1080;
 		config.backgroundFPS = 60;
 		config.foregroundFPS = 60;
-
+		config.title = "York Pirates";
 
 		config.addIcon("Logo.png", Files.FileType.Internal);
 		new LwjglApplication(new Unity(), config);
