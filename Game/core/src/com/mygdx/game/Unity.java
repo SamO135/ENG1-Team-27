@@ -17,7 +17,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import static com.mygdx.game.utils.Constants.PPM;
 import static java.lang.Math.toRadians;
 
-public class MyGdxGame extends ApplicationAdapter {
+public class Unity extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private Texture img;
 	private Sprite sprite;
