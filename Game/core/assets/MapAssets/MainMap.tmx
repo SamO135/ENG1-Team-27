@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="3">
+ <tileset firstgid="1" source="TilesetKenny.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJwTZGRgEAJiQSrRhkBsREWaWu4add+o+0bdN+q+UfdR130ABZs16Q==
+  </data>
+ </layer>
+ <layer id="2" name="Tile Layer 2" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJzVzLVVA1AAQNFAgCb4BmiDs0GwJvgGaIOzARKa4BugDc4aOGvgTMCd4f8mvHNu+xKJ/1+KUsoop4JKqqgO+DXRTAuttNFOB50Bvwz9DDDIEMOMMBrwm2GWOeZZYJEllgN+OTbZYpsddtljP+B3xjkXXHLFNTfcBvzuuOeBR5545oXXgN8b73zwyRff/PAb8MuHCigkSRHFlET8aqiljnoaaIz4pemimx566Yv4jTHOBJNMMR3xW2GVNdbJshHxO+CQI4454TTil6/9AUh1K18=
+  </data>
+ </layer>
+ <objectgroup id="3" name="Object Layer 1">
+  <object id="1" x="294.376" y="85.7154">
+   <polygon points="0,0 -6.9265,27.706 -4.32906,180.089 14.7188,223.38 25.9744,227.709 53.6803,232.903 176.626,232.903 207.795,227.709 239.83,212.99 249.354,192.21 249.354,48.4855 232.038,-14.7188 199.137,-22.5111 45.888,-20.7795"/>
+  </object>
+  <object id="2" x="232.903" y="389.615">
+   <polygon points="0,0 20.7795,58.8752 20.7795,149.785 12.1214,164.504 2.59744,171.431 -22.5111,180.089 -56.2778,187.881 -138.53,182.686 -154.98,167.102 -163.638,136.798 -169.699,109.092 -166.236,35.4983 -158.444,12.1214 -127.274,-0.865812 -98.7026,-6.06068 -23.3769,-4.32906"/>
+  </object>
+ </objectgroup>
+</map>

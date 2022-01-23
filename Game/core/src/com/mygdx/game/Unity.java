@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -24,6 +27,9 @@ public class Unity extends ApplicationAdapter {
 
 	private final float scale = 2.0f;
 	private OrthographicCamera camera;
+
+	private OrthogonalTiledMapRenderer tmr;
+	private TiledMap map;
 
 	private Box2DDebugRenderer b2dr;
 	private World world;
@@ -45,13 +51,15 @@ public class Unity extends ApplicationAdapter {
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, w / scale, h / scale);
-		//camera.position =new Vector3(0, 0) ;
 
 		world = new World(new Vector2(0, 0f), false);
 		b2dr = new Box2DDebugRenderer();
 
 		player = createBox(0 , 0, 128, 64, false);
 		platform = createBox(-8 , -10, 128, 32, true);
+
+		map = new TmxMapLoader().load("MapAssets/MainMap.tmx");
+		tmr = new OrthogonalTiledMapRenderer(map);
 	}
 
 	@Override
@@ -60,6 +68,8 @@ public class Unity extends ApplicationAdapter {
 		ScreenUtils.clear(0, 0, 1, 1);
 
 		b2dr.render(world, camera.combined.scl(PPM));
+
+		tmr.render();
 
 		sprite.setPosition(player.getPosition().x * PPM - (img.getWidth() / scale) + 32, player.getPosition().y * PPM  - (img.getHeight() / scale) +16);
 		batch.begin();
@@ -77,6 +87,9 @@ public class Unity extends ApplicationAdapter {
 		world.dispose();
 		b2dr.dispose();
 		batch.dispose();
+		tmr.dispose();
+		map.dispose();
+		img.dispose();
 	}
 
 	public void update (float delta){
@@ -84,6 +97,7 @@ public class Unity extends ApplicationAdapter {
 
 		inputUpdate(delta);
 		cameraUpdate(delta);
+		tmr.setView(camera);
 		batch.setProjectionMatrix(camera.combined);
 	}
 
