@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.utils.TiledObjectUtil;
 
 
 import static com.mygdx.game.utils.Constants.PPM;
@@ -60,6 +61,8 @@ public class Unity extends ApplicationAdapter {
 
 		map = new TmxMapLoader().load("MapAssets/MainMap.tmx");
 		tmr = new OrthogonalTiledMapRenderer(map);
+
+		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("Collision-layer").getObjects());
 	}
 
 	@Override
@@ -121,7 +124,7 @@ public class Unity extends ApplicationAdapter {
 			verticalforce -= 1;
 			updateRotation(4);
 		}
-		player.setLinearVelocity(horizontalforce * 500, verticalforce * 500);
+		player.setLinearVelocity(horizontalforce * 1000, verticalforce * 1000);
 
 	}
 
