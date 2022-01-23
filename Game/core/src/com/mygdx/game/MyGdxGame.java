@@ -38,7 +38,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		img = new Texture("PirateShip3Mast.png");
 
 		sprite = new Sprite(img);
+		sprite.setPosition(0,0);
 		sprite.setSize(128,64);
+		sprite.setOrigin(64, 32);
 		sprite.setRotation(270);
 
 		camera = new OrthographicCamera();
@@ -47,8 +49,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		world = new World(new Vector2(0, 0f), false);
 		b2dr = new Box2DDebugRenderer();
 
-		player = createBox(8 , 10, 64, 128, false);
-		platform = createBox(0 , 0, 128, 32, true);
+		player = createBox(0 , 0, 64, 128, false);
+		platform = createBox(-8 , -10, 128, 32, true);
 	}
 
 	@Override
@@ -58,7 +60,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		b2dr.render(world, camera.combined.scl(PPM));
 
-		sprite.setPosition(player.getPosition().x * PPM - (img.getWidth() / scale) + 16, player.getPosition().y * PPM  - (img.getHeight() / scale) -32);
+		sprite.setPosition(player.getPosition().x * PPM - (img.getWidth() / scale) + 32, player.getPosition().y * PPM  - (img.getHeight() / scale) +16);
 		batch.begin();
 		sprite.draw(batch);
 		//batch.draw(img,player.getPosition().x * PPM - (img.getWidth() / scale), player.getPosition().y * PPM  - (img.getHeight() / scale));
@@ -91,18 +93,40 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		if(Gdx.input.isKeyPressed(Input.Keys.A)){
 			horizontalforce -= 1;
+			updateRotation(1);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.D)){
 			horizontalforce += 1;
+			updateRotation(2);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.W)){
 			verticalforce += 1;
+			updateRotation(3);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.S)){
 			verticalforce -= 1;
+			updateRotation(4);
 		}
 		player.setLinearVelocity(horizontalforce * 5, verticalforce * 5);
 
+	}
+
+	public void updateRotation(int i) { // 1 = left, 2 = right, 3 = up, 4 = down
+		float currentRotation = sprite.getRotation();
+		switch (i) {
+			case 1:
+				sprite.setRotation((float) (currentRotation + (0-currentRotation) * 0.1));
+				break;
+			case 2:
+				sprite.setRotation((float) (currentRotation + (180-currentRotation) * 0.1));
+				break;
+			case 3:
+				sprite.setRotation((float) (currentRotation + (270-currentRotation) * 0.1));
+				break;
+			case 4:
+				sprite.setRotation((float) (currentRotation + (90-currentRotation) * 0.1));
+				break;
+		}
 	}
 
 	public void cameraUpdate(float delta) {
