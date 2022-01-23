@@ -11,7 +11,6 @@ public class TiledObjectUtil {
     public static void parseTiledObjectLayer(World world, MapObjects objects){
         for(MapObject object: objects){
             Shape shape;
-            System.out.println(object);
             if(object instanceof PolylineMapObject){
                 shape = createPolyline((PolylineMapObject) object);
             }else{

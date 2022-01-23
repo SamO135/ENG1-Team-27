@@ -3,8 +3,12 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -25,6 +29,7 @@ public class Unity extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private Texture img;
 	private Sprite sprite;
+	private BitmapFont font;
 
 	private final float scale = 2.0f;
 	private OrthographicCamera camera;
@@ -36,6 +41,12 @@ public class Unity extends ApplicationAdapter {
 	private World world;
 	private Body player;
 	private Body platform;
+
+	enum Screen{
+		Home, MAIN_GAME;
+	}
+
+	Screen currentScreen = Screen.Home;
 
 	@Override
 	public void create () {
@@ -63,21 +74,48 @@ public class Unity extends ApplicationAdapter {
 		tmr = new OrthogonalTiledMapRenderer(map);
 
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("Collision-layer").getObjects());
+
+		font = new BitmapFont();
+		Gdx.input.setInputProcessor(new InputAdapter() {
+
+			@Override
+			public boolean keyDown (int keyCode) {
+
+				if(currentScreen == Screen.Home && keyCode == Input.Keys.SPACE){
+					currentScreen = Screen.MAIN_GAME;
+				}
+				return true;
+			}
+		});
+
 	}
 
 	@Override
 	public void render () {
-		update(Gdx.graphics.getDeltaTime());  // deltaTime is time between a frame refresh
-		ScreenUtils.clear(0, 0, 1, 1);
+		if(currentScreen == Screen.Home){
 
-		b2dr.render(world, camera.combined.scl(PPM));
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		tmr.render();
+			batch.begin();
+			font.draw(batch, "Title Screen!", Gdx.graphics.getWidth()*.25f, Gdx.graphics.getHeight() * .75f);
+			font.draw(batch, "Destory Constantine College to win.", Gdx.graphics.getWidth()*.25f, Gdx.graphics.getHeight() * .5f);
+			font.draw(batch, "Press space to play.", Gdx.graphics.getWidth()*.25f, Gdx.graphics.getHeight() * .25f);
+			batch.end();
+		}
+		if(currentScreen == Screen.MAIN_GAME){
+			update(Gdx.graphics.getDeltaTime());  // deltaTime is time between a frame refresh
+			ScreenUtils.clear(0, 0, 1, 1);
 
-		sprite.setPosition(player.getPosition().x * PPM - (img.getWidth() / scale) + 32, player.getPosition().y * PPM  - (img.getHeight() / scale) +16);
-		batch.begin();
-		sprite.draw(batch);
-		batch.end();
+			b2dr.render(world, camera.combined.scl(PPM));
+
+			tmr.render();
+
+			sprite.setPosition(player.getPosition().x * PPM - (img.getWidth() / scale) + 32, player.getPosition().y * PPM  - (img.getHeight() / scale) +16);
+			batch.begin();
+			sprite.draw(batch);
+			batch.end();
+		}
 	}
 
 	@Override
