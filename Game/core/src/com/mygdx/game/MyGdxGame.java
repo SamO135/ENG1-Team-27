@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
@@ -18,6 +19,7 @@ import static com.mygdx.game.utils.Constants.PPM;
 public class MyGdxGame extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private Texture img;
+	private Sprite sprite;
 
 	private final float scale = 2.0f;
 	private OrthographicCamera camera;
@@ -35,25 +37,31 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		img = new Texture("PirateShip3Mast.png");
 
+		sprite = new Sprite(img);
+		sprite.setSize(128,64);
+		sprite.setRotation(270);
+
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, w / scale, h / scale);
 
 		world = new World(new Vector2(0, 0f), false);
 		b2dr = new Box2DDebugRenderer();
 
-		player = createBox(8 , 10, 32, 32, false);
+		player = createBox(8 , 10, 64, 128, false);
 		platform = createBox(0 , 0, 128, 32, true);
 	}
 
 	@Override
 	public void render () {
 		update(Gdx.graphics.getDeltaTime());  // deltaTime is time between a frame refresh
-		ScreenUtils.clear(0, 0, 0, 1);
+		ScreenUtils.clear(0, 0, 1, 1);
 
 		b2dr.render(world, camera.combined.scl(PPM));
 
+		sprite.setPosition(player.getPosition().x * PPM - (img.getWidth() / scale) + 16, player.getPosition().y * PPM  - (img.getHeight() / scale) -32);
 		batch.begin();
-		batch.draw(img, player.getPosition().x * PPM - (img.getWidth() / scale), player.getPosition().y * PPM  - (img.getHeight() / scale));
+		sprite.draw(batch);
+		//batch.draw(img,player.getPosition().x * PPM - (img.getWidth() / scale), player.getPosition().y * PPM  - (img.getHeight() / scale));
 		batch.end();
 	}
 
@@ -61,7 +69,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void resize(int width, int height){
 		camera.setToOrtho(false, width / scale, height / scale);
 	}
-	
+
 	@Override
 	public void dispose () {
 		world.dispose();
