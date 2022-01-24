@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.utils.TiledObjectUtil;
+import com.mygdx.game.utils.gui;
 
 
 import static com.mygdx.game.utils.Constants.PPM;
@@ -28,8 +29,8 @@ import static java.lang.Math.toRadians;
 
 public class Unity extends ApplicationAdapter {
 
-	float w;
-	float h;
+	static float w;
+	static float h;
 
 	private SpriteBatch batch;
 	private SpriteBatch HUDbatch;
@@ -49,10 +50,9 @@ public class Unity extends ApplicationAdapter {
 	private Body platform;
 	private Body Constantine;
 	
-	float PlunderInfoTextWidth;
-	float PlunderInfoTextHeight;
 
-	enum Screen{
+
+	public enum Screen{
 		Home, MAIN_GAME;
 	}
 
@@ -72,10 +72,7 @@ public class Unity extends ApplicationAdapter {
 		font = new BitmapFont();
 		font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 		font.getData().setScale(2);
-		
-		GlyphLayout PlunderInfoTextLayout = new GlyphLayout(font, "Plunder: ");
-		PlunderInfoTextWidth = PlunderInfoTextLayout.width;
-		PlunderInfoTextHeight = PlunderInfoTextLayout.height;
+
 
 		//initialise sprites
 		sprite = new Sprite(img);
@@ -139,13 +136,7 @@ public class Unity extends ApplicationAdapter {
 			sprite.draw(batch);
 			batch.end();
 			
-			//draw overlay objects
-			HUDbatch.begin();
-			
-			font.draw(HUDbatch, "Plunder: ", Math.round(w -(PlunderInfoTextWidth*1.2)),
-					Math.round(h-(PlunderInfoTextHeight*1.2)));
-			
-			HUDbatch.end();
+			gui.update(HUDbatch, font);
 		}
 	}
 
@@ -267,5 +258,13 @@ public class Unity extends ApplicationAdapter {
 		shape.dispose();
 
 		return pBody;
+	}
+
+	public static float getHeight(){
+		return h;
+	}
+
+	public static float getWidth(){
+		return w;
 	}
 }
