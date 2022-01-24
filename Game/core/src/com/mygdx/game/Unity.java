@@ -27,6 +27,10 @@ import static com.mygdx.game.utils.Constants.PPM;
 import static java.lang.Math.toRadians;
 
 public class Unity extends ApplicationAdapter {
+
+	float w;
+	float h;
+
 	private SpriteBatch batch;
 	private SpriteBatch HUDbatch;
 	private Texture img;
@@ -43,6 +47,7 @@ public class Unity extends ApplicationAdapter {
 	private World world;
 	private Body player;
 	private Body platform;
+	private Body Constantine;
 	
 	float PlunderInfoTextWidth;
 	float PlunderInfoTextHeight;
@@ -55,9 +60,8 @@ public class Unity extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
-
+		w = Gdx.graphics.getWidth();
+		h = Gdx.graphics.getHeight();
 		//batches
 		batch = new SpriteBatch();
 		HUDbatch = new SpriteBatch();
@@ -87,7 +91,8 @@ public class Unity extends ApplicationAdapter {
 		b2dr = new Box2DDebugRenderer();
 
 		player = createBox(0 , 0, 128, 64, false);
-		platform = createBox(-8 , -10, 128, 32, true);
+		//platform = createBox(-8 , -10, 128, 32, true);
+		Constantine = createBox(160 , 160, 128, 128, true);
 
 		map = new TmxMapLoader().load("MapAssets/MainMap.tmx");
 		tmr = new OrthogonalTiledMapRenderer(map);
@@ -127,9 +132,9 @@ public class Unity extends ApplicationAdapter {
 
 			b2dr.render(world, camera.combined.scl(PPM));
 
-			tmr.render();
+			//tmr.render();
 
-			sprite.setPosition(player.getPosition().x * PPM - (img.getWidth() / scale) + 32, player.getPosition().y * PPM  - (img.getHeight() / scale) +16);
+			sprite.setPosition(player.getPosition().x * PPM - (img.getWidth()) / 3, player.getPosition().y * PPM  - (img.getHeight()) / 3);
 			batch.begin();
 			sprite.draw(batch);
 			batch.end();
@@ -137,8 +142,8 @@ public class Unity extends ApplicationAdapter {
 			//draw overlay objects
 			HUDbatch.begin();
 			
-			font.draw(HUDbatch, "Plunder: ", Math.round(Gdx.graphics.getWidth()-(PlunderInfoTextWidth*1.2)), 
-					Math.round(Gdx.graphics.getHeight()-(PlunderInfoTextHeight*1.2)));
+			font.draw(HUDbatch, "Plunder: ", Math.round(w -(PlunderInfoTextWidth*1.2)),
+					Math.round(h-(PlunderInfoTextHeight*1.2)));
 			
 			HUDbatch.end();
 		}
