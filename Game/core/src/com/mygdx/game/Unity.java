@@ -21,9 +21,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.utils.Projectile;
 import com.mygdx.game.utils.TiledObjectUtil;
 import com.mygdx.game.utils.gui;
 
+
+import java.util.ArrayList;
 
 import static com.mygdx.game.utils.Constants.PPM;
 import static java.lang.Math.toRadians;
@@ -54,6 +57,8 @@ public class Unity extends ApplicationAdapter {
 
 	private float health = 1f;
 
+	private ArrayList<Projectile> cannonballs;
+
 	public enum Screen{
 		Home, MAIN_GAME;
 	}
@@ -64,6 +69,9 @@ public class Unity extends ApplicationAdapter {
 	public void create () {
 		w = Gdx.graphics.getWidth();
 		h = Gdx.graphics.getHeight();
+
+		cannonballs = new ArrayList<Projectile>();
+
 		//batches
 		batch = new SpriteBatch();
 		HUDbatch = new SpriteBatch();
@@ -138,6 +146,21 @@ public class Unity extends ApplicationAdapter {
 			batch.begin();
 			sprite.draw(batch);
 
+			//Shooting code
+			if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
+				cannonballs.add(new Projectile(new Vector2(player.getPosition().x, player.getPosition().y), mousePos(Gdx.input.getX(), Gdx.input.getY())));
+			}
+
+			//Update projectiles
+			ArrayList<Projectile> cannonballsToRemove = new ArrayList<Projectile>();
+			for(Projectile cannonball : cannonballs){
+				cannonball.update(Gdx.graphics.getDeltaTime());
+				if(cannonball.remove){
+					cannonballsToRemove.add(cannonball);
+				}
+			}
+			cannonballs.removeAll(cannonballsToRemove);
+
 			if (health > 0.6f){
 				batch.setColor(Color.GREEN);
 			}else if(health > 0.2f){
@@ -148,6 +171,10 @@ public class Unity extends ApplicationAdapter {
 
 			batch.draw(blank, player.getPosition().x - 30, player.getPosition().y - 70, 60 * health, 5);
 			batch.setColor(Color.WHITE);
+
+			for(Projectile cannonball : cannonballs){
+				cannonball.render(batch);
+			}
 
 			batch.end();
 			
@@ -168,6 +195,7 @@ public class Unity extends ApplicationAdapter {
 		tmr.dispose();
 		map.dispose();
 		img.dispose();
+		blank.dispose();
 	}
 
 	public void update (float delta){
@@ -273,6 +301,22 @@ public class Unity extends ApplicationAdapter {
 		shape.dispose();
 
 		return pBody;
+	}
+
+	public Vector2 mousePos(int screenX, int screenY) {
+
+		//screenX, screenY - Mouse Coords
+
+		Vector2 centerPosition = new Vector2(player.getPosition().x, player.getPosition().y);
+
+		Vector3 worldCoordinates = new Vector3(screenX, screenY,0);
+		camera.unproject(worldCoordinates);
+
+		Vector2 mouseLoc = new Vector2(worldCoordinates.x, worldCoordinates.y);
+
+		Vector2 direction = mouseLoc.sub(centerPosition);
+		float mouseAngle  = direction.angleDeg();
+		return mouseLoc;
 	}
 
 	public static float getHeight(){
