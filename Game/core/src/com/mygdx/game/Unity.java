@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -35,6 +36,7 @@ public class Unity extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private SpriteBatch HUDbatch;
 	private Texture img;
+	private Texture blank;
 	private Sprite sprite;
 	private BitmapFont font;
 
@@ -49,8 +51,8 @@ public class Unity extends ApplicationAdapter {
 	private Body player;
 	private Body platform;
 	private Body Constantine;
-	
 
+	private float health = 1f;
 
 	public enum Screen{
 		Home, MAIN_GAME;
@@ -67,6 +69,7 @@ public class Unity extends ApplicationAdapter {
 		HUDbatch = new SpriteBatch();
 		
 		img = new Texture("PirateShip3Mast.png");
+		blank = new Texture("Blank.png");
 		
 		//initialise fonts
 		font = new BitmapFont();
@@ -118,9 +121,9 @@ public class Unity extends ApplicationAdapter {
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 			batch.begin();
-			font.draw(batch, "Title Screen!", Gdx.graphics.getWidth()*.25f, Gdx.graphics.getHeight() * .75f);
-			font.draw(batch, "Destory Constantine College to win.", Gdx.graphics.getWidth()*.25f, Gdx.graphics.getHeight() * .5f);
-			font.draw(batch, "Press space to play.", Gdx.graphics.getWidth()*.25f, Gdx.graphics.getHeight() * .25f);
+			font.draw(batch, "Title Screen!", w *.25f, h * .75f);
+			font.draw(batch, "Destory Constantine College to win.", w *.25f, h * .5f);
+			font.draw(batch, "Press space to play.", w *.25f, h * .25f);
 			batch.end();
 		}
 		if(currentScreen == Screen.MAIN_GAME){
@@ -134,6 +137,18 @@ public class Unity extends ApplicationAdapter {
 			sprite.setPosition(player.getPosition().x * PPM - (img.getWidth()) / 3, player.getPosition().y * PPM  - (img.getHeight()) / 3);
 			batch.begin();
 			sprite.draw(batch);
+
+			if (health > 0.6f){
+				batch.setColor(Color.GREEN);
+			}else if(health > 0.2f){
+				batch.setColor(Color.ORANGE);
+			}else{
+				batch.setColor(Color.RED);
+			}
+
+			batch.draw(blank, player.getPosition().x - 30, player.getPosition().y - 70, 60 * health, 5);
+			batch.setColor(Color.WHITE);
+
 			batch.end();
 			
 			gui.update(HUDbatch, font);
