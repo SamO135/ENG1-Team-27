@@ -112,7 +112,7 @@ public class Unity extends ApplicationAdapter {
 		//platform = createBox(-8 , -10, 128, 32, true);
 		//Constantine = createBox(160 , 160, 128, 128, true);
 
-		map = new TmxMapLoader().load("MapAssets/testMap.tmx");
+		map = new TmxMapLoader().load("MapAssets/GameMap.tmx");
 		MapProperties props = map.getProperties();
 		mapWidth = props.get("width", Integer.class);
 		mapHeight = props.get("height", Integer.class);
