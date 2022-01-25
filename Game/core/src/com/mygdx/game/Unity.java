@@ -22,6 +22,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.Animations.Explosion;
 import com.mygdx.game.CameraUtils.cam;
 import com.mygdx.game.Colleges.College;
 import com.mygdx.game.Colliders.CollisionRect;
@@ -59,17 +60,20 @@ public class Unity extends ApplicationAdapter {
 	private Box2DDebugRenderer b2dr;
 	private World world;
 	private Body player;
-	private College Constantine;
+	private College Goodricke;
+	private College Alcuin;
+	private College Derwent;
 	private int spawnx;
 	private int spawny;
 
 	private float health = 1f;
+	private float plunder = 0f;
 
 	private ArrayList<Projectile> cannonballs;
 	private ArrayList<College> Collages;
-
+	private ArrayList<Explosion> explosions;
 	public enum Screen{
-		Home, MAIN_GAME;
+		Home, MAIN_GAME, End;
 	}
 
 	Screen currentScreen = Screen.Home;
@@ -83,6 +87,7 @@ public class Unity extends ApplicationAdapter {
 
 		cannonballs = new ArrayList<Projectile>();
 		Collages = new ArrayList<College>();
+		explosions = new ArrayList<Explosion>();
 
 		//batches
 		batch = new SpriteBatch();
@@ -92,8 +97,14 @@ public class Unity extends ApplicationAdapter {
 		blank = new Texture("Blank.png");
 
 		//initialise colleges
-		Constantine = new College(2500, 2100, "pirate-long-boi.png");
-		Collages.add(Constantine);
+		Goodricke = new College(2500, 2100, "TowerGoodricke.png");
+		Collages.add(Goodricke);
+
+		Alcuin = new College(600, 4400, "TowerAlcuin.png");
+		Collages.add(Alcuin);
+
+		Derwent = new College(5700, 6100, "TowerDerwent.png");
+		Collages.add(Derwent);
 		
 		//initialise fonts
 		font = new BitmapFont();
@@ -114,7 +125,6 @@ public class Unity extends ApplicationAdapter {
 		b2dr = new Box2DDebugRenderer();
 
 		player = createBox(spawnx , spawny, 128, 64, false);
-		//Constantine = createBox(160 , 160, 128, 128, true);
 
 		map = new TmxMapLoader().load("MapAssets/GameMap.tmx");
 		MapProperties props = map.getProperties();
@@ -148,7 +158,7 @@ public class Unity extends ApplicationAdapter {
 
 			batch.begin();
 			font.draw(batch, "Title Screen!", w *.25f, h * .75f);
-			font.draw(batch, "Destory Constantine College to win.", w *.25f, h * .5f);
+			font.draw(batch, "Destory Goodricke College to win.", w *.25f, h * .5f);
 			font.draw(batch, "Press space to play.", w *.25f, h * .25f);
 			batch.end();
 		}
@@ -177,7 +187,16 @@ public class Unity extends ApplicationAdapter {
 					cannonballsToRemove.add(cannonball);
 				}
 			}
-			cannonballs.removeAll(cannonballsToRemove);
+
+			//Update explosions
+			ArrayList<Explosion> explosionsToRemove = new ArrayList<Explosion>();
+			for(Explosion explosion : explosions){
+				explosion.update(Gdx.graphics.getDeltaTime());
+				if(explosion.remove){
+					explosionsToRemove.add(explosion);
+				}
+			}
+			explosions.removeAll(explosionsToRemove);
 
 
 			//Health bar colour
@@ -197,23 +216,34 @@ public class Unity extends ApplicationAdapter {
 				cannonball.render(batch);
 			}
 
-			//After all updates
+			//After all updates, checking for collisions
 			for (Projectile cannonball: cannonballs){
 				for (College college: Collages){
 					if(cannonball.getCollisionRect().collidesWith(college.getCollisionRect())){
 						cannonballsToRemove.add(cannonball);
+						explosions.add(new Explosion(cannonball.getPosition().x, cannonball.getPosition().y));
 						college.hit();
+						if(college.getHealth() != 0f){
+							plunder += 50f;
+						}
 
 					}
 				}
 			}
 			cannonballs.removeAll(cannonballsToRemove);
 
-			Constantine.render(batch);
+
+			for(College college: Collages){
+				college.render(batch);
+			}
+
+			for(Explosion explosion: explosions){
+				explosion.render(batch);
+			}
 
 			batch.end();
 			
-			gui.update(HUDbatch, font);
+			gui.update(HUDbatch, font, plunder);
 		}
 	}
 

@@ -12,7 +12,7 @@ public class College {
     private Sprite sprite;
     int x,y;
     CollisionRect rect;
-    float health = 1;
+    float health = 1f;
     Texture blank = Unity.blank;
 
     public College(int x, int y, String img){
@@ -33,6 +33,14 @@ public class College {
     }
 
     public void hit(){
-        health -= 0.2f;
+        if(health > 0.2f){
+            health -= 0.2f;
+        }else{
+            health = 0f;
+        }
+    }
+
+    public float getHealth(){
+        return health;
     }
 }

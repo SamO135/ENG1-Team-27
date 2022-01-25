@@ -12,16 +12,16 @@ public class gui {
     static float PlunderInfoTextWidth;
     static float PlunderInfoTextHeight;
 
-    public static void update(Batch batch, BitmapFont font) {
-        drawPlunder(batch, font);
+    public static void update(Batch batch, BitmapFont font, float count) {
+        drawPlunder(batch, font, count);
     }
 
-    public static void drawPlunder(Batch batch, BitmapFont font){
-        GlyphLayout PlunderInfoTextLayout = new GlyphLayout(font, "Plunder: ");
+    public static void drawPlunder(Batch batch, BitmapFont font, float count){
+        GlyphLayout PlunderInfoTextLayout = new GlyphLayout(font, "Plunder: " + count);
         PlunderInfoTextWidth = PlunderInfoTextLayout.width;
         PlunderInfoTextHeight = PlunderInfoTextLayout.height;
         batch.begin();
-        font.draw(batch, "Plunder: ", Math.round(width -(PlunderInfoTextWidth*1.2)),
+        font.draw(batch, "Plunder: " + count, Math.round(width -(PlunderInfoTextWidth*1.2)),
                 Math.round(height-(PlunderInfoTextHeight*1.2)));
         batch.end();
 
