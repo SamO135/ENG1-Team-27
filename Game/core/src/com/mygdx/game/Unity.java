@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.CameraUtils.cam;
 import com.mygdx.game.utils.Projectile;
 import com.mygdx.game.utils.TiledObjectUtil;
 import com.mygdx.game.utils.gui;
@@ -29,6 +31,7 @@ import com.mygdx.game.utils.gui;
 import java.util.ArrayList;
 
 import static com.mygdx.game.utils.Constants.PPM;
+import static java.lang.Math.random;
 import static java.lang.Math.toRadians;
 
 public class Unity extends ApplicationAdapter {
@@ -48,12 +51,16 @@ public class Unity extends ApplicationAdapter {
 
 	private OrthogonalTiledMapRenderer tmr;
 	private TiledMap map;
+	private int mapWidth = 0;
+	private int mapHeight = 0;
 
 	private Box2DDebugRenderer b2dr;
 	private World world;
 	private Body player;
 	private Body platform;
 	private Body Constantine;
+	private int spawnx;
+	private int spawny;
 
 	private float health = 1f;
 
@@ -69,6 +76,8 @@ public class Unity extends ApplicationAdapter {
 	public void create () {
 		w = Gdx.graphics.getWidth();
 		h = Gdx.graphics.getHeight();
+		spawnx = 1000;
+		spawny = 1000;
 
 		cannonballs = new ArrayList<Projectile>();
 
@@ -87,7 +96,7 @@ public class Unity extends ApplicationAdapter {
 
 		//initialise sprites
 		sprite = new Sprite(img);
-		sprite.setPosition(0,0);
+		sprite.setPosition(spawnx,spawny);
 		sprite.setSize(128,64);
 		sprite.setOrigin(64, 32);
 
@@ -98,12 +107,16 @@ public class Unity extends ApplicationAdapter {
 		world = new World(new Vector2(0, 0f), false);
 		b2dr = new Box2DDebugRenderer();
 
-		player = createBox(0 , 0, 128, 64, false);
+		player = createBox(spawnx , spawny, 128, 64, false);
 		//platform = createBox(-8 , -10, 128, 32, true);
-		Constantine = createBox(160 , 160, 128, 128, true);
+		//Constantine = createBox(160 , 160, 128, 128, true);
 
-		map = new TmxMapLoader().load("MapAssets/MainMap.tmx");
+		map = new TmxMapLoader().load("MapAssets/testMap.tmx");
+		MapProperties props = map.getProperties();
+		mapWidth = props.get("width", Integer.class);
+		mapHeight = props.get("height", Integer.class);
 		tmr = new OrthogonalTiledMapRenderer(map);
+
 
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("Collision-layer").getObjects());
 
@@ -140,7 +153,7 @@ public class Unity extends ApplicationAdapter {
 
 			b2dr.render(world, camera.combined.scl(PPM));
 
-			//tmr.render();
+			tmr.render();
 
 			sprite.setPosition(player.getPosition().x * PPM - (img.getWidth()) / 3, player.getPosition().y * PPM  - (img.getHeight()) / 3);
 			batch.begin();
@@ -161,6 +174,8 @@ public class Unity extends ApplicationAdapter {
 			}
 			cannonballs.removeAll(cannonballsToRemove);
 
+
+			//Health bar colour
 			if (health > 0.6f){
 				batch.setColor(Color.GREEN);
 			}else if(health > 0.2f){
@@ -169,6 +184,7 @@ public class Unity extends ApplicationAdapter {
 				batch.setColor(Color.RED);
 			}
 
+			//Health bar position
 			batch.draw(blank, player.getPosition().x - 30, player.getPosition().y - 70, 60 * health, 5);
 			batch.setColor(Color.WHITE);
 
@@ -202,7 +218,12 @@ public class Unity extends ApplicationAdapter {
 		world.step(1/60f, 6, 2);
 
 		inputUpdate(delta);
-		cameraUpdate(delta);
+
+		float startx = camera.viewportWidth / 2;
+		float starty = camera.viewportHeight / 2;
+
+		cam.cameraUpdate(delta, camera, player.getPosition().x, player.getPosition().y);
+		cam.boundry(camera, mapWidth * 32 - startx * 2, mapHeight * 32 - starty * 2);
 		tmr.setView(camera);
 		batch.setProjectionMatrix(camera.combined);
 	}
@@ -227,7 +248,7 @@ public class Unity extends ApplicationAdapter {
 			verticalforce -= 1;
 			updateRotation(4);
 		}
-		player.setLinearVelocity(horizontalforce * 1000, verticalforce * 1000);
+		player.setLinearVelocity(horizontalforce * 1000 * 32, verticalforce * 1000 * 32);
 
 	}
 
@@ -268,16 +289,6 @@ public class Unity extends ApplicationAdapter {
 		}
 	}
 
-	public void cameraUpdate(float delta) {
-		Vector3 cameraPosition = camera.position;
-
-		cameraPosition.x = cameraPosition.x + (player.getPosition().x - cameraPosition.x) * 0.1f * PPM;
-		cameraPosition.y = cameraPosition.y + (player.getPosition().y - cameraPosition.y) * 0.1f * PPM;
-		camera.position.set(cameraPosition);
-
-		camera.update();
-	}
-
 
 	public Body createBox(int x, int y, int width, int height, boolean isStatic) {
 		Body pBody;
@@ -315,7 +326,6 @@ public class Unity extends ApplicationAdapter {
 		Vector2 mouseLoc = new Vector2(worldCoordinates.x, worldCoordinates.y);
 
 		Vector2 direction = mouseLoc.sub(centerPosition);
-		float mouseAngle  = direction.angleDeg();
 		return mouseLoc;
 	}
 
