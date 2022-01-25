@@ -3,11 +3,16 @@ package com.mygdx.game.utils;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Colliders.CollisionRect;
 
 public class Projectile {
     public static final int SPEED = 3;
     private static Texture texture;
     float num = 0;
+    int width = 8;
+    int height = 8;
+
+    CollisionRect rect;
 
     Vector2 position;
     Vector2 targetposition;
@@ -17,6 +22,7 @@ public class Projectile {
     public Projectile(Vector2 position, Vector2 target){
         this.position = position;
         this.targetposition = target;
+        this.rect = new CollisionRect(position.x, position.y, width, height);
 
         if (texture == null){
             texture = new Texture("cannonball.png");
@@ -25,8 +31,26 @@ public class Projectile {
 
     public void update(float deltaTime){
         num += deltaTime;
+        /* boolean temp = false;
+        float altx = 0;
+        float alty = 0;
+        float x = 0;
+        float y = 0;
+
+        if(!temp){
+            altx = (float) Math.cos((float) Math.atan2(position.y - targetposition.y, position.x - targetposition.x)) * SPEED * deltaTime;
+            alty = (float) Math.sin((float) Math.atan2(position.y - targetposition.y, position.x - targetposition.x)) * SPEED * deltaTime;
+            temp = true;
+        }
+
+        x += altx;
+        y += alty;
+        position.x = x;
+        position.y = y;*/
+
         position.y += targetposition.y * SPEED * deltaTime;
         position.x += targetposition.x * SPEED * deltaTime;
+        rect.move(position.x, position.y);
         if(num >= 5){
             remove = true;
         }
@@ -43,5 +67,7 @@ public class Projectile {
     public void setPosition(Vector2 Position){
         this.position = Position;
     }
+
+    public CollisionRect getCollisionRect(){ return rect;}
 
 }
