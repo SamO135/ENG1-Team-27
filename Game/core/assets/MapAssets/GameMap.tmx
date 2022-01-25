@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.2" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" nextobjectid="1">
+<map version="1.0" tiledversion="1.0.2" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" nextobjectid="2">
  <tileset firstgid="1" source="TilesetKenny.tsx"/>
  <layer name="Tile Layer 1" width="200" height="200">
   <data encoding="csv">
@@ -613,5 +613,9 @@
 301,302,301,302,301,302,301,302,303,304,303,304,0,293,294,225,226,299,300,299,300,299,300,0,0,299,300,367,368,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup name="Collision-layer"/>
+ <objectgroup name="Collision-layer">
+  <object id="1" x="0" y="5377.33">
+   <polyline points="0,0 221.333,1.33333 238.667,12 250.667,48 253.333,65.3333 253.333,254.667 482.667,258.667 492,268 509.333,320 508,510.667 728,512 750.667,524 768,581.333 765.333,768 988,769.333 1005.33,777.333 1024,830.667 1020,1022.67"/>
+  </object>
+ </objectgroup>
 </map>

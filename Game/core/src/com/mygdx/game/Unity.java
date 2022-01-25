@@ -23,6 +23,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.CameraUtils.cam;
+import com.mygdx.game.Colleges.College;
 import com.mygdx.game.Colliders.CollisionRect;
 import com.mygdx.game.utils.Projectile;
 import com.mygdx.game.utils.TiledObjectUtil;
@@ -43,7 +44,7 @@ public class Unity extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private SpriteBatch HUDbatch;
 	private Texture img;
-	private Texture blank;
+	public static Texture blank;
 	private Sprite sprite;
 	private BitmapFont font;
 
@@ -58,14 +59,14 @@ public class Unity extends ApplicationAdapter {
 	private Box2DDebugRenderer b2dr;
 	private World world;
 	private Body player;
-	private Body platform;
-	private Body Constantine;
+	private College Constantine;
 	private int spawnx;
 	private int spawny;
 
 	private float health = 1f;
 
 	private ArrayList<Projectile> cannonballs;
+	private ArrayList<College> Collages;
 
 	public enum Screen{
 		Home, MAIN_GAME;
@@ -81,6 +82,7 @@ public class Unity extends ApplicationAdapter {
 		spawny = 1000;
 
 		cannonballs = new ArrayList<Projectile>();
+		Collages = new ArrayList<College>();
 
 		//batches
 		batch = new SpriteBatch();
@@ -88,6 +90,10 @@ public class Unity extends ApplicationAdapter {
 		
 		img = new Texture("PirateShip3Mast.png");
 		blank = new Texture("Blank.png");
+
+		//initialise colleges
+		Constantine = new College(2500, 2100, "pirate-long-boi.png");
+		Collages.add(Constantine);
 		
 		//initialise fonts
 		font = new BitmapFont();
@@ -97,7 +103,6 @@ public class Unity extends ApplicationAdapter {
 
 		//initialise sprites
 		sprite = new Sprite(img);
-		sprite.setPosition(spawnx,spawny);
 		sprite.setSize(128,64);
 		sprite.setOrigin(64, 32);
 
@@ -109,7 +114,6 @@ public class Unity extends ApplicationAdapter {
 		b2dr = new Box2DDebugRenderer();
 
 		player = createBox(spawnx , spawny, 128, 64, false);
-		//platform = createBox(-8 , -10, 128, 32, true);
 		//Constantine = createBox(160 , 160, 128, 128, true);
 
 		map = new TmxMapLoader().load("MapAssets/GameMap.tmx");
@@ -192,6 +196,20 @@ public class Unity extends ApplicationAdapter {
 			for(Projectile cannonball : cannonballs){
 				cannonball.render(batch);
 			}
+
+			//After all updates
+			for (Projectile cannonball: cannonballs){
+				for (College college: Collages){
+					if(cannonball.getCollisionRect().collidesWith(college.getCollisionRect())){
+						cannonballsToRemove.add(cannonball);
+						college.hit();
+
+					}
+				}
+			}
+			cannonballs.removeAll(cannonballsToRemove);
+
+			Constantine.render(batch);
 
 			batch.end();
 			
