@@ -104,16 +104,16 @@ public class Unity extends ApplicationAdapter {
 		blank = new Texture("Blank.png");
 
 		//initialise colleges
-		Goodricke = new College(3140, 3110, "TowerGoodricke.png");
+		Goodricke = new College(3140, 3110, "TowerGoodricke.png", true);
 		Collages.add(Goodricke);
 
-		Alcuin = new College(1500, 1300, "TowerAlcuin.png");
+		Alcuin = new College(1500, 1300, "TowerAlcuin.png", false);
 		Collages.add(Alcuin);
 
-		Derwent = new College(520, 2170, "TowerDerwent.png");
+		Derwent = new College(520, 2170, "TowerDerwent.png", false);
 		Collages.add(Derwent);
 
-		James = new College(3080, 1080, "TowerJames.png");
+		James = new College(3080, 1080, "TowerJames.png", false);
 		Collages.add(James);
 		
 		//initialise fonts
@@ -239,7 +239,7 @@ public class Unity extends ApplicationAdapter {
 						cannonballsToRemove.add(cannonball);
 						explosions.add(new Explosion(cannonball.getPosition().x, cannonball.getPosition().y));
 						college.hit();
-						if(college.getHealth() != 0f){
+						if(college.getHealth() != 0f && college.isCaptured() == false && college.bossReady){
 							plunder += 50f;
 						}
 
@@ -251,6 +251,7 @@ public class Unity extends ApplicationAdapter {
 
 			for(College college: Collages){
 				college.render(batch);
+				score = college.captured(score, Gdx.graphics.getDeltaTime());
 			}
 
 			for(Explosion explosion: explosions){
