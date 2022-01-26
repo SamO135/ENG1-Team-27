@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -47,7 +49,8 @@ public class Unity extends ApplicationAdapter {
 	private Texture img;
 	public static Texture blank;
 	private Sprite sprite;
-	private BitmapFont font;
+	private BitmapFont SmallFont;
+	private BitmapFont LargeFont;
 
 	private final float scale = 2.0f;
 	private OrthographicCamera camera;
@@ -111,10 +114,13 @@ public class Unity extends ApplicationAdapter {
 		Collages.add(James);
 		
 		//initialise fonts
-		font = new BitmapFont();
-		font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-		font.getData().setScale(2);
-
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Oswald-Regular.ttf"));
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+		
+		parameter.size = 20;
+		SmallFont = generator.generateFont(parameter);
+		parameter.size = 64;
+		LargeFont = generator.generateFont(parameter);
 
 		//initialise sprites
 		sprite = new Sprite(img);
@@ -137,38 +143,34 @@ public class Unity extends ApplicationAdapter {
 		mapHeight = props.get("height", Integer.class);
 		tmr = new OrthogonalTiledMapRenderer(map);
 
-
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("Collision-layer").getObjects());
-
-		Gdx.input.setInputProcessor(new InputAdapter() {
-
-			@Override
-			public boolean keyDown (int keyCode) {
-
-				if(currentScreen == Screen.Home && keyCode == Input.Keys.SPACE){
-					currentScreen = Screen.MAIN_GAME;
-				}
-				return true;
-			}
-		});
 
 	}
 
 	@Override
 	public void render () {
+		
+		update(Gdx.graphics.getDeltaTime());  // deltaTime is time between a frame refresh
+		
+		//menu screen
 		if(currentScreen == Screen.Home){
 
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-			batch.begin();
-			font.draw(batch, "Title Screen!", w *.25f, h * .75f);
-			font.draw(batch, "Destory Goodricke College to win.", w *.25f, h * .5f);
-			font.draw(batch, "Press space to play.", w *.25f, h * .25f);
-			batch.end();
+			//draw map
+			tmr.render();
+			
+			HUDbatch.begin();
+			
+			//draw menu
+			gui.drawMenuScreen(HUDbatch, SmallFont, LargeFont);
+
+			HUDbatch.end();
 		}
+    
 		if(currentScreen == Screen.MAIN_GAME){
-			update(Gdx.graphics.getDeltaTime());  // deltaTime is time between a frame refresh
+			
 			ScreenUtils.clear(0, 0, 1, 1);
 
 			b2dr.render(world, camera.combined.scl(PPM));
@@ -248,7 +250,8 @@ public class Unity extends ApplicationAdapter {
 
 			batch.end();
 			
-			gui.update(HUDbatch, font, plunder);
+			gui.updateMainScreen(HUDbatch, SmallFont);
+
 		}
 	}
 
@@ -282,25 +285,32 @@ public class Unity extends ApplicationAdapter {
 	public void inputUpdate(float delta){
 		int horizontalforce = 0;
 		int verticalforce = 0;
-
-		if(Gdx.input.isKeyPressed(Input.Keys.A)){
-			horizontalforce -= 1;
-			updateRotation(1);
+		float currentRotation = sprite.getRotation();
+		
+		if(currentScreen == Screen.Home && Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)){
+			currentScreen = Screen.MAIN_GAME;
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.D)){
-			horizontalforce += 1;
-			updateRotation(2);
+		
+		if (currentScreen == Screen.MAIN_GAME) {
+			
+			if(Gdx.input.isKeyPressed(Input.Keys.A)){
+				sprite.setRotation((float) (currentRotation + 0.8));
+				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
+			}
+			if(Gdx.input.isKeyPressed(Input.Keys.D)){
+				sprite.setRotation((float) (currentRotation - 0.8));
+				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
+			}
+			if(Gdx.input.isKeyPressed(Input.Keys.W)){
+				verticalforce += -Math.sin(toRadians(currentRotation))*1000;
+				horizontalforce += -Math.cos(toRadians(currentRotation))*1000;
+			}
+			if(Gdx.input.isKeyPressed(Input.Keys.S)){
+				verticalforce += Math.sin(toRadians(currentRotation))*1000;
+				horizontalforce += Math.cos(toRadians(currentRotation))*1000;
+			}
+			player.setLinearVelocity(horizontalforce * 32, verticalforce * 32);	
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.W)){
-			verticalforce += 1;
-			updateRotation(3);
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.S)){
-			verticalforce -= 1;
-			updateRotation(4);
-		}
-		player.setLinearVelocity(horizontalforce * 1000 * 32, verticalforce * 1000 * 32);
-
 	}
 
 	public void updateRotation(int i) { // 1 = left, 2 = right, 3 = up, 4 = down
