@@ -233,6 +233,7 @@ public class Unity extends ApplicationAdapter {
 	public void inputUpdate(float delta){
 		int horizontalforce = 0;
 		int verticalforce = 0;
+		float currentRotation = sprite.getRotation();
 		
 		if(currentScreen == Screen.Home && Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)){
 			currentScreen = Screen.MAIN_GAME;
@@ -241,22 +242,20 @@ public class Unity extends ApplicationAdapter {
 		if (currentScreen == Screen.MAIN_GAME) {
 			
 			if(Gdx.input.isKeyPressed(Input.Keys.A)){
-				horizontalforce -= 1;
-				updateRotation(1);
+				sprite.setRotation((float) (currentRotation + 0.8));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.D)){
-				horizontalforce += 1;
-				updateRotation(2);
+				sprite.setRotation((float) (currentRotation - 0.8));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.W)){
-				verticalforce += 1;
-				updateRotation(3);
+				verticalforce += -Math.sin(toRadians(currentRotation))*1000;
+				horizontalforce += -Math.cos(toRadians(currentRotation))*1000;
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.S)){
-				verticalforce -= 1;
-				updateRotation(4);
+				verticalforce += Math.sin(toRadians(currentRotation))*1000;
+				horizontalforce += Math.cos(toRadians(currentRotation))*1000;
 			}
-			player.setLinearVelocity(horizontalforce * 1000 * 32, verticalforce * 1000 * 32);	
+			player.setLinearVelocity(horizontalforce * 32, verticalforce * 32);	
 		}
 	}
 
