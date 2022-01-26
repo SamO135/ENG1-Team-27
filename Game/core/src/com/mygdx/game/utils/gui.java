@@ -10,23 +10,19 @@ public class gui {
     private static float width = Unity.getWidth();
     private static float height = Unity.getHeight();
 
-    public static void updateMainScreen(Batch batch, BitmapFont font, float count, int score) {
-        drawPlunder(batch, font, count, score);
-    }
-
-    public static void drawPlunder(Batch batch, BitmapFont font, float count, int score){
-        
-        GlyphLayout PlunderInfoTextLayout = new GlyphLayout(font, "Plunder: " + count);
-        GlyphLayout ScoreInfoTextLayout = new GlyphLayout(font, "Score: " + score);
+    public static void updateMainScreen(Batch batch, BitmapFont font, int plunder, float score) {
+    	
+        GlyphLayout PlunderInfoTextLayout = new GlyphLayout(font, "Plunder: " + plunder);
+        GlyphLayout ScoreInfoTextLayout = new GlyphLayout(font, "Score: " + Math.round(score));
         float PlunderInfoTextWidth = PlunderInfoTextLayout.width;
         float PlunderInfoTextHeight = PlunderInfoTextLayout.height;
         float ScoreInfoTextWidth = ScoreInfoTextLayout.width;
         float ScoreInfoTextHeight = ScoreInfoTextLayout.height;
 
         batch.begin();
-        font.draw(batch, "Plunder: " + count, Math.round(width -(PlunderInfoTextWidth*1.2)),
+        font.draw(batch, "Plunder: " + plunder, Math.round(width -(PlunderInfoTextWidth*1.2)),
                 Math.round(height-(PlunderInfoTextHeight*1.2)));
-        font.draw(batch, "Score: " + score, Math.round(width / 2 -(ScoreInfoTextWidth*1.2)),
+        font.draw(batch, "Score: " + Math.round(score), Math.round(width / 2 -(ScoreInfoTextWidth*1.2)),
                 Math.round(height-(ScoreInfoTextHeight*1.2)));
         batch.end();
     }

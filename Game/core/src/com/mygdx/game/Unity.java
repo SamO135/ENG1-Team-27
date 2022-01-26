@@ -71,8 +71,10 @@ public class Unity extends ApplicationAdapter {
 	private int spawny;
 
 	private float health = 1f;
-	private float plunder = 0f;
-	private int score = 0;
+	private int plunder = 0;
+	private float score = 0;
+	
+	private int cannonCooldown = 0;
 
 	private ArrayList<Projectile> cannonballs;
 	private ArrayList<College> Collages;
@@ -172,6 +174,11 @@ public class Unity extends ApplicationAdapter {
     
 		if(currentScreen == Screen.MAIN_GAME){
 			
+			//reduce cannon cooldown
+			if (cannonCooldown > 0){
+				cannonCooldown -= 1;
+			}
+			
 			ScreenUtils.clear(0, 0, 1, 1);
 
 			b2dr.render(world, camera.combined.scl(PPM));
@@ -183,8 +190,9 @@ public class Unity extends ApplicationAdapter {
 			sprite.draw(batch);
 
 			//Shooting code
-			if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
+			if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && cannonCooldown <= 0){
 				cannonballs.add(new Projectile(new Vector2(player.getPosition().x, player.getPosition().y), mousePos(Gdx.input.getX(), Gdx.input.getY())));
+				cannonCooldown = 40;
 			}
 
 			//Update projectiles
@@ -305,10 +313,12 @@ public class Unity extends ApplicationAdapter {
 			if(Gdx.input.isKeyPressed(Input.Keys.W)){
 				verticalforce += -Math.sin(toRadians(currentRotation))*1000;
 				horizontalforce += -Math.cos(toRadians(currentRotation))*1000;
+				score += 0.005;
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.S)){
 				verticalforce += Math.sin(toRadians(currentRotation))*1000;
 				horizontalforce += Math.cos(toRadians(currentRotation))*1000;
+				score += 0.005;
 			}
 			player.setLinearVelocity(horizontalforce * 32, verticalforce * 32);	
 		}
