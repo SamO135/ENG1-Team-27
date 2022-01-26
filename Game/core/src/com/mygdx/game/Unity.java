@@ -63,6 +63,7 @@ public class Unity extends ApplicationAdapter {
 	private College Goodricke;
 	private College Alcuin;
 	private College Derwent;
+	private College James;
 	private int spawnx;
 	private int spawny;
 
@@ -82,8 +83,8 @@ public class Unity extends ApplicationAdapter {
 	public void create () {
 		w = Gdx.graphics.getWidth();
 		h = Gdx.graphics.getHeight();
-		spawnx = 1000;
-		spawny = 1000;
+		spawnx = 700;
+		spawny = 700;
 
 		cannonballs = new ArrayList<Projectile>();
 		Collages = new ArrayList<College>();
@@ -97,14 +98,17 @@ public class Unity extends ApplicationAdapter {
 		blank = new Texture("Blank.png");
 
 		//initialise colleges
-		Goodricke = new College(2500, 2100, "TowerGoodricke.png");
+		Goodricke = new College(3140, 3110, "TowerGoodricke.png");
 		Collages.add(Goodricke);
 
-		Alcuin = new College(600, 4400, "TowerAlcuin.png");
+		Alcuin = new College(1500, 1300, "TowerAlcuin.png");
 		Collages.add(Alcuin);
 
-		Derwent = new College(5700, 6100, "TowerDerwent.png");
+		Derwent = new College(520, 2170, "TowerDerwent.png");
 		Collages.add(Derwent);
+
+		James = new College(3080, 1080, "TowerJames.png");
+		Collages.add(James);
 		
 		//initialise fonts
 		font = new BitmapFont();
@@ -116,6 +120,7 @@ public class Unity extends ApplicationAdapter {
 		sprite = new Sprite(img);
 		sprite.setSize(128,64);
 		sprite.setOrigin(64, 32);
+		sprite.setRotation(180f);
 
 		//initialise camera
 		camera = new OrthographicCamera();
@@ -268,11 +273,8 @@ public class Unity extends ApplicationAdapter {
 
 		inputUpdate(delta);
 
-		float startx = camera.viewportWidth / 2;
-		float starty = camera.viewportHeight / 2;
-
 		cam.cameraUpdate(delta, camera, player.getPosition().x, player.getPosition().y);
-		cam.boundry(camera, mapWidth * 32 - startx * 2, mapHeight * 32 - starty * 2);
+		cam.boundry(camera, mapWidth * 32, mapHeight * 32);
 		tmr.setView(camera);
 		batch.setProjectionMatrix(camera.combined);
 	}
