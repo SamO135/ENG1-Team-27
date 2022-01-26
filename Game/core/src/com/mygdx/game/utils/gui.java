@@ -15,14 +15,15 @@ public class gui {
     }
 
     public static void drawPlunder(Batch batch, BitmapFont font){
+        
         GlyphLayout PlunderInfoTextLayout = new GlyphLayout(font, "Plunder: ");
         float PlunderInfoTextWidth = PlunderInfoTextLayout.width;
         float PlunderInfoTextHeight = PlunderInfoTextLayout.height;
+
         batch.begin();
         font.draw(batch, "Plunder: ", Math.round(width -(PlunderInfoTextWidth*1.2)),
                 Math.round(height-(PlunderInfoTextHeight*1.2)));
         batch.end();
-
     }
     
     public static void drawMenuScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){

@@ -21,8 +21,8 @@ public class cam {
         }else if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
             camera.zoom += 0.03f;
         }
-        if(camera.zoom > 5.5f){
-            camera.zoom = 5.5f;
+        if(camera.zoom > 3.55f){
+            camera.zoom = 3.55f;
         }
         camera.update();
     }
