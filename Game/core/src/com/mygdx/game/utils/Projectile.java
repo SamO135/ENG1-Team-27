@@ -31,22 +31,6 @@ public class Projectile {
 
     public void update(float deltaTime){
         num += deltaTime;
-        /* boolean temp = false;
-        float altx = 0;
-        float alty = 0;
-        float x = 0;
-        float y = 0;
-
-        if(!temp){
-            altx = (float) Math.cos((float) Math.atan2(position.y - targetposition.y, position.x - targetposition.x)) * SPEED * deltaTime;
-            alty = (float) Math.sin((float) Math.atan2(position.y - targetposition.y, position.x - targetposition.x)) * SPEED * deltaTime;
-            temp = true;
-        }
-
-        x += altx;
-        y += alty;
-        position.x = x;
-        position.y = y;*/
 
         position.y += targetposition.y * SPEED * deltaTime;
         position.x += targetposition.x * SPEED * deltaTime;

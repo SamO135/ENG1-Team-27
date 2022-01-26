@@ -72,6 +72,7 @@ public class Unity extends ApplicationAdapter {
 
 	private float health = 1f;
 	private float plunder = 0f;
+	private int score = 0;
 
 	private ArrayList<Projectile> cannonballs;
 	private ArrayList<College> Collages;
@@ -250,7 +251,7 @@ public class Unity extends ApplicationAdapter {
 
 			batch.end();
 			
-			gui.updateMainScreen(HUDbatch, SmallFont);
+			gui.updateMainScreen(HUDbatch, SmallFont, plunder, score);
 
 		}
 	}
