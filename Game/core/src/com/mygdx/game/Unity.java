@@ -243,9 +243,11 @@ public class Unity extends ApplicationAdapter {
 			
 			if(Gdx.input.isKeyPressed(Input.Keys.A)){
 				sprite.setRotation((float) (currentRotation + 0.8));
+				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.D)){
 				sprite.setRotation((float) (currentRotation - 0.8));
+				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.W)){
 				verticalforce += -Math.sin(toRadians(currentRotation))*1000;
