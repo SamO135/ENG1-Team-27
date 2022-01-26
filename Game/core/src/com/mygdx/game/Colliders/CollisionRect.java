@@ -19,11 +19,8 @@ public class CollisionRect {
         this.y = y;
     }
 
-    public boolean collidesWith(CollisionRect rect, Body body, int width, int height, String type){
-        if (type == "body"){
-            return x < body.getPosition().x + width && y < body.getPosition().y + height && x + this.width > body.getPosition().x && y + this.height > height;
-        }else{
+    public boolean collidesWith(CollisionRect rect){
             return x < rect.x + rect.width && y < rect.y + rect.height && x + this.width > rect.x && y + this.height > rect.y;
-        }
+
     }
 }

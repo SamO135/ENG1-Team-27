@@ -24,7 +24,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.Animations.Explosion;
 import com.mygdx.game.CameraUtils.cam;
+import com.mygdx.game.Colleges.College;
 import com.mygdx.game.Colliders.CollisionRect;
 import com.mygdx.game.utils.Projectile;
 import com.mygdx.game.utils.TiledObjectUtil;
@@ -45,7 +47,7 @@ public class Unity extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private SpriteBatch HUDbatch;
 	private Texture img;
-	private Texture blank;
+	public static Texture blank;
 	private Sprite sprite;
 	private BitmapFont SmallFont;
 	private BitmapFont LargeFont;
@@ -61,17 +63,21 @@ public class Unity extends ApplicationAdapter {
 	private Box2DDebugRenderer b2dr;
 	private World world;
 	private Body player;
-	private Body platform;
-	private Body Constantine;
+	private College Goodricke;
+	private College Alcuin;
+	private College Derwent;
+	private College James;
 	private int spawnx;
 	private int spawny;
 
 	private float health = 1f;
+	private float plunder = 0f;
 
 	private ArrayList<Projectile> cannonballs;
-
+	private ArrayList<College> Collages;
+	private ArrayList<Explosion> explosions;
 	public enum Screen{
-		Home, MAIN_GAME;
+		Home, MAIN_GAME, End;
 	}
 
 	Screen currentScreen = Screen.Home;
@@ -80,10 +86,12 @@ public class Unity extends ApplicationAdapter {
 	public void create () {
 		w = Gdx.graphics.getWidth();
 		h = Gdx.graphics.getHeight();
-		spawnx = 1000;
-		spawny = 1000;
+		spawnx = 700;
+		spawny = 700;
 
 		cannonballs = new ArrayList<Projectile>();
+		Collages = new ArrayList<College>();
+		explosions = new ArrayList<Explosion>();
 
 		//batches
 		batch = new SpriteBatch();
@@ -91,6 +99,19 @@ public class Unity extends ApplicationAdapter {
 		
 		img = new Texture("PirateShip3Mast.png");
 		blank = new Texture("Blank.png");
+
+		//initialise colleges
+		Goodricke = new College(3140, 3110, "TowerGoodricke.png");
+		Collages.add(Goodricke);
+
+		Alcuin = new College(1500, 1300, "TowerAlcuin.png");
+		Collages.add(Alcuin);
+
+		Derwent = new College(520, 2170, "TowerDerwent.png");
+		Collages.add(Derwent);
+
+		James = new College(3080, 1080, "TowerJames.png");
+		Collages.add(James);
 		
 		//initialise fonts
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Oswald-Regular.ttf"));
@@ -103,9 +124,9 @@ public class Unity extends ApplicationAdapter {
 
 		//initialise sprites
 		sprite = new Sprite(img);
-		sprite.setPosition(spawnx,spawny);
 		sprite.setSize(128,64);
 		sprite.setOrigin(64, 32);
+		sprite.setRotation(180f);
 
 		//initialise camera
 		camera = new OrthographicCamera();
@@ -115,10 +136,8 @@ public class Unity extends ApplicationAdapter {
 		b2dr = new Box2DDebugRenderer();
 
 		player = createBox(spawnx , spawny, 128, 64, false);
-		//platform = createBox(-8 , -10, 128, 32, true);
-		//Constantine = createBox(160 , 160, 128, 128, true);
 
-		map = new TmxMapLoader().load("MapAssets/testMap.tmx");
+		map = new TmxMapLoader().load("MapAssets/GameMap.tmx");
 		MapProperties props = map.getProperties();
 		mapWidth = props.get("width", Integer.class);
 		mapHeight = props.get("height", Integer.class);
@@ -149,6 +168,7 @@ public class Unity extends ApplicationAdapter {
 
 			HUDbatch.end();
 		}
+    
 		if(currentScreen == Screen.MAIN_GAME){
 			
 			ScreenUtils.clear(0, 0, 1, 1);
@@ -174,7 +194,16 @@ public class Unity extends ApplicationAdapter {
 					cannonballsToRemove.add(cannonball);
 				}
 			}
-			cannonballs.removeAll(cannonballsToRemove);
+
+			//Update explosions
+			ArrayList<Explosion> explosionsToRemove = new ArrayList<Explosion>();
+			for(Explosion explosion : explosions){
+				explosion.update(Gdx.graphics.getDeltaTime());
+				if(explosion.remove){
+					explosionsToRemove.add(explosion);
+				}
+			}
+			explosions.removeAll(explosionsToRemove);
 
 
 			//Health bar colour
@@ -194,9 +223,35 @@ public class Unity extends ApplicationAdapter {
 				cannonball.render(batch);
 			}
 
+			//After all updates, checking for collisions
+			for (Projectile cannonball: cannonballs){
+				for (College college: Collages){
+					if(cannonball.getCollisionRect().collidesWith(college.getCollisionRect())){
+						cannonballsToRemove.add(cannonball);
+						explosions.add(new Explosion(cannonball.getPosition().x, cannonball.getPosition().y));
+						college.hit();
+						if(college.getHealth() != 0f){
+							plunder += 50f;
+						}
+
+					}
+				}
+			}
+			cannonballs.removeAll(cannonballsToRemove);
+
+
+			for(College college: Collages){
+				college.render(batch);
+			}
+
+			for(Explosion explosion: explosions){
+				explosion.render(batch);
+			}
+
 			batch.end();
 			
 			gui.updateMainScreen(HUDbatch, SmallFont);
+
 		}
 	}
 
@@ -221,11 +276,8 @@ public class Unity extends ApplicationAdapter {
 
 		inputUpdate(delta);
 
-		float startx = camera.viewportWidth / 2;
-		float starty = camera.viewportHeight / 2;
-
 		cam.cameraUpdate(delta, camera, player.getPosition().x, player.getPosition().y);
-		cam.boundry(camera, mapWidth * 32 - startx * 2, mapHeight * 32 - starty * 2);
+		cam.boundry(camera, mapWidth * 32, mapHeight * 32);
 		tmr.setView(camera);
 		batch.setProjectionMatrix(camera.combined);
 	}
