@@ -40,4 +40,11 @@ public class gui {
         SmallFont.draw(batch, "Defeat Goodricke college to win!", (width-MissionTextWidth)/2, height * .5f);
 		SmallFont.draw(batch, "Press any key to start", (width-StartTextWidth)/2, height * .4f);
     }
+
+    public static void drawEndScreen(Batch batch, BitmapFont LargeFont) {
+        //title
+        GlyphLayout TitleText = new GlyphLayout(LargeFont, "You Win!");
+        float TitleTextWidth = TitleText.width;
+        LargeFont.draw(batch, "You Win!", (width - TitleTextWidth) / 2, height * .5f);
+    }
 }

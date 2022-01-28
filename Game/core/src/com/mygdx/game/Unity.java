@@ -41,6 +41,7 @@ import static java.lang.Math.toRadians;
 
 public class Unity extends ApplicationAdapter {
 
+	public static int collagesNotBossCount;
 	static float w;
 	static float h;
 
@@ -115,6 +116,8 @@ public class Unity extends ApplicationAdapter {
 
 		James = new College(3080, 1080, "TowerJames.png", false);
 		Collages.add(James);
+
+		collagesNotBossCount = Collages.size() - 1;
 		
 		//initialise fonts
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Oswald-Regular.ttf"));
@@ -263,6 +266,21 @@ public class Unity extends ApplicationAdapter {
 			gui.updateMainScreen(HUDbatch, SmallFont, plunder, score);
 
 		}
+		if(currentScreen == Screen.End){
+
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+			//draw map
+			tmr.render();
+
+			HUDbatch.begin();
+
+			//draw menu
+			gui.drawEndScreen(HUDbatch, LargeFont);
+
+			HUDbatch.end();
+		}
 	}
 
 	@Override
@@ -322,6 +340,9 @@ public class Unity extends ApplicationAdapter {
 				score += 0.005;
 			}
 			player.setLinearVelocity(horizontalforce * 32, verticalforce * 32);	
+		}
+		if(currentScreen == Screen.MAIN_GAME && Goodricke.isCaptured()){
+			currentScreen = Screen.End;
 		}
 	}
 

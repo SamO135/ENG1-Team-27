@@ -18,6 +18,7 @@ public class College {
     public boolean bossReady = false;
     boolean isCaptured = false;
     float num = 0;
+    int collegesNotBoss;
 
     public College(int x, int y, String img, boolean boss){
         this.img = new Texture(img);
@@ -25,8 +26,12 @@ public class College {
         this.x = x;
         this.y = y;
         isBoss = boss;
-        if(isBoss == false){bossReady = true;}
+        if(!isBoss){bossReady = true;}
         this.rect = new CollisionRect(x, y, (int) sprite.getWidth(), (int) sprite.getHeight());
+        collegesNotBoss = Unity.collagesNotBossCount;
+        if(collegesNotBoss == 0){
+            bossReady = true;
+        }
     }
 
     public CollisionRect getCollisionRect(){ return rect;}
@@ -34,7 +39,7 @@ public class College {
     public void render(SpriteBatch batch){
         sprite.setPosition(x, y);
         sprite.draw(batch);
-        if(isCaptured  != true){
+        if(!isCaptured){
             batch.setColor(Color.RED);
         }else{
             health = 1;
@@ -47,9 +52,9 @@ public class College {
 
     public void hit(){
         if(health > 0.2f){
-            if(isBoss == true){
-                if(bossReady == true){
-                    health -= 0.2f;
+            if(isBoss){
+                if(bossReady){
+                    health -= 0.1f;
                 }
             }else{
                 health -= 0.2f;
@@ -57,12 +62,13 @@ public class College {
         }else{
             health = 0f;
             isCaptured = true;
+            collegesNotBoss -= 1;
         }
     }
 
     public float captured(float score, float delta){
         num += delta;
-        if((int) num >= 1 && isCaptured == true){
+        if((int) num >= 1 && isCaptured){
             score += 5;
             num = 0;
         }
@@ -76,4 +82,6 @@ public class College {
     public boolean isCaptured(){
         return isCaptured;
     }
+
+
 }

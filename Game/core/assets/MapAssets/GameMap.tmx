@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.2" orientation="orthogonal" renderorder="right-down" width="107" height="102" tilewidth="32" tileheight="32" nextobjectid="22">
+<map version="1.0" tiledversion="1.0.2" orientation="orthogonal" renderorder="right-down" width="107" height="102" tilewidth="32" tileheight="32" nextobjectid="23">
  <tileset firstgid="1" source="TilesetKenny.tsx"/>
  <layer name="Tile Layer 1" width="107" height="102">
   <data encoding="csv">
@@ -370,6 +370,9 @@
   </object>
   <object id="21" x="2174.67" y="928">
    <polyline points="0,0 40,4 65.3333,64 64,222.667 52,240 -5.33333,258.667 -162.667,253.333 -190.667,197.333 -189.333,-2.66667 -226.667,-2.66667 -254.667,-50.6667 -256,-218.667 -238.667,-244 -196,-257.333 -158.667,-257.333 -158.667,-480 -101.333,-513.333 62.6667,-510.667 77.3333,-504 96,-442.667 96,-298.667 81.3333,-277.333 26.6667,-256 26.6667,-238.667 -1.33333,-236 -1.33333,0"/>
+  </object>
+  <object id="22" x="0" y="3264">
+   <polyline points="0,0 4,-3264 3416,-3264 3424,0 4,0"/>
   </object>
  </objectgroup>
 </map>
