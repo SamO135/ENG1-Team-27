@@ -41,10 +41,13 @@ public class gui {
 		SmallFont.draw(batch, "Press any key to start", (width-StartTextWidth)/2, height * .4f);
     }
 
-    public static void drawEndScreen(Batch batch, BitmapFont LargeFont) {
-        //title
+    public static void drawEndScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){
         GlyphLayout TitleText = new GlyphLayout(LargeFont, "You Win!");
         float TitleTextWidth = TitleText.width;
-        LargeFont.draw(batch, "You Win!", (width - TitleTextWidth) / 2, height * .5f);
+        LargeFont.draw(batch, "You Win!", (width-TitleTextWidth)/2, height * .5f);
+
+        GlyphLayout StartTextLayout = new GlyphLayout(SmallFont, "Press esc to exit");
+        float StartTextWidth = StartTextLayout.width;
+        SmallFont.draw(batch, "Press esc to exit", (width-StartTextWidth)/2, height * .4f);
     }
 }

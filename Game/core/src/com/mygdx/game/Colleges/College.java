@@ -28,10 +28,6 @@ public class College {
         isBoss = boss;
         if(!isBoss){bossReady = true;}
         this.rect = new CollisionRect(x, y, (int) sprite.getWidth(), (int) sprite.getHeight());
-        collegesNotBoss = Unity.collagesNotBossCount;
-        if(collegesNotBoss == 0){
-            bossReady = true;
-        }
     }
 
     public CollisionRect getCollisionRect(){ return rect;}
@@ -50,20 +46,33 @@ public class College {
 
     }
 
-    public void hit(){
-        if(health > 0.2f){
-            if(isBoss){
-                if(bossReady){
+    public int  hit(int plunder){
+        collegesNotBoss = Unity.collagesNotBossCount;
+        if(collegesNotBoss == 0){
+            bossReady = true;
+        }
+        if(isBoss){
+            if(bossReady){
+                if(health > 0.1f){
                     health -= 0.1f;
+
+                }else{
+                    health = 0f;
+                    isCaptured = true;
                 }
-            }else{
-                health -= 0.2f;
             }
         }else{
-            health = 0f;
-            isCaptured = true;
-            collegesNotBoss -= 1;
+            if(health > 0.2f){
+                health -= 0.2f;
+
+            }else{
+                health = 0f;
+                isCaptured = true;
+                collegesNotBoss -= 1;
+                plunder += 200;
+            }
         }
+        return plunder;
     }
 
     public float captured(float score, float delta){

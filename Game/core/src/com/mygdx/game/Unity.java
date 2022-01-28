@@ -3,14 +3,11 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -19,7 +16,6 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -27,16 +23,11 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.Animations.Explosion;
 import com.mygdx.game.CameraUtils.cam;
 import com.mygdx.game.Colleges.College;
-import com.mygdx.game.Colliders.CollisionRect;
 import com.mygdx.game.utils.Projectile;
 import com.mygdx.game.utils.TiledObjectUtil;
 import com.mygdx.game.utils.gui;
-
-
 import java.util.ArrayList;
-
 import static com.mygdx.game.utils.Constants.PPM;
-import static java.lang.Math.random;
 import static java.lang.Math.toRadians;
 
 public class Unity extends ApplicationAdapter {
@@ -241,9 +232,11 @@ public class Unity extends ApplicationAdapter {
 					if(cannonball.getCollisionRect().collidesWith(college.getCollisionRect())){
 						cannonballsToRemove.add(cannonball);
 						explosions.add(new Explosion(cannonball.getPosition().x, cannonball.getPosition().y));
-						college.hit();
-						if(college.getHealth() != 0f && college.isCaptured() == false && college.bossReady){
+						plunder = college.hit(plunder);
+						if(college.getHealth() != 0f && !college.isCaptured() && college.bossReady){
 							plunder += 50f;
+						}else if(college.isCaptured()){
+							collagesNotBossCount -= 1;
 						}
 
 					}
@@ -277,7 +270,7 @@ public class Unity extends ApplicationAdapter {
 			HUDbatch.begin();
 
 			//draw menu
-			gui.drawEndScreen(HUDbatch, LargeFont);
+			gui.drawEndScreen(HUDbatch, SmallFont, LargeFont);
 
 			HUDbatch.end();
 		}
@@ -343,6 +336,9 @@ public class Unity extends ApplicationAdapter {
 		}
 		if(currentScreen == Screen.MAIN_GAME && Goodricke.isCaptured()){
 			currentScreen = Screen.End;
+		}
+		if(currentScreen == Screen.End && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
+			Gdx.app.exit();
 		}
 	}
 
