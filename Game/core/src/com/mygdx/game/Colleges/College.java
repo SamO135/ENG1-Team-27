@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Colliders.CollisionRect;
 import com.mygdx.game.Unity;
 
@@ -92,5 +93,7 @@ public class College {
         return isCaptured;
     }
 
-
+    public Vector2 getLocation(){
+        return new Vector2(x,y);
+    }
 }

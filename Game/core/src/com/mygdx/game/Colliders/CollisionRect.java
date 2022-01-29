@@ -1,7 +1,5 @@
 package com.mygdx.game.Colliders;
 
-import com.badlogic.gdx.physics.box2d.Body;
-
 public class CollisionRect {
 
     float x, y;

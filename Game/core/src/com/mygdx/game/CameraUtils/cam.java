@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import static com.mygdx.game.utils.Constants.PPM;
 
 public class cam {
+
     public static void cameraUpdate(float delta, OrthographicCamera camera, float x, float y) {
         Vector3 cameraPosition = camera.position;
 

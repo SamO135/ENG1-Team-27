@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.Animations.Explosion;
 import com.mygdx.game.CameraUtils.cam;
 import com.mygdx.game.Colleges.College;
+import com.mygdx.game.Enemies.EnemyShip;
 import com.mygdx.game.utils.Projectile;
 import com.mygdx.game.utils.TiledObjectUtil;
 import com.mygdx.game.utils.gui;
@@ -40,7 +41,12 @@ public class Unity extends ApplicationAdapter {
 	private SpriteBatch HUDbatch;
 	private Texture img;
 	public static Texture blank;
+	private Texture imgenemy;
 	private Sprite sprite;
+	private Sprite spriteEnemyAlcuin;
+	private Sprite spriteEnemyGoodrick;
+	private Sprite spriteEnemyJames;
+	private Sprite spriteEnemyDerwent;
 	private BitmapFont SmallFont;
 	private BitmapFont LargeFont;
 
@@ -49,12 +55,16 @@ public class Unity extends ApplicationAdapter {
 
 	private OrthogonalTiledMapRenderer tmr;
 	private TiledMap map;
-	private int mapWidth = 0;
-	private int mapHeight = 0;
+	public static int mapWidth = 0;
+	public static int mapHeight = 0;
 
 	private Box2DDebugRenderer b2dr;
-	private World world;
+	private static World world;
 	private Body player;
+	private Body enemyalcuin;
+	private Body enemygoodricke;
+	private Body enemyjames;
+	private Body enemyderwent;
 	private College Goodricke;
 	private College Alcuin;
 	private College Derwent;
@@ -70,9 +80,10 @@ public class Unity extends ApplicationAdapter {
 
 	private ArrayList<Projectile> cannonballs;
 	private ArrayList<College> Collages;
+	private ArrayList<Body> enemyShips;
 	private ArrayList<Explosion> explosions;
 	public enum Screen{
-		Home, MAIN_GAME, End;
+		Home, MAIN_GAME, End
 	}
 
 	Screen currentScreen = Screen.Home;
@@ -87,26 +98,32 @@ public class Unity extends ApplicationAdapter {
 		cannonballs = new ArrayList<Projectile>();
 		Collages = new ArrayList<College>();
 		explosions = new ArrayList<Explosion>();
+		enemyShips = new ArrayList<>();
 
 		//batches
 		batch = new SpriteBatch();
 		HUDbatch = new SpriteBatch();
 		
 		img = new Texture("PirateShip3Mast.png");
+		imgenemy = new Texture("PirateShipEnemy.png");
 		blank = new Texture("Blank.png");
 
 		//initialise colleges
 		Goodricke = new College(3140, 3110, "TowerGoodricke.png", true);
 		Collages.add(Goodricke);
+		//enemyShips.add(new EnemyShip(2900, 2600, Goodricke, world));
 
 		Alcuin = new College(1500, 1300, "TowerAlcuin.png", false);
 		Collages.add(Alcuin);
+		//enemyShips.add(new EnemyShip(1500, 1000, Alcuin, world));
 
 		Derwent = new College(520, 2170, "TowerDerwent.png", false);
 		Collages.add(Derwent);
+		//enemyShips.add(new EnemyShip(520, 1900, Derwent, world));
 
 		James = new College(3080, 1080, "TowerJames.png", false);
 		Collages.add(James);
+		//enemyShips.add(new EnemyShip(2900, 800, James, world));
 
 		collagesNotBossCount = Collages.size() - 1;
 		
@@ -124,6 +141,10 @@ public class Unity extends ApplicationAdapter {
 		sprite.setSize(128,64);
 		sprite.setOrigin(64, 32);
 		sprite.setRotation(180f);
+		spriteEnemyAlcuin = new Sprite(imgenemy);
+		spriteEnemyDerwent = new Sprite(imgenemy);
+		spriteEnemyGoodrick = new Sprite(imgenemy);
+		spriteEnemyJames = new Sprite(imgenemy);
 
 		//initialise camera
 		camera = new OrthographicCamera();
@@ -133,6 +154,14 @@ public class Unity extends ApplicationAdapter {
 		b2dr = new Box2DDebugRenderer();
 
 		player = createBox(spawnx , spawny, 128, 64, false);
+		enemyalcuin = createBox(1500 , 1000, 128, 64, true);
+		enemyderwent = createBox(520 , 1900, 128, 64, true);
+		enemygoodricke = createBox(2900 , 2600, 128, 64, true);
+		enemyjames = createBox(2900 , 800, 128, 64, true);
+		enemyShips.add(enemyalcuin);
+		enemyShips.add(enemyderwent);
+		enemyShips.add(enemygoodricke);
+		enemyShips.add(enemyjames);
 
 		map = new TmxMapLoader().load("MapAssets/GameMap.tmx");
 		MapProperties props = map.getProperties();
@@ -177,11 +206,25 @@ public class Unity extends ApplicationAdapter {
 
 			b2dr.render(world, camera.combined.scl(PPM));
 
+			//Draw the map
 			tmr.render();
 
+			//Update the position of the player's image
 			sprite.setPosition(player.getPosition().x * PPM - (img.getWidth()) / 3, player.getPosition().y * PPM  - (img.getHeight()) / 3);
+			spriteEnemyAlcuin.setPosition(enemyalcuin.getPosition().x - imgenemy.getWidth() / 2, enemyalcuin.getPosition().y - imgenemy.getHeight() / 2);
+			spriteEnemyDerwent.setPosition(enemyderwent.getPosition().x - imgenemy.getWidth() / 2, enemyderwent.getPosition().y - imgenemy.getHeight() / 2);
+			spriteEnemyGoodrick.setPosition(enemygoodricke.getPosition().x - imgenemy.getWidth() / 2, enemygoodricke.getPosition().y - imgenemy.getHeight() / 2);
+			spriteEnemyJames.setPosition(enemyjames.getPosition().x - imgenemy.getWidth() / 2, enemyjames.getPosition().y - imgenemy.getHeight() / 2);
+
 			batch.begin();
+
+			//Draw player & enemies
 			sprite.draw(batch);
+			spriteEnemyAlcuin.draw(batch);
+			spriteEnemyDerwent.draw(batch);
+			spriteEnemyGoodrick.draw(batch);
+			spriteEnemyJames.draw(batch);
+
 
 			//Shooting code
 			if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && cannonCooldown <= 0){
@@ -220,6 +263,11 @@ public class Unity extends ApplicationAdapter {
 
 			//Health bar position
 			batch.draw(blank, player.getPosition().x - 30, player.getPosition().y - 70, 60 * health, 5);
+			batch.setColor(Color.RED);
+			batch.draw(blank, enemyjames.getPosition().x - 30, enemyjames.getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, enemyderwent.getPosition().x - 30, enemyderwent.getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, enemyalcuin.getPosition().x - 30, enemyalcuin.getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, enemygoodricke.getPosition().x - 30, enemygoodricke.getPosition().y - 70, 60 * health, 5);
 			batch.setColor(Color.WHITE);
 
 			for(Projectile cannonball : cannonballs){
@@ -380,7 +428,7 @@ public class Unity extends ApplicationAdapter {
 	}
 
 
-	public Body createBox(int x, int y, int width, int height, boolean isStatic) {
+	public static Body createBox(float x, float y, int width, int height, boolean isStatic) {
 		Body pBody;
 		BodyDef def = new BodyDef();
 
@@ -391,7 +439,6 @@ public class Unity extends ApplicationAdapter {
 			def.type = BodyDef.BodyType.DynamicBody;
 		}
 		def.position.set(x / PPM, y / PPM);
-		def.fixedRotation = true;
 		pBody = world.createBody(def);
 
 
@@ -425,5 +472,13 @@ public class Unity extends ApplicationAdapter {
 
 	public static float getWidth(){
 		return w;
+	}
+
+	public static float getMapWidth(){
+		return mapWidth;
+	}
+
+	public static float getMapHeight(){
+		return mapHeight;
 	}
 }
