@@ -26,6 +26,9 @@ public class cam {
         if(camera.zoom > 3.55f){
             camera.zoom = 3.55f;
         }
+        if(camera.zoom < 1f){
+            camera.zoom = 1f;
+        }
         camera.update();
     }
 

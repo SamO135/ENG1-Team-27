@@ -281,7 +281,7 @@ public class Unity extends ApplicationAdapter {
 						cannonballsToRemove.add(cannonball);
 						explosions.add(new Explosion(cannonball.getPosition()));
 						plunder = college.hit(plunder);
-						if(college.getHealth() != 0f && !college.isCaptured() && college.bossReady){
+						if(!college.isCaptured() && college.bossReady){
 							plunder += 50f;
 						}else if(college.isCaptured()){
 							collagesNotBossCount -= 1;
