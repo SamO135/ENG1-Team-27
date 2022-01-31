@@ -9,7 +9,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.Colleges.College;
-import com.mygdx.game.Colliders.CollisionRect;
+import com.mygdx.game.Colliders.ProjectileCollider;
 import com.mygdx.game.Unity;
 import java.util.Random;
 
@@ -20,7 +20,7 @@ public class EnemyShip {
     private Texture img;
     private Sprite sprite;
     Random rand = new Random();
-    CollisionRect rect;
+    ProjectileCollider rect;
     float health = 1f;
     Texture blank = Unity.blank;
     Body body;
@@ -33,7 +33,7 @@ public class EnemyShip {
 
        /*this.img = new Texture("PirateShipEnemy.png");
         sprite = new Sprite(this.img);
-        rect = new CollisionRect(x, y, img.getWidth(), img.getHeight());
+        rect = new ProjectileCollider(x, y, img.getWidth(), img.getHeight());
 
         Body pBody;
         BodyDef def = new BodyDef();

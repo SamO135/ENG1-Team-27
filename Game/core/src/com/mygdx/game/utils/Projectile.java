@@ -3,7 +3,7 @@ package com.mygdx.game.utils;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game.Colliders.CollisionRect;
+import com.mygdx.game.Colliders.ProjectileCollider;
 
 public class Projectile {
     public static final int SPEED = 3;
@@ -12,7 +12,7 @@ public class Projectile {
     int width = 8;
     int height = 8;
 
-    CollisionRect rect;
+    ProjectileCollider rect;
 
     Vector2 position;
     Vector2 targetposition;
@@ -22,7 +22,7 @@ public class Projectile {
     public Projectile(Vector2 position, Vector2 target){
         this.position = position;
         this.targetposition = target;
-        this.rect = new CollisionRect(position, width, height);
+        this.rect = new ProjectileCollider(position, width, height);
 
         if (texture == null){
             texture = new Texture("cannonball.png");
@@ -52,6 +52,6 @@ public class Projectile {
         this.position = Position;
     }
 
-    public CollisionRect getCollisionRect(){ return rect;}
+    public ProjectileCollider getProjectileCollider(){ return rect;}
 
 }

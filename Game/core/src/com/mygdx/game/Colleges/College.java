@@ -5,14 +5,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game.Colliders.CollisionRect;
+import com.mygdx.game.Colliders.ProjectileCollider;
 import com.mygdx.game.Unity;
 
 public class College {
     private Texture img;
     private Sprite sprite;
     Vector2 position;
-    CollisionRect rect;
+    ProjectileCollider rect;
     float health = 1f;
     Texture blank = Unity.blank;
     public boolean isBoss;
@@ -27,10 +27,10 @@ public class College {
         this.position = position;
         isBoss = boss;
         if(!isBoss){bossReady = true;}
-        this.rect = new CollisionRect(position, (int) sprite.getWidth(), (int) sprite.getHeight());
+        this.rect = new ProjectileCollider(position, (int) sprite.getWidth(), (int) sprite.getHeight());
     }
 
-    public CollisionRect getCollisionRect(){ return rect;}
+    public ProjectileCollider getProjectileCollider(){ return rect;}
 
     public void render(SpriteBatch batch){
         sprite.setPosition(position.x, position.y);
