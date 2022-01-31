@@ -11,7 +11,7 @@ import com.mygdx.game.Unity;
 public class College {
     private Texture img;
     private Sprite sprite;
-    int x,y;
+    Vector2 position;
     CollisionRect rect;
     float health = 1f;
     Texture blank = Unity.blank;
@@ -21,20 +21,19 @@ public class College {
     float num = 0;
     int collegesNotBoss;
 
-    public College(int x, int y, String img, boolean boss){
+    public College(Vector2 position, String img, boolean boss){
         this.img = new Texture(img);
         sprite = new Sprite(this.img);
-        this.x = x;
-        this.y = y;
+        this.position = position;
         isBoss = boss;
         if(!isBoss){bossReady = true;}
-        this.rect = new CollisionRect(x, y, (int) sprite.getWidth(), (int) sprite.getHeight());
+        this.rect = new CollisionRect(position, (int) sprite.getWidth(), (int) sprite.getHeight());
     }
 
     public CollisionRect getCollisionRect(){ return rect;}
 
     public void render(SpriteBatch batch){
-        sprite.setPosition(x, y);
+        sprite.setPosition(position.x, position.y);
         sprite.draw(batch);
         if(!isCaptured){
             batch.setColor(Color.RED);
@@ -42,7 +41,7 @@ public class College {
             health = 1;
             batch.setColor(Color.GREEN);
         }
-        batch.draw(blank, x + (img.getWidth() / 2) - 60, y - 10, 120 * health, 5);
+        batch.draw(blank, position.x + (img.getWidth() / 2) - 60, position.y - 10, 120 * health, 5);
         batch.setColor(Color.WHITE);
 
     }
@@ -94,6 +93,6 @@ public class College {
     }
 
     public Vector2 getLocation(){
-        return new Vector2(x,y);
+        return position;
     }
 }

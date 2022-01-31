@@ -109,19 +109,19 @@ public class Unity extends ApplicationAdapter {
 		blank = new Texture("Blank.png");
 
 		//initialise colleges
-		Goodricke = new College(3140, 3110, "TowerGoodricke.png", true);
+		Goodricke = new College(new Vector2(3140, 3110), "TowerGoodricke.png", true);
 		Collages.add(Goodricke);
 		//enemyShips.add(new EnemyShip(2900, 2600, Goodricke, world));
 
-		Alcuin = new College(1500, 1300, "TowerAlcuin.png", false);
+		Alcuin = new College(new Vector2(1500, 1300), "TowerAlcuin.png", false);
 		Collages.add(Alcuin);
 		//enemyShips.add(new EnemyShip(1500, 1000, Alcuin, world));
 
-		Derwent = new College(520, 2170, "TowerDerwent.png", false);
+		Derwent = new College(new Vector2(520, 2170), "TowerDerwent.png", false);
 		Collages.add(Derwent);
 		//enemyShips.add(new EnemyShip(520, 1900, Derwent, world));
 
-		James = new College(3080, 1080, "TowerJames.png", false);
+		James = new College(new Vector2(3080, 1080), "TowerJames.png", false);
 		Collages.add(James);
 		//enemyShips.add(new EnemyShip(2900, 800, James, world));
 
@@ -279,7 +279,7 @@ public class Unity extends ApplicationAdapter {
 				for (College college: Collages){
 					if(cannonball.getCollisionRect().collidesWith(college.getCollisionRect())){
 						cannonballsToRemove.add(cannonball);
-						explosions.add(new Explosion(cannonball.getPosition().x, cannonball.getPosition().y));
+						explosions.add(new Explosion(cannonball.getPosition()));
 						plunder = college.hit(plunder);
 						if(college.getHealth() != 0f && !college.isCaptured() && college.bossReady){
 							plunder += 50f;
@@ -304,7 +304,7 @@ public class Unity extends ApplicationAdapter {
 
 			batch.end();
 			
-			gui.updateMainScreen(HUDbatch, SmallFont, plunder, score);
+			gui.drawMainScreen(HUDbatch, SmallFont, plunder, score);
 
 		}
 		if(currentScreen == Screen.End){
