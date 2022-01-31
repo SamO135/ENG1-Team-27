@@ -27,6 +27,7 @@ import com.mygdx.game.Enemies.EnemyShip;
 import com.mygdx.game.utils.Projectile;
 import com.mygdx.game.utils.TiledObjectUtil;
 import com.mygdx.game.utils.gui;
+import com.mygdx.game.utils.BaseCollider;
 import java.util.ArrayList;
 import static com.mygdx.game.utils.Constants.PPM;
 import static java.lang.Math.toRadians;
@@ -60,11 +61,11 @@ public class Unity extends ApplicationAdapter {
 
 	private Box2DDebugRenderer b2dr;
 	private static World world;
-	private Body player;
-	private Body enemyalcuin;
-	private Body enemygoodricke;
-	private Body enemyjames;
-	private Body enemyderwent;
+	private BaseCollider player;
+	private BaseCollider enemyalcuin;
+	private BaseCollider enemygoodricke;
+	private BaseCollider enemyjames;
+	private BaseCollider enemyderwent;
 	private College Goodricke;
 	private College Alcuin;
 	private College Derwent;
@@ -153,15 +154,15 @@ public class Unity extends ApplicationAdapter {
 		world = new World(new Vector2(0, 0f), false);
 		b2dr = new Box2DDebugRenderer();
 
-		player = createBox(spawnx , spawny, 128, 64, false);
-		enemyalcuin = createBox(1500 , 1000, 128, 64, true);
-		enemyderwent = createBox(520 , 1900, 128, 64, true);
-		enemygoodricke = createBox(2900 , 2600, 128, 64, true);
-		enemyjames = createBox(2900 , 800, 128, 64, true);
-		enemyShips.add(enemyalcuin);
-		enemyShips.add(enemyderwent);
-		enemyShips.add(enemygoodricke);
-		enemyShips.add(enemyjames);
+		player = new BaseCollider(new Vector2(spawnx , spawny), 128, 64, false, world);
+		enemyalcuin = new BaseCollider(new Vector2(1500 , 1000), 128, 64, true, world);
+		enemyderwent = new BaseCollider(new Vector2(520 , 1900), 128, 64, true, world);
+		enemygoodricke = new BaseCollider(new Vector2(2900 , 2600), 128, 64, true, world);
+		enemyjames = new BaseCollider(new Vector2(2900 , 800), 128, 64, true, world);
+		enemyShips.add(enemyalcuin.getBody());
+		enemyShips.add(enemyderwent.getBody());
+		enemyShips.add(enemygoodricke.getBody());
+		enemyShips.add(enemyjames.getBody());
 
 		map = new TmxMapLoader().load("MapAssets/GameMap.tmx");
 		MapProperties props = map.getProperties();
@@ -170,7 +171,6 @@ public class Unity extends ApplicationAdapter {
 		tmr = new OrthogonalTiledMapRenderer(map);
 
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("Collision-layer").getObjects());
-
 	}
 
 	@Override
@@ -210,11 +210,11 @@ public class Unity extends ApplicationAdapter {
 			tmr.render();
 
 			//Update the position of the player's image
-			sprite.setPosition(player.getPosition().x * PPM - (img.getWidth()) / 3, player.getPosition().y * PPM  - (img.getHeight()) / 3);
-			spriteEnemyAlcuin.setPosition(enemyalcuin.getPosition().x - imgenemy.getWidth() / 2, enemyalcuin.getPosition().y - imgenemy.getHeight() / 2);
-			spriteEnemyDerwent.setPosition(enemyderwent.getPosition().x - imgenemy.getWidth() / 2, enemyderwent.getPosition().y - imgenemy.getHeight() / 2);
-			spriteEnemyGoodrick.setPosition(enemygoodricke.getPosition().x - imgenemy.getWidth() / 2, enemygoodricke.getPosition().y - imgenemy.getHeight() / 2);
-			spriteEnemyJames.setPosition(enemyjames.getPosition().x - imgenemy.getWidth() / 2, enemyjames.getPosition().y - imgenemy.getHeight() / 2);
+			sprite.setPosition(player.getBody().getPosition().x * PPM - (img.getWidth()) / 3, player.getBody().getPosition().y * PPM  - (img.getHeight()) / 3);
+			spriteEnemyAlcuin.setPosition(enemyalcuin.getBody().getPosition().x - imgenemy.getWidth() / 2, enemyalcuin.getBody().getPosition().y - imgenemy.getHeight() / 2);
+			spriteEnemyDerwent.setPosition(enemyderwent.getBody().getPosition().x - imgenemy.getWidth() / 2, enemyderwent.getBody().getPosition().y - imgenemy.getHeight() / 2);
+			spriteEnemyGoodrick.setPosition(enemygoodricke.getBody().getPosition().x - imgenemy.getWidth() / 2, enemygoodricke.getBody().getPosition().y - imgenemy.getHeight() / 2);
+			spriteEnemyJames.setPosition(enemyjames.getBody().getPosition().x - imgenemy.getWidth() / 2, enemyjames.getBody().getPosition().y - imgenemy.getHeight() / 2);
 
 			batch.begin();
 
@@ -228,7 +228,7 @@ public class Unity extends ApplicationAdapter {
 
 			//Shooting code
 			if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && cannonCooldown <= 0){
-				cannonballs.add(new Projectile(new Vector2(player.getPosition().x, player.getPosition().y), mousePos(Gdx.input.getX(), Gdx.input.getY())));
+				cannonballs.add(new Projectile(new Vector2(player.getBody().getPosition().x, player.getBody().getPosition().y), mousePos(Gdx.input.getX(), Gdx.input.getY())));
 				cannonCooldown = 40;
 			}
 
@@ -262,12 +262,12 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			//Health bar position
-			batch.draw(blank, player.getPosition().x - 30, player.getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, player.getBody().getPosition().x - 30, player.getBody().getPosition().y - 70, 60 * health, 5);
 			batch.setColor(Color.RED);
-			batch.draw(blank, enemyjames.getPosition().x - 30, enemyjames.getPosition().y - 70, 60 * health, 5);
-			batch.draw(blank, enemyderwent.getPosition().x - 30, enemyderwent.getPosition().y - 70, 60 * health, 5);
-			batch.draw(blank, enemyalcuin.getPosition().x - 30, enemyalcuin.getPosition().y - 70, 60 * health, 5);
-			batch.draw(blank, enemygoodricke.getPosition().x - 30, enemygoodricke.getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, enemyjames.getBody().getPosition().x - 30, enemyjames.getBody().getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, enemyderwent.getBody().getPosition().x - 30, enemyderwent.getBody().getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, enemyalcuin.getBody().getPosition().x - 30, enemyalcuin.getBody().getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, enemygoodricke.getBody().getPosition().x - 30, enemygoodricke.getBody().getPosition().y - 70, 60 * health, 5);
 			batch.setColor(Color.WHITE);
 
 			for(Projectile cannonball : cannonballs){
@@ -277,7 +277,7 @@ public class Unity extends ApplicationAdapter {
 			//After all updates, checking for collisions
 			for (Projectile cannonball: cannonballs){
 				for (College college: Collages){
-					if(cannonball.getCollisionRect().collidesWith(college.getCollisionRect())){
+					if(cannonball.getProjectileCollider().collidesWith(college.getProjectileCollider())){
 						cannonballsToRemove.add(cannonball);
 						explosions.add(new Explosion(cannonball.getPosition()));
 						plunder = college.hit(plunder);
@@ -340,18 +340,18 @@ public class Unity extends ApplicationAdapter {
 		blank.dispose();
 	}
 
-	public void update (float delta){
+	private void update (float delta){
 		world.step(1/60f, 6, 2);
 
 		inputUpdate(delta);
 
-		cam.cameraUpdate(delta, camera, player.getPosition().x, player.getPosition().y);
+		cam.cameraUpdate(delta, camera, player.getBody().getPosition().x, player.getBody().getPosition().y);
 		cam.boundry(camera, mapWidth * 32, mapHeight * 32);
 		tmr.setView(camera);
 		batch.setProjectionMatrix(camera.combined);
 	}
 
-	public void inputUpdate(float delta){
+	private void inputUpdate(float delta){
 		int horizontalforce = 0;
 		int verticalforce = 0;
 		float currentRotation = sprite.getRotation();
@@ -364,11 +364,11 @@ public class Unity extends ApplicationAdapter {
 			
 			if(Gdx.input.isKeyPressed(Input.Keys.A)){
 				sprite.setRotation((float) (currentRotation + 0.8));
-				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
+				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(currentRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.D)){
 				sprite.setRotation((float) (currentRotation - 0.8));
-				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
+				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(currentRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.W)){
 				verticalforce += -Math.sin(toRadians(currentRotation))*1000;
@@ -380,7 +380,7 @@ public class Unity extends ApplicationAdapter {
 				horizontalforce += Math.cos(toRadians(currentRotation))*1000;
 				score += 0.005;
 			}
-			player.setLinearVelocity(horizontalforce * 32, verticalforce * 32);	
+			player.getBody().setLinearVelocity(horizontalforce * 32, verticalforce * 32);	
 		}
 		if(currentScreen == Screen.MAIN_GAME && Goodricke.isCaptured()){
 			currentScreen = Screen.End;
@@ -390,72 +390,11 @@ public class Unity extends ApplicationAdapter {
 		}
 	}
 
-	public void updateRotation(int i) { // 1 = left, 2 = right, 3 = up, 4 = down
-		float currentRotation = sprite.getRotation();
-		switch (i) {
-			case 1:
-				if (currentRotation > 180){
-					sprite.setRotation((float) (currentRotation + (360 - currentRotation) * 0.1));
-				}
-				else {
-					sprite.setRotation((float) (currentRotation + (0 - currentRotation) * 0.1));
-				}
-				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
-				break;
-			case 2:
-				sprite.setRotation((float) (currentRotation + (180-currentRotation) * 0.1));
-				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
-				break;
-			case 3:
-				if (currentRotation < 90){
-					sprite.setRotation((float) (currentRotation + (-90 - currentRotation) * 0.1));
-				}
-				else {
-					sprite.setRotation((float) (currentRotation + (270 - currentRotation) * 0.1));
-				}
-				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
-				break;
-			case 4:
-				if (currentRotation > 270){
-					sprite.setRotation((float) (currentRotation + (450 - currentRotation) * 0.1));
-				}
-				else {
-					sprite.setRotation((float) (currentRotation + (90 - currentRotation) * 0.1));
-				}
-				player.setTransform(player.getPosition().x, player.getPosition().y, (float) toRadians(currentRotation));
-				break;
-		}
-	}
-
-
-	public static Body createBox(float x, float y, int width, int height, boolean isStatic) {
-		Body pBody;
-		BodyDef def = new BodyDef();
-
-		if(isStatic){
-			def.type = BodyDef.BodyType.StaticBody;
-		}
-		else{
-			def.type = BodyDef.BodyType.DynamicBody;
-		}
-		def.position.set(x / PPM, y / PPM);
-		pBody = world.createBody(def);
-
-
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(width / 2 / PPM,height / 2 / PPM);
-
-		pBody.createFixture(shape, 1.0f);
-		shape.dispose();
-
-		return pBody;
-	}
-
-	public Vector2 mousePos(int screenX, int screenY) {
+	private Vector2 mousePos(int screenX, int screenY) {
 
 		//screenX, screenY - Mouse Coords
 
-		Vector2 centerPosition = new Vector2(player.getPosition().x, player.getPosition().y);
+		Vector2 centerPosition = new Vector2(player.getBody().getPosition().x, player.getBody().getPosition().y);
 
 		Vector3 worldCoordinates = new Vector3(screenX, screenY,0);
 		camera.unproject(worldCoordinates);
