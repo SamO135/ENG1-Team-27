@@ -16,21 +16,20 @@ import java.util.Random;
 import static com.mygdx.game.utils.Constants.PPM;
 
 public class EnemyShip {
+	
     private Texture img;
     private Sprite sprite;
     Random rand = new Random();
-    float x;
-    float y;
     CollisionRect rect;
     float health = 1f;
     Texture blank = Unity.blank;
     Body body;
+	private Vector2 position;
+	private Vector2 collegePosition;
 
-    public EnemyShip(int x, int y, College college, World world){
-        float collegex = college.getLocation().x;
-        float collegey = college.getLocation().y;
-        this.x = x;
-        this.y = y;
+    public EnemyShip(Vector2 position, College college, World world){ 
+        this.collegePosition = college.getLocation();
+        this.position = position;
 
        /*this.img = new Texture("PirateShipEnemy.png");
         sprite = new Sprite(this.img);
@@ -50,23 +49,20 @@ public class EnemyShip {
         shape.dispose();*/
 
         /*while(x < 0 || x > Unity.getMapWidth() * 32 || y < 0 || y > Unity.getMapHeight() * 32){
-            x = getRandomLocation(collegex, collegey).x;
-            y = getRandomLocation(collegex, collegey).y;
+            randomLocation = getRandomLocation(collegePosition);
         }*/
-
-
     }
 
     public void render(SpriteBatch batch){
-        sprite.setPosition(x, y);
+        sprite.setPosition(position.x, position.y);
         sprite.draw(batch);
-        batch.draw(blank, x + (img.getWidth() / 2) - 60, y - 10, 60 * health, 5);
+        batch.draw(blank, position.x + (img.getWidth() / 2) - 60, position.y - 10, 60 * health, 5);
     }
 
-    private Vector2 getRandomLocation(float collegex, float collegey){
+    private Vector2 getRandomLocation(){
         return new Vector2(
-                collegex + (rand.nextInt(1500) - 500),
-                collegey + (rand.nextInt(1500) - 500)
+                collegePosition.x + (rand.nextInt(1500) - 500),
+                collegePosition.y + (rand.nextInt(1500) - 500)
         );
     }
 }

@@ -10,7 +10,7 @@ public class gui {
     private static float width = Unity.getWidth();
     private static float height = Unity.getHeight();
 
-    public static void updateMainScreen(Batch batch, BitmapFont font, int plunder, float score) {
+    public static void drawMainScreen(Batch batch, BitmapFont font, int plunder, float score) {
     	
         GlyphLayout PlunderInfoTextLayout = new GlyphLayout(font, "Plunder: " + plunder);
         GlyphLayout ScoreInfoTextLayout = new GlyphLayout(font, "Score: " + Math.round(score));

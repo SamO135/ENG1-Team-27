@@ -1,24 +1,24 @@
 package com.mygdx.game.Colliders;
 
+import com.badlogic.gdx.math.Vector2;
+
 public class CollisionRect {
 
-    float x, y;
+    Vector2 position;
     int width, height;
 
-    public CollisionRect(float x, float y, int width, int height){
-        this.x = x;
-        this.y = y;
+    public CollisionRect(Vector2 position, int width, int height){
+        this.position = position;
         this.width = width;
         this.height= height;
     }
 
-    public void move(float x, float y){
-        this.x = x;
-        this.y = y;
+    public void move(Vector2 newPosition){
+        this.position = newPosition;
     }
 
     public boolean collidesWith(CollisionRect rect){
-            return x < rect.x + rect.width && y < rect.y + rect.height && x + this.width > rect.x && y + this.height > rect.y;
+            return position.x < rect.position.x + rect.width && position.y < rect.position.y + rect.height && position.x + this.width > rect.position.x && position.y + this.height > rect.position.y;
 
     }
 }

@@ -22,7 +22,7 @@ public class Projectile {
     public Projectile(Vector2 position, Vector2 target){
         this.position = position;
         this.targetposition = target;
-        this.rect = new CollisionRect(position.x, position.y, width, height);
+        this.rect = new CollisionRect(position, width, height);
 
         if (texture == null){
             texture = new Texture("cannonball.png");
@@ -34,7 +34,7 @@ public class Projectile {
 
         position.y += targetposition.y * SPEED * deltaTime;
         position.x += targetposition.x * SPEED * deltaTime;
-        rect.move(position.x, position.y);
+        rect.move(position);
         if(num >= 5){
             remove = true;
         }

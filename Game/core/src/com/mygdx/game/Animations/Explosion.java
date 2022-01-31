@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 
 public class Explosion {
@@ -11,14 +12,13 @@ public class Explosion {
     public static final int offset = 4;
     public static final int size = 32;
 
-    private static Animation anim = null;
-    float x, y;
+    private static Animation<?> anim = null;
     float statetime;
     public boolean remove = false;
-
-    public Explosion(float x, float y){
-        this.x = x - offset;
-        this.y = y - offset;
+	private Vector2 position;
+    
+	public Explosion(Vector2 loc){
+        this.position = new Vector2(loc.x - offset, loc.y - offset);
         statetime = 0;
 
 
@@ -35,7 +35,7 @@ public class Explosion {
     }
 
     public void render(SpriteBatch batch){
-        batch.draw((TextureRegion) anim.getKeyFrame(statetime), x, y);
+        batch.draw((TextureRegion) anim.getKeyFrame(statetime), position.x, position.y);
     }
 
 }
