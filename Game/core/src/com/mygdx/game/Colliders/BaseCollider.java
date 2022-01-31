@@ -1,4 +1,4 @@
-package com.mygdx.game.utils;
+package com.mygdx.game.Colliders;
 
 import static com.mygdx.game.utils.Constants.PPM;
 

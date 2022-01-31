@@ -27,7 +27,7 @@ import com.mygdx.game.Enemies.EnemyShip;
 import com.mygdx.game.utils.Projectile;
 import com.mygdx.game.utils.TiledObjectUtil;
 import com.mygdx.game.utils.gui;
-import com.mygdx.game.utils.BaseCollider;
+import com.mygdx.game.Colliders.BaseCollider;
 import java.util.ArrayList;
 import static com.mygdx.game.utils.Constants.PPM;
 import static java.lang.Math.toRadians;
