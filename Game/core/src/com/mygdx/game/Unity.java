@@ -345,7 +345,7 @@ public class Unity extends ApplicationAdapter {
 
 		inputUpdate(delta);
 
-		cam.cameraUpdate(delta, camera, player.getBody().getPosition().x, player.getBody().getPosition().y);
+		cam.cameraUpdate(delta, camera, player.getBody().getPosition());
 		cam.boundry(camera, mapWidth * 32, mapHeight * 32);
 		tmr.setView(camera);
 		batch.setProjectionMatrix(camera.combined);
