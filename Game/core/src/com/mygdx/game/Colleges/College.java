@@ -5,6 +5,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
+import com.mygdx.game.Colliders.BaseCollider;
 import com.mygdx.game.Colliders.ProjectileCollider;
 import com.mygdx.game.Unity;
 
@@ -13,6 +16,7 @@ public class College {
     private Sprite sprite;
     Vector2 position;
     ProjectileCollider rect;
+    BaseCollider collider;
     float health = 1f;
     Texture blank = Unity.blank;
     public boolean isBoss;
@@ -21,13 +25,14 @@ public class College {
     float num = 0;
     int collegesNotBoss;
 
-    public College(Vector2 position, String img, boolean boss){
+    public College(Vector2 position, String img, boolean boss, World world){
         this.img = new Texture(img);
         sprite = new Sprite(this.img);
         this.position = position;
         isBoss = boss;
         if(!isBoss){bossReady = true;}
         this.rect = new ProjectileCollider(position, (int) sprite.getWidth(), (int) sprite.getHeight());
+        this.collider = new BaseCollider(position, 128, 64, true, world);
     }
 
     public ProjectileCollider getProjectileCollider(){ return rect;}
@@ -94,5 +99,9 @@ public class College {
 
     public Vector2 getLocation(){
         return position;
+    }
+    
+    public Body getColliderBody() {
+    	return collider.getBody();
     }
 }

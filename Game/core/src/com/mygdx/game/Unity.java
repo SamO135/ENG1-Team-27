@@ -62,10 +62,6 @@ public class Unity extends ApplicationAdapter {
 	private Box2DDebugRenderer b2dr;
 	private static World world;
 	private BaseCollider player;
-	private BaseCollider enemyalcuin;
-	private BaseCollider enemygoodricke;
-	private BaseCollider enemyjames;
-	private BaseCollider enemyderwent;
 	private College Goodricke;
 	private College Alcuin;
 	private College Derwent;
@@ -108,21 +104,25 @@ public class Unity extends ApplicationAdapter {
 		img = new Texture("PirateShip3Mast.png");
 		imgenemy = new Texture("PirateShipEnemy.png");
 		blank = new Texture("Blank.png");
+		
+		//init collision system
+		world = new World(new Vector2(0, 0f), false);
+		b2dr = new Box2DDebugRenderer();
 
 		//initialise colleges
-		Goodricke = new College(new Vector2(3140, 3110), "TowerGoodricke.png", true);
+		Goodricke = new College(new Vector2(3140, 3110), "TowerGoodricke.png", true, world);
 		Collages.add(Goodricke);
 		//enemyShips.add(new EnemyShip(2900, 2600, Goodricke, world));
 
-		Alcuin = new College(new Vector2(1500, 1300), "TowerAlcuin.png", false);
+		Alcuin = new College(new Vector2(1500, 1300), "TowerAlcuin.png", false, world);
 		Collages.add(Alcuin);
 		//enemyShips.add(new EnemyShip(1500, 1000, Alcuin, world));
 
-		Derwent = new College(new Vector2(520, 2170), "TowerDerwent.png", false);
+		Derwent = new College(new Vector2(520, 2170), "TowerDerwent.png", false, world);
 		Collages.add(Derwent);
 		//enemyShips.add(new EnemyShip(520, 1900, Derwent, world));
 
-		James = new College(new Vector2(3080, 1080), "TowerJames.png", false);
+		James = new College(new Vector2(3080, 1080), "TowerJames.png", false, world);
 		Collages.add(James);
 		//enemyShips.add(new EnemyShip(2900, 800, James, world));
 
@@ -151,18 +151,11 @@ public class Unity extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, w / scale, h / scale);
 
-		world = new World(new Vector2(0, 0f), false);
-		b2dr = new Box2DDebugRenderer();
-
 		player = new BaseCollider(new Vector2(spawnx , spawny), 128, 64, false, world);
-		enemyalcuin = new BaseCollider(new Vector2(1500 , 1000), 128, 64, true, world);
-		enemyderwent = new BaseCollider(new Vector2(520 , 1900), 128, 64, true, world);
-		enemygoodricke = new BaseCollider(new Vector2(2900 , 2600), 128, 64, true, world);
-		enemyjames = new BaseCollider(new Vector2(2900 , 800), 128, 64, true, world);
-		enemyShips.add(enemyalcuin.getBody());
-		enemyShips.add(enemyderwent.getBody());
-		enemyShips.add(enemygoodricke.getBody());
-		enemyShips.add(enemyjames.getBody());
+		enemyShips.add(Alcuin.getColliderBody());
+		enemyShips.add(Derwent.getColliderBody());
+		enemyShips.add(Goodricke.getColliderBody());
+		enemyShips.add(James.getColliderBody());
 
 		map = new TmxMapLoader().load("MapAssets/GameMap.tmx");
 		MapProperties props = map.getProperties();
@@ -211,10 +204,10 @@ public class Unity extends ApplicationAdapter {
 
 			//Update the position of the player's image
 			sprite.setPosition(player.getBody().getPosition().x * PPM - (img.getWidth()) / 3, player.getBody().getPosition().y * PPM  - (img.getHeight()) / 3);
-			spriteEnemyAlcuin.setPosition(enemyalcuin.getBody().getPosition().x - imgenemy.getWidth() / 2, enemyalcuin.getBody().getPosition().y - imgenemy.getHeight() / 2);
-			spriteEnemyDerwent.setPosition(enemyderwent.getBody().getPosition().x - imgenemy.getWidth() / 2, enemyderwent.getBody().getPosition().y - imgenemy.getHeight() / 2);
-			spriteEnemyGoodrick.setPosition(enemygoodricke.getBody().getPosition().x - imgenemy.getWidth() / 2, enemygoodricke.getBody().getPosition().y - imgenemy.getHeight() / 2);
-			spriteEnemyJames.setPosition(enemyjames.getBody().getPosition().x - imgenemy.getWidth() / 2, enemyjames.getBody().getPosition().y - imgenemy.getHeight() / 2);
+			spriteEnemyAlcuin.setPosition(Alcuin.getColliderBody().getPosition().x - imgenemy.getWidth() / 2, Alcuin.getColliderBody().getPosition().y - imgenemy.getHeight() / 2);
+			spriteEnemyDerwent.setPosition(Derwent.getColliderBody().getPosition().x - imgenemy.getWidth() / 2, Derwent.getColliderBody().getPosition().y - imgenemy.getHeight() / 2);
+			spriteEnemyGoodrick.setPosition(Goodricke.getColliderBody().getPosition().x - imgenemy.getWidth() / 2, Goodricke.getColliderBody().getPosition().y - imgenemy.getHeight() / 2);
+			spriteEnemyJames.setPosition(James.getColliderBody().getPosition().x - imgenemy.getWidth() / 2, James.getColliderBody().getPosition().y - imgenemy.getHeight() / 2);
 
 			batch.begin();
 
@@ -264,10 +257,10 @@ public class Unity extends ApplicationAdapter {
 			//Health bar position
 			batch.draw(blank, player.getBody().getPosition().x - 30, player.getBody().getPosition().y - 70, 60 * health, 5);
 			batch.setColor(Color.RED);
-			batch.draw(blank, enemyjames.getBody().getPosition().x - 30, enemyjames.getBody().getPosition().y - 70, 60 * health, 5);
-			batch.draw(blank, enemyderwent.getBody().getPosition().x - 30, enemyderwent.getBody().getPosition().y - 70, 60 * health, 5);
-			batch.draw(blank, enemyalcuin.getBody().getPosition().x - 30, enemyalcuin.getBody().getPosition().y - 70, 60 * health, 5);
-			batch.draw(blank, enemygoodricke.getBody().getPosition().x - 30, enemygoodricke.getBody().getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, James.getColliderBody().getPosition().x - 30, James.getColliderBody().getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, Derwent.getColliderBody().getPosition().x - 30, Derwent.getColliderBody().getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, Alcuin.getColliderBody().getPosition().x - 30, Alcuin.getColliderBody().getPosition().y - 70, 60 * health, 5);
+			batch.draw(blank, Goodricke.getColliderBody().getPosition().x - 30, Goodricke.getColliderBody().getPosition().y - 70, 60 * health, 5);
 			batch.setColor(Color.WHITE);
 
 			for(Projectile cannonball : cannonballs){
