@@ -11,11 +11,11 @@ import static com.mygdx.game.utils.Constants.PPM;
 
 public class cam {
 
-    public static void cameraUpdate(float delta, OrthographicCamera camera, float x, float y) {
+    public static void cameraUpdate(float delta, OrthographicCamera camera, Vector2 position) {
         Vector3 cameraPosition = camera.position;
 
-        cameraPosition.x = cameraPosition.x + (x - cameraPosition.x) * 0.1f * PPM;
-        cameraPosition.y = cameraPosition.y + (y - cameraPosition.y) * 0.1f * PPM;
+        cameraPosition.x = cameraPosition.x + (position.x - cameraPosition.x) * 0.1f * PPM;
+        cameraPosition.y = cameraPosition.y + (position.y - cameraPosition.y) * 0.1f * PPM;
         camera.position.set(cameraPosition);
 
         if(Gdx.input.isKeyPressed(Input.Keys.UP)){

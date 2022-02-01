@@ -13,6 +13,7 @@ body {
 h1 {
   font-family: sans-serif;
   font-size: 30px;
+  text-align: center;
   border: #111111;
   border-style: double;
   background-color: rgb(71, 204, 71);
@@ -22,40 +23,25 @@ h1 {
 }
 p {
   text-align: left;
-  margin-left: 20px;
+  margin-left: auto;
+  font-size: 16px;
+  font-weight: normal;
 }
-nav ul {
-  list-style-type: none;
-  background-color: aqua;
-  border: 1px solid #111111;
-  border-radius: 10px;
-  font-family: sans-serif;
-  font-weight: bold;
-  padding: 16px;
-}
-nav ul li {
-  display: inline;
-  color: grey;
-  border-right: 2px solid #111111;
-  padding-right: 8px;
-  padding-left: 8px;
-}
-nav ul li:last-child {
-  border-right: none;
-}
-nav ul li a {
+ul li a {
   text-decoration: none;
   color: darkblue;
+  font-size: 16px;
+  font-weight: normal;
 }
-nav li a:hover {
+li a:hover {
   text-decoration: underline;
 }
 article a {
   text-align: left;
-  margin-left: 20px;
   text-decoration: underline;
   color: darkblue;
 }
+
 /* set box sizing to border box method*/
 html {
   box-sizing: border-box;
@@ -66,13 +52,17 @@ html {
 /*  */
 @media all and (min-width: 900px) {
   article {
-      float: left;
-      width: 66%;
+    float: left;
+    width: 66%;
   }
   aside {
       float: left;
       padding-left: 24px;
       width: 34%;
+  }
+  footer {
+    clear: both;
+    position: relative;
   }
 }
 
