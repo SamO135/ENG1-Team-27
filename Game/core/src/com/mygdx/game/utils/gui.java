@@ -50,4 +50,22 @@ public class gui {
         float StartTextWidth = StartTextLayout.width;
         SmallFont.draw(batch, "Press esc to exit", (width-StartTextWidth)/2, height * .4f);
     }
+
+    public static void drawShopScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){
+        GlyphLayout TitleText = new GlyphLayout(LargeFont, "Shop");
+        float TitleTextWidth = TitleText.width;
+        LargeFont.draw(batch, "Shop", (width-TitleTextWidth)/2, height * 0.92f);
+
+        GlyphLayout StartTextLayout = new GlyphLayout(SmallFont, "Press enter to exit");
+        float StartTextWidth = StartTextLayout.width;
+        SmallFont.draw(batch, "Press enter to exit", (width-StartTextWidth)/2, height * 0.2f);
+
+        GlyphLayout Upgrade1TextLayout = new GlyphLayout(SmallFont, "Press 1 to increased fire rate (200 plunder) : " + Unity.getCannonCooldownSpeed() + "/5");
+        float Upgrade1TextWidth = Upgrade1TextLayout.width;
+        SmallFont.draw(batch, "Press 1 to increased fire rate (200 plunder) : " + Unity.getCannonCooldownSpeed() + "/5", (width * 0.35f), height * 0.8f);
+
+        GlyphLayout Upgrade2TextLayout = new GlyphLayout(SmallFont, "Press 2 to repair ship by 30%: ");
+        float Upgrade2TextWidth = Upgrade2TextLayout.width;
+        SmallFont.draw(batch, "Press 2 to repair ship by 30% (200 plunder) : " + "Current health = " + Unity.getHealth(), (width * 0.35f), height * 0.75f);
+    }
 }

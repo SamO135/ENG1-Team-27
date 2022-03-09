@@ -69,18 +69,19 @@ public class Unity extends ApplicationAdapter {
 	private int spawnx;
 	private int spawny;
 
-	private float health = 1f;
+	private static float health = 1f;
 	private int plunder = 0;
 	private float score = 0;
 	
 	private int cannonCooldown = 0;
+	private static int cannonCooldownSpeed = 1;
 
 	private ArrayList<Projectile> cannonballs;
 	private ArrayList<College> Collages;
 	private ArrayList<Body> enemyShips;
 	private ArrayList<Explosion> explosions;
 	public enum Screen{
-		Home, MAIN_GAME, End
+		Home, MAIN_GAME, Shop, End
 	}
 
 	Screen currentScreen = Screen.Home;
@@ -192,7 +193,7 @@ public class Unity extends ApplicationAdapter {
 			
 			//reduce cannon cooldown
 			if (cannonCooldown > 0){
-				cannonCooldown -= 1;
+				cannonCooldown -= cannonCooldownSpeed;
 			}
 			
 			ScreenUtils.clear(0, 0, 1, 1);
@@ -277,7 +278,7 @@ public class Unity extends ApplicationAdapter {
 						if(!college.isCaptured() && college.bossReady){
 							plunder += 50f;
 						}else if(college.isCaptured()){
-							collagesNotBossCount -= 1;
+							//collagesNotBossCount -= 1;
 						}
 
 					}
@@ -314,6 +315,45 @@ public class Unity extends ApplicationAdapter {
 			gui.drawEndScreen(HUDbatch, SmallFont, LargeFont);
 
 			HUDbatch.end();
+		}
+
+		if (currentScreen == Screen.Shop){
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+			//draw map
+			tmr.render();
+
+			HUDbatch.begin();
+
+
+			//draw Shop
+			gui.drawShopScreen(HUDbatch, SmallFont, LargeFont);
+
+			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
+				if (cannonCooldownSpeed < 5 && plunder >= 200) {
+					cannonCooldownSpeed += 1;
+					plunder -= 200;
+				}
+			}
+
+			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+				if (plunder >= 200){
+					if (getHealth() < 1 && getHealth() >= 0.7f){
+						health = 1f;
+					}
+					else if (getHealth() > 0 && getHealth() < 0.7f){
+						health += 0.3f;
+					}
+				}
+			}
+
+			if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+				currentScreen = Screen.MAIN_GAME;
+			}
+
+			HUDbatch.end();
+
 		}
 	}
 
@@ -373,13 +413,17 @@ public class Unity extends ApplicationAdapter {
 				horizontalforce += Math.cos(toRadians(currentRotation))*1000;
 				score += 0.005;
 			}
-			player.getBody().setLinearVelocity(horizontalforce * 32, verticalforce * 32);	
+			player.getBody().setLinearVelocity(horizontalforce * 32, verticalforce * 32);
 		}
 		if(currentScreen == Screen.MAIN_GAME && Goodricke.isCaptured()){
 			currentScreen = Screen.End;
 		}
 		if(currentScreen == Screen.End && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
 			Gdx.app.exit();
+		}
+
+		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
+			currentScreen = Screen.Shop;
 		}
 	}
 
@@ -412,5 +456,13 @@ public class Unity extends ApplicationAdapter {
 
 	public static float getMapHeight(){
 		return mapHeight;
+	}
+
+	public static int getCannonCooldownSpeed(){
+		return cannonCooldownSpeed;
+	}
+
+	public static float getHealth(){
+		return health;
 	}
 }

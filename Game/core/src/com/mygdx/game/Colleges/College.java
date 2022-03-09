@@ -73,7 +73,7 @@ public class College {
             }else{
                 health = 0f;
                 isCaptured = true;
-                collegesNotBoss -= 1;
+                Unity.collagesNotBossCount -= 1;
                 plunder += 200;
             }
         }
