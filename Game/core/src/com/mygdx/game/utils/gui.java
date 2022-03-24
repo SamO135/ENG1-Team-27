@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.mygdx.game.Unity;
+import jdk.internal.org.jline.utils.DiffHelper;
 
 public class gui {
 
@@ -27,11 +28,14 @@ public class gui {
         batch.end();
     }
     
-    public static void drawMenuScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){
+    public static void drawMenuScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont, BitmapFont MediumFont, Unity.Difficulty difficulty){
     	//title
     	GlyphLayout TitleTextLayout = new GlyphLayout(LargeFont, "York Pirates");
+        GlyphLayout DifficultyTextLayout = new GlyphLayout(MediumFont, "(" + difficulty + " mode)");
         float TitleTextWidth = TitleTextLayout.width;
+        float DifficultyTextWidth = DifficultyTextLayout.width;
 		LargeFont.draw(batch, "York Pirates", (width-TitleTextWidth)/2, height * .75f);
+        MediumFont.draw(batch, "(" + difficulty + " mode)", (width-DifficultyTextWidth)/2, height * .69f);
 		
     	GlyphLayout MissionTextLayout = new GlyphLayout(SmallFont, "Defeat Goodricke college to win!");
     	GlyphLayout StartTextLayout = new GlyphLayout(SmallFont, "Press any key to start");
@@ -39,6 +43,26 @@ public class gui {
         float StartTextWidth = StartTextLayout.width;
         SmallFont.draw(batch, "Defeat Goodricke college to win!", (width-MissionTextWidth)/2, height * .5f);
 		SmallFont.draw(batch, "Press any key to start", (width-StartTextWidth)/2, height * .4f);
+    }
+
+    public static void drawDifficultySelectionScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){
+        //title
+        GlyphLayout TitleTextLayout = new GlyphLayout(LargeFont, "York Pirates");
+        float TitleTextWidth = TitleTextLayout.width;
+        LargeFont.draw(batch, "York Pirates", (width-TitleTextWidth)/2, height * .75f);
+
+        GlyphLayout DifficultySelectionTextLayout = new GlyphLayout(SmallFont, "Difficulty Selection: ");
+        GlyphLayout EasyTextLayout = new GlyphLayout(SmallFont, "Press 1 for EASY");
+        GlyphLayout NormalTextLayout = new GlyphLayout(SmallFont, "Press 2 for NORMAL");
+        GlyphLayout HardTextLayout = new GlyphLayout(SmallFont, "Press 2 for HARD");
+        float DifficultySelectionTextWidth = DifficultySelectionTextLayout.width;
+        float EasyTextWidth = EasyTextLayout.width;
+        float NormalTextWidth = NormalTextLayout.width;
+        float HardTextWidth = HardTextLayout.width;
+        SmallFont.draw(batch, "Difficulty Selection: ", (width-DifficultySelectionTextWidth)/2, height * .575f);
+        SmallFont.draw(batch, "Press 1 for EASY", (width-EasyTextWidth)/2, height * .5f);
+        SmallFont.draw(batch, "Press 2 for NORMAL", (width-NormalTextWidth)/2, height * .45f);
+        SmallFont.draw(batch, "Press 3 for HARD", (width-HardTextWidth)/2, height * .4f);
     }
 
     public static void drawEndScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){

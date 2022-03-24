@@ -28,6 +28,9 @@ import com.mygdx.game.utils.Projectile;
 import com.mygdx.game.utils.TiledObjectUtil;
 import com.mygdx.game.utils.gui;
 import com.mygdx.game.Colliders.BaseCollider;
+import jdk.internal.org.jline.utils.DiffHelper;
+
+import java.security.Key;
 import java.util.ArrayList;
 import static com.mygdx.game.utils.Constants.PPM;
 import static java.lang.Math.toRadians;
@@ -49,6 +52,7 @@ public class Unity extends ApplicationAdapter {
 	private Sprite spriteEnemyJames;
 	private Sprite spriteEnemyDerwent;
 	private BitmapFont SmallFont;
+	private BitmapFont MediumFont;
 	private BitmapFont LargeFont;
 
 	private final float scale = 2.0f;
@@ -81,10 +85,13 @@ public class Unity extends ApplicationAdapter {
 	private ArrayList<Body> enemyShips;
 	private ArrayList<Explosion> explosions;
 	public enum Screen{
-		Home, MAIN_GAME, Shop, End
+		DifficultySelection, Home, MAIN_GAME, Shop, End
 	}
-
-	Screen currentScreen = Screen.Home;
+	Screen currentScreen = Screen.DifficultySelection;
+	public enum Difficulty{
+		Easy, Normal, Hard
+	}
+	public static Difficulty difficulty = Difficulty.Hard;
 
 	@Override
 	public void create () {
@@ -135,6 +142,8 @@ public class Unity extends ApplicationAdapter {
 		
 		parameter.size = 20;
 		SmallFont = generator.generateFont(parameter);
+		parameter.size = 32;
+		MediumFont = generator.generateFont(parameter);
 		parameter.size = 64;
 		LargeFont = generator.generateFont(parameter);
 
@@ -171,7 +180,47 @@ public class Unity extends ApplicationAdapter {
 	public void render () {
 		
 		update(Gdx.graphics.getDeltaTime());  // deltaTime is time between a frame refresh
-		
+
+		if (currentScreen == Screen.DifficultySelection){
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+			//draw map
+			tmr.render();
+
+			HUDbatch.begin();
+
+			//draw menu
+			gui.drawDifficultySelectionScreen(HUDbatch, SmallFont, LargeFont);
+
+			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
+				difficulty = Difficulty.Easy;
+				currentScreen = Screen.Home;
+			}
+			else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+				difficulty = Difficulty.Normal;
+				currentScreen = Screen.Home;
+			}
+			else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
+				difficulty = Difficulty.Hard;
+				currentScreen = Screen.Home;
+			}
+
+			switch (difficulty){
+				case Easy:
+					College.setDmgTakenFromBullet(0.3f);
+					break;
+				case Hard:
+					College.setDmgTakenFromBullet(0.1f);
+					break;
+				default:
+					College.setDmgTakenFromBullet(0.2f);
+					break;
+			}
+
+			HUDbatch.end();
+		}
+
 		//menu screen
 		if(currentScreen == Screen.Home){
 
@@ -184,7 +233,8 @@ public class Unity extends ApplicationAdapter {
 			HUDbatch.begin();
 			
 			//draw menu
-			gui.drawMenuScreen(HUDbatch, SmallFont, LargeFont);
+			gui.drawMenuScreen(HUDbatch, SmallFont, LargeFont, MediumFont, difficulty);
+
 
 			HUDbatch.end();
 		}
@@ -348,9 +398,9 @@ public class Unity extends ApplicationAdapter {
 				}
 			}
 
-			if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
-				currentScreen = Screen.MAIN_GAME;
-			}
+			//if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+			//	currentScreen = Screen.MAIN_GAME;
+			//}
 
 			HUDbatch.end();
 
@@ -385,11 +435,12 @@ public class Unity extends ApplicationAdapter {
 	}
 
 	private void inputUpdate(float delta){
+		boolean changedScreen = false;
 		int horizontalforce = 0;
 		int verticalforce = 0;
 		float currentRotation = sprite.getRotation();
 		
-		if(currentScreen == Screen.Home && Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)){
+		if(currentScreen == Screen.Home && Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)){
 			currentScreen = Screen.MAIN_GAME;
 		}
 		
@@ -423,7 +474,13 @@ public class Unity extends ApplicationAdapter {
 		}
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-			currentScreen = Screen.Shop;
+			if (currentScreen == Screen.MAIN_GAME){
+				currentScreen = Screen.Shop;
+				changedScreen = true;
+			}
+			if (currentScreen == Screen.Shop && !changedScreen){
+				currentScreen = Screen.MAIN_GAME;
+			}
 		}
 	}
 
