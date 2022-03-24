@@ -28,9 +28,7 @@ import com.mygdx.game.utils.Projectile;
 import com.mygdx.game.utils.TiledObjectUtil;
 import com.mygdx.game.utils.gui;
 import com.mygdx.game.Colliders.BaseCollider;
-import jdk.internal.org.jline.utils.DiffHelper;
 
-import java.security.Key;
 import java.util.ArrayList;
 import static com.mygdx.game.utils.Constants.PPM;
 import static java.lang.Math.toRadians;
@@ -48,9 +46,13 @@ public class Unity extends ApplicationAdapter {
 	private Texture imgenemy;
 	private Sprite sprite;
 	private Sprite spriteEnemyAlcuin;
-	private Sprite spriteEnemyGoodrick;
+	private Sprite spriteEnemyGoodricke;
 	private Sprite spriteEnemyJames;
 	private Sprite spriteEnemyDerwent;
+	private EnemyShip AlcuinShip;
+	private EnemyShip GoodrickeShip;
+	private EnemyShip JamesShip;
+	private EnemyShip DerwentShip;
 	private BitmapFont SmallFont;
 	private BitmapFont MediumFont;
 	private BitmapFont LargeFont;
@@ -82,7 +84,7 @@ public class Unity extends ApplicationAdapter {
 
 	private ArrayList<Projectile> cannonballs;
 	private ArrayList<College> Collages;
-	private ArrayList<Body> enemyShips;
+	private ArrayList<EnemyShip> enemyShips;
 	private ArrayList<Explosion> explosions;
 	public enum Screen{
 		DifficultySelection, Home, MAIN_GAME, Shop, End
@@ -103,7 +105,7 @@ public class Unity extends ApplicationAdapter {
 		cannonballs = new ArrayList<Projectile>();
 		Collages = new ArrayList<College>();
 		explosions = new ArrayList<Explosion>();
-		enemyShips = new ArrayList<>();
+		enemyShips = new ArrayList<EnemyShip>();
 
 		//batches
 		batch = new SpriteBatch();
@@ -120,19 +122,23 @@ public class Unity extends ApplicationAdapter {
 		//initialise colleges
 		Goodricke = new College(new Vector2(3140, 3110), "TowerGoodricke.png", true, world);
 		Collages.add(Goodricke);
-		//enemyShips.add(new EnemyShip(2900, 2600, Goodricke, world));
+		GoodrickeShip = new EnemyShip(new Vector2(2900, 2600), Goodricke, world, spriteEnemyGoodricke);
+		enemyShips.add(GoodrickeShip);
 
 		Alcuin = new College(new Vector2(1500, 1300), "TowerAlcuin.png", false, world);
 		Collages.add(Alcuin);
-		//enemyShips.add(new EnemyShip(1500, 1000, Alcuin, world));
+		AlcuinShip = new EnemyShip(new Vector2(1500, 1000), Alcuin, world, spriteEnemyAlcuin);
+		enemyShips.add(AlcuinShip);
 
 		Derwent = new College(new Vector2(520, 2170), "TowerDerwent.png", false, world);
 		Collages.add(Derwent);
-		//enemyShips.add(new EnemyShip(520, 1900, Derwent, world));
+		DerwentShip = new EnemyShip(new Vector2(520, 1900), Derwent, world, spriteEnemyDerwent);
+		enemyShips.add(DerwentShip);
 
 		James = new College(new Vector2(3080, 1080), "TowerJames.png", false, world);
 		Collages.add(James);
-		//enemyShips.add(new EnemyShip(2900, 800, James, world));
+		 JamesShip = new EnemyShip(new Vector2(2900, 800), James, world, spriteEnemyJames);
+		enemyShips.add(JamesShip);
 
 		collagesNotBossCount = Collages.size() - 1;
 		
@@ -154,7 +160,7 @@ public class Unity extends ApplicationAdapter {
 		sprite.setRotation(180f);
 		spriteEnemyAlcuin = new Sprite(imgenemy);
 		spriteEnemyDerwent = new Sprite(imgenemy);
-		spriteEnemyGoodrick = new Sprite(imgenemy);
+		spriteEnemyGoodricke = new Sprite(imgenemy);
 		spriteEnemyJames = new Sprite(imgenemy);
 
 		//initialise camera
@@ -162,10 +168,10 @@ public class Unity extends ApplicationAdapter {
 		camera.setToOrtho(false, w / scale, h / scale);
 
 		player = new BaseCollider(new Vector2(spawnx , spawny), 128, 64, false, world);
-		enemyShips.add(Alcuin.getColliderBody());
-		enemyShips.add(Derwent.getColliderBody());
-		enemyShips.add(Goodricke.getColliderBody());
-		enemyShips.add(James.getColliderBody());
+		//enemyShips.add(Alcuin.getColliderBody());
+		//enemyShips.add(Derwent.getColliderBody());
+		//enemyShips.add(Goodricke.getColliderBody());
+		//enemyShips.add(James.getColliderBody());
 
 		map = new TmxMapLoader().load("MapAssets/GameMap.tmx");
 		MapProperties props = map.getProperties();
@@ -178,7 +184,6 @@ public class Unity extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		
 		update(Gdx.graphics.getDeltaTime());  // deltaTime is time between a frame refresh
 
 		if (currentScreen == Screen.DifficultySelection){
@@ -206,15 +211,19 @@ public class Unity extends ApplicationAdapter {
 				currentScreen = Screen.Home;
 			}
 
+			//Change values based on difficulty
 			switch (difficulty){
 				case Easy:
 					College.setDmgTakenFromBullet(0.3f);
+					EnemyShip.setDmgTakenFromBullet(0.5f);
 					break;
 				case Hard:
 					College.setDmgTakenFromBullet(0.1f);
+					EnemyShip.setDmgTakenFromBullet(0.25f);
 					break;
 				default:
 					College.setDmgTakenFromBullet(0.2f);
+					EnemyShip.setDmgTakenFromBullet(0.34f);
 					break;
 			}
 
@@ -255,10 +264,11 @@ public class Unity extends ApplicationAdapter {
 
 			//Update the position of the player's image
 			sprite.setPosition(player.getBody().getPosition().x * PPM - (img.getWidth()) / 3, player.getBody().getPosition().y * PPM  - (img.getHeight()) / 3);
-			spriteEnemyAlcuin.setPosition(Alcuin.getColliderBody().getPosition().x - imgenemy.getWidth() / 2, Alcuin.getColliderBody().getPosition().y - imgenemy.getHeight() / 2);
-			spriteEnemyDerwent.setPosition(Derwent.getColliderBody().getPosition().x - imgenemy.getWidth() / 2, Derwent.getColliderBody().getPosition().y - imgenemy.getHeight() / 2);
-			spriteEnemyGoodrick.setPosition(Goodricke.getColliderBody().getPosition().x - imgenemy.getWidth() / 2, Goodricke.getColliderBody().getPosition().y - imgenemy.getHeight() / 2);
-			spriteEnemyJames.setPosition(James.getColliderBody().getPosition().x - imgenemy.getWidth() / 2, James.getColliderBody().getPosition().y - imgenemy.getHeight() / 2);
+			//Update the position of the enemy ships' image
+			spriteEnemyAlcuin.setPosition(AlcuinShip.getPosition().x, AlcuinShip.getPosition().y);
+			spriteEnemyDerwent.setPosition(DerwentShip.getPosition().x, DerwentShip.getPosition().y);
+			spriteEnemyGoodricke.setPosition(GoodrickeShip.getPosition().x, GoodrickeShip.getPosition().y);
+			spriteEnemyJames.setPosition(JamesShip.getPosition().x, JamesShip.getPosition().y);
 
 			batch.begin();
 
@@ -266,7 +276,7 @@ public class Unity extends ApplicationAdapter {
 			sprite.draw(batch);
 			spriteEnemyAlcuin.draw(batch);
 			spriteEnemyDerwent.draw(batch);
-			spriteEnemyGoodrick.draw(batch);
+			spriteEnemyGoodricke.draw(batch);
 			spriteEnemyJames.draw(batch);
 
 
@@ -305,13 +315,16 @@ public class Unity extends ApplicationAdapter {
 				batch.setColor(Color.RED);
 			}
 
-			//Health bar position
+			//Health bar position of ships
 			batch.draw(blank, player.getBody().getPosition().x - 30, player.getBody().getPosition().y - 70, 60 * health, 5);
 			batch.setColor(Color.RED);
-			batch.draw(blank, James.getColliderBody().getPosition().x - 30, James.getColliderBody().getPosition().y - 70, 60 * health, 5);
-			batch.draw(blank, Derwent.getColliderBody().getPosition().x - 30, Derwent.getColliderBody().getPosition().y - 70, 60 * health, 5);
-			batch.draw(blank, Alcuin.getColliderBody().getPosition().x - 30, Alcuin.getColliderBody().getPosition().y - 70, 60 * health, 5);
-			batch.draw(blank, Goodricke.getColliderBody().getPosition().x - 30, Goodricke.getColliderBody().getPosition().y - 70, 60 * health, 5);
+			for (EnemyShip enemyShip : enemyShips){
+				//batch.draw(blank, enemyShip.getPosition().x + 30, enemyShip.getPosition().y, 60 * enemyShip.getHealth(), 5);
+			}
+			//batch.draw(blank, spriteEnemyGoodricke.getX() + 30, spriteEnemyGoodricke.getY(), 60 * health, 5);
+			//batch.draw(blank, spriteEnemyDerwent.getX() + 30, spriteEnemyDerwent.getY(), 60 * health, 5);
+			//batch.draw(blank, spriteEnemyAlcuin.getX() + 30, spriteEnemyAlcuin.getY(), 60 * health, 5);
+			//batch.draw(blank, spriteEnemyJames.getX() + 30, spriteEnemyJames.getY(), 60 * health, 5);
 			batch.setColor(Color.WHITE);
 
 			for(Projectile cannonball : cannonballs){
@@ -319,6 +332,7 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			//After all updates, checking for collisions
+			ArrayList<EnemyShip> enemyShipsToRemove = new ArrayList<EnemyShip>();
 			for (Projectile cannonball: cannonballs){
 				for (College college: Collages){
 					if(cannonball.getProjectileCollider().collidesWith(college.getProjectileCollider())){
@@ -333,13 +347,29 @@ public class Unity extends ApplicationAdapter {
 
 					}
 				}
+				for (EnemyShip enemyShip : enemyShips){
+					if (cannonball.getProjectileCollider().collidesWith(enemyShip.getProjectileCollider())){
+						cannonballsToRemove.add(cannonball);
+						explosions.add(new Explosion((cannonball.getPosition())));
+						enemyShip.hit();
+						if (enemyShip.getHealth() == 0f){
+							plunder += 50;
+							enemyShipsToRemove.add(enemyShip);
+						}
+					}
+				}
 			}
 			cannonballs.removeAll(cannonballsToRemove);
+			//enemyShips.removeAll(enemyShipsToRemove);
 
 
 			for(College college: Collages){
 				college.render(batch);
 				score = college.captured(score, Gdx.graphics.getDeltaTime());
+			}
+
+			for(EnemyShip enemyShip: enemyShips){
+				enemyShip.render(batch);
 			}
 
 			for(Explosion explosion: explosions){
@@ -398,9 +428,6 @@ public class Unity extends ApplicationAdapter {
 				}
 			}
 
-			//if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
-			//	currentScreen = Screen.MAIN_GAME;
-			//}
 
 			HUDbatch.end();
 
@@ -455,13 +482,13 @@ public class Unity extends ApplicationAdapter {
 				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(currentRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.W)){
-				verticalforce += -Math.sin(toRadians(currentRotation))*1000;
-				horizontalforce += -Math.cos(toRadians(currentRotation))*1000;
+				verticalforce += -Math.sin(toRadians(currentRotation)) * 1000;
+				horizontalforce += -Math.cos(toRadians(currentRotation)) * 1000;
 				score += 0.005;
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.S)){
-				verticalforce += Math.sin(toRadians(currentRotation))*1000;
-				horizontalforce += Math.cos(toRadians(currentRotation))*1000;
+				verticalforce += Math.sin(toRadians(currentRotation)) * 1000;
+				horizontalforce += Math.cos(toRadians(currentRotation)) * 1000;
 				score += 0.005;
 			}
 			player.getBody().setLinearVelocity(horizontalforce * 32, verticalforce * 32);

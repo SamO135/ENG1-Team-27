@@ -1,5 +1,6 @@
 package com.mygdx.game.Enemies;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.Colleges.College;
+import com.mygdx.game.Colliders.BaseCollider;
 import com.mygdx.game.Colliders.ProjectileCollider;
 import com.mygdx.game.Unity;
 import java.util.Random;
@@ -21,23 +23,29 @@ public class EnemyShip {
     private Sprite sprite;
     Random rand = new Random();
     ProjectileCollider rect;
-    float health = 1f;
+    BaseCollider collider;
+    float maxHealth = 1f;
+    float health = maxHealth;
     Texture blank = Unity.blank;
     Body body;
 	private Vector2 position;
 	private Vector2 collegePosition;
+    static float dmgTakenFromBullet = 0.5f;
+    boolean isCaptured = false;
 
-    public EnemyShip(Vector2 position, College college, World world){ 
+    public EnemyShip(Vector2 position, College college, World world, Sprite sprite){
         this.collegePosition = college.getLocation();
         this.position = position;
+        this.sprite = sprite;
+        this.collider = new BaseCollider(position, 128, 64, true, world);
 
-       /*this.img = new Texture("PirateShipEnemy.png");
-        sprite = new Sprite(this.img);
-        rect = new ProjectileCollider(x, y, img.getWidth(), img.getHeight());
+        this.img = new Texture("PirateShipEnemy.png");
+        //sprite = new Sprite(this.img);
+        this.rect = new ProjectileCollider(position, img.getWidth(), img.getHeight());
 
-        Body pBody;
+        /*Body pBody;
         BodyDef def = new BodyDef();
-        def.position.set(x / PPM, y / PPM);
+        def.position.set(position.x / PPM, position.y / PPM);
         pBody = world.createBody(def);
 
 
@@ -46,17 +54,68 @@ public class EnemyShip {
 
         pBody.createFixture(shape, 1.0f);
         this.body = pBody;
-        shape.dispose();*/
+        shape.dispose();
 
         /*while(x < 0 || x > Unity.getMapWidth() * 32 || y < 0 || y > Unity.getMapHeight() * 32){
             randomLocation = getRandomLocation(collegePosition);
         }*/
     }
 
+    public void hit(){
+        takeDamage(dmgTakenFromBullet);
+    }
+
     public void render(SpriteBatch batch){
-        sprite.setPosition(position.x, position.y);
-        sprite.draw(batch);
-        batch.draw(blank, position.x + (img.getWidth() / 2) - 60, position.y - 10, 60 * health, 5);
+        //sprite.setPosition(position.x, position.y);
+        //sprite.draw(batch);
+        if(!isCaptured){
+            batch.setColor(Color.RED);
+        }else{
+            health = maxHealth;
+            batch.setColor(Color.GREEN);
+        }
+        batch.draw(blank, position.x + (img.getWidth() / 2) - 30, position.y - 10, 60 * health, 5);
+        batch.setColor(Color.WHITE);
+    }
+
+    public ProjectileCollider getProjectileCollider(){ return rect;}
+
+    public float takeDamage(float dmg){
+        if (!isCaptured){
+            if (health > dmg){
+                health -= dmg;
+            }
+            else{
+                health = 0f;
+                isCaptured = true;
+            }
+        }
+
+        return health;
+    }
+
+    public float getHealth(){
+        return health;
+    }
+
+    public Vector2 getPosition(){
+        return this.position;
+    }
+
+    public Sprite getSprite(){
+        return this.sprite;
+    }
+
+    public int getWidth(){
+        return img.getWidth();
+    }
+
+    public int getHeight(){
+        return img.getHeight();
+    }
+
+    public static void setDmgTakenFromBullet(float dmg){
+        dmgTakenFromBullet = dmg;
     }
 
     private Vector2 getRandomLocation(){

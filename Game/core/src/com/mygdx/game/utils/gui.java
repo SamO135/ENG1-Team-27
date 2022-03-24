@@ -80,9 +80,9 @@ public class gui {
         float TitleTextWidth = TitleText.width;
         LargeFont.draw(batch, "Shop", (width-TitleTextWidth)/2, height * 0.92f);
 
-        GlyphLayout StartTextLayout = new GlyphLayout(SmallFont, "Press enter to exit");
+        GlyphLayout StartTextLayout = new GlyphLayout(SmallFont, "Press esc to exit");
         float StartTextWidth = StartTextLayout.width;
-        SmallFont.draw(batch, "Press enter to exit", (width-StartTextWidth)/2, height * 0.2f);
+        SmallFont.draw(batch, "Press esc to exit", (width-StartTextWidth)/2, height * 0.2f);
 
         GlyphLayout Upgrade1TextLayout = new GlyphLayout(SmallFont, "Press 1 to increased fire rate (200 plunder) : " + Unity.getCannonCooldownSpeed() + "/5");
         float Upgrade1TextWidth = Upgrade1TextLayout.width;
