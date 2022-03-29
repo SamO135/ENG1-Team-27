@@ -5,8 +5,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Colliders.ProjectileCollider;
 
+import static com.mygdx.game.utils.Constants.PPM;
+
 public class Projectile {
-    public static final int SPEED = 3;
+    public int SPEED = 300;
     private static Texture texture;
     float num = 0;
     int width = 8;
@@ -19,7 +21,10 @@ public class Projectile {
 
     public boolean remove = false;
 
-    public Projectile(Vector2 position, Vector2 target){
+    public Projectile(Vector2 position, Vector2 target, boolean enemy){
+        if (!enemy){
+            SPEED = 1000;
+        }
         this.position = position;
         this.targetposition = target;
         this.rect = new ProjectileCollider(position, width, height);

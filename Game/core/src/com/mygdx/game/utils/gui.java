@@ -75,6 +75,17 @@ public class gui {
         SmallFont.draw(batch, "Press esc to exit", (width-StartTextWidth)/2, height * .4f);
     }
 
+
+    public static void drawGameOverScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont) {
+        GlyphLayout TitleText = new GlyphLayout(LargeFont, "Game Over!");
+        float TitleTextWidth = TitleText.width;
+        LargeFont.draw(batch, "Game Over!", (width - TitleTextWidth) / 2, height * .5f);
+
+        GlyphLayout StartTextLayout = new GlyphLayout(SmallFont, "Press SPACE to try again");
+        float StartTextWidth = StartTextLayout.width;
+        SmallFont.draw(batch, "Press SPACE to try again", (width - StartTextWidth) / 2, height * .4f);
+    }
+
     public static void drawShopScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){
         GlyphLayout TitleText = new GlyphLayout(LargeFont, "Shop");
         float TitleTextWidth = TitleText.width;

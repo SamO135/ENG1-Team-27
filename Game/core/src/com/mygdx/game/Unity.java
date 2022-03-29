@@ -76,6 +76,7 @@ public class Unity extends ApplicationAdapter {
 	private int spawny;
 
 	private static float health = 1f;
+	private static float playerDmgFromBullet;
 	private int plunder = 0;
 	private float score = 0;
 	
@@ -83,11 +84,12 @@ public class Unity extends ApplicationAdapter {
 	private static int cannonCooldownSpeed = 1;
 
 	private ArrayList<Projectile> cannonballs;
+	private ArrayList<Projectile> enemyCannonballs;
 	private ArrayList<College> Collages;
 	private ArrayList<EnemyShip> enemyShips;
 	private ArrayList<Explosion> explosions;
 	public enum Screen{
-		DifficultySelection, Home, MAIN_GAME, Shop, End
+		DifficultySelection, Home, MAIN_GAME, Shop, End, GameOver
 	}
 	Screen currentScreen = Screen.DifficultySelection;
 	public enum Difficulty{
@@ -103,6 +105,7 @@ public class Unity extends ApplicationAdapter {
 		spawny = 700;
 
 		cannonballs = new ArrayList<Projectile>();
+		enemyCannonballs = new ArrayList<Projectile>();
 		Collages = new ArrayList<College>();
 		explosions = new ArrayList<Explosion>();
 		enemyShips = new ArrayList<EnemyShip>();
@@ -216,14 +219,17 @@ public class Unity extends ApplicationAdapter {
 				case Easy:
 					College.setDmgTakenFromBullet(0.3f);
 					EnemyShip.setDmgTakenFromBullet(0.5f);
+					playerDmgFromBullet = 0.1f;
 					break;
 				case Hard:
 					College.setDmgTakenFromBullet(0.1f);
 					EnemyShip.setDmgTakenFromBullet(0.25f);
+					playerDmgFromBullet = 0.25f;
 					break;
 				default:
 					College.setDmgTakenFromBullet(0.2f);
 					EnemyShip.setDmgTakenFromBullet(0.34f);
+					playerDmgFromBullet = 0.2f;
 					break;
 			}
 
@@ -254,6 +260,11 @@ public class Unity extends ApplicationAdapter {
 			if (cannonCooldown > 0){
 				cannonCooldown -= cannonCooldownSpeed;
 			}
+			for (College college : Collages){
+				if (college.shootCooldown > 0){
+					college.shootCooldown -= 1;
+				}
+			}
 			
 			ScreenUtils.clear(0, 0, 1, 1);
 
@@ -263,7 +274,9 @@ public class Unity extends ApplicationAdapter {
 			tmr.render();
 
 			//Update the position of the player's image
-			sprite.setPosition(player.getBody().getPosition().x * PPM - (img.getWidth()) / 3, player.getBody().getPosition().y * PPM  - (img.getHeight()) / 3);
+			//sprite.setPosition(player.getBody().getPosition().x * PPM, player.getBody().getPosition().y * PPM);
+			sprite.setPosition(player.getBody().getPosition().x, player.getBody().getPosition().y);
+			player.update();
 			//Update the position of the enemy ships' image
 			spriteEnemyAlcuin.setPosition(AlcuinShip.getPosition().x, AlcuinShip.getPosition().y);
 			spriteEnemyDerwent.setPosition(DerwentShip.getPosition().x, DerwentShip.getPosition().y);
@@ -282,13 +295,46 @@ public class Unity extends ApplicationAdapter {
 
 			//Shooting code
 			if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && cannonCooldown <= 0){
-				cannonballs.add(new Projectile(new Vector2(player.getBody().getPosition().x, player.getBody().getPosition().y), mousePos(Gdx.input.getX(), Gdx.input.getY())));
+				cannonballs.add(new Projectile(new Vector2(player.getBody().getPosition().x, player.getBody().getPosition().y), mousePos(Gdx.input.getX(), Gdx.input.getY()).nor(), false));
 				cannonCooldown = 40;
 			}
+
+			Vector2 displacement;
+			for (College college : Collages){
+				displacement = new Vector2(player.getBody().getPosition().x + (sprite.getWidth()/2) - college.getLocation().x, player.getBody().getPosition().y - college.getLocation().y);
+				if (!college.isCaptured() && displacement.len() <= 600 && college.shootCooldown <= 0){
+					enemyCannonballs.add(new Projectile(new Vector2(college.getLocation()), displacement.nor(), true));
+					college.shootCooldown = 120;
+				}
+			}
+
+			/*if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
+				String message = "";
+				Vector2 direction = new Vector2();
+				for (College college : Collages){
+					direction = new Vector2(player.getBody().getPosition().x + (sprite.getWidth()/2) - college.getLocation().x, player.getBody().getPosition().y - college.getLocation().y);
+					message += college.getLocation() + ", ";
+					//enemyCannonballs.add(new Projectile(new Vector2(college.getColliderBody().getPosition().x, college.getColliderBody().getPosition().y), direction));
+					enemyCannonballs.add(new Projectile(new Vector2(college.getLocation()), direction));
+				}
+				//System.out.println("BaseCollider: " + player.getBody().getPosition());
+				//System.out.println("Sprite: " + sprite.getX() + ", " + sprite.getY());
+				//System.out.println("Projectile Collider: " + player.getProjectileCollider().position);
+				System.out.println(direction.len());
+				System.out.println("");
+				//System.out.println("Colleges: " + message);
+				//System.out.println("Direction: " + direction);
+			}*/
 
 			//Update projectiles
 			ArrayList<Projectile> cannonballsToRemove = new ArrayList<Projectile>();
 			for(Projectile cannonball : cannonballs){
+				cannonball.update(Gdx.graphics.getDeltaTime());
+				if(cannonball.remove){
+					cannonballsToRemove.add(cannonball);
+				}
+			}
+			for(Projectile cannonball : enemyCannonballs){
 				cannonball.update(Gdx.graphics.getDeltaTime());
 				if(cannonball.remove){
 					cannonballsToRemove.add(cannonball);
@@ -316,7 +362,8 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			//Health bar position of ships
-			batch.draw(blank, player.getBody().getPosition().x - 30, player.getBody().getPosition().y - 70, 60 * health, 5);
+			//batch.draw(blank, player.getBody().getPosition().x * PPM + 30, player.getBody().getPosition().y * PPM - 10, 60 * health, 5);
+			batch.draw(blank, player.getBody().getPosition().x + 30, player.getBody().getPosition().y - 10, 60 * health, 5);
 			batch.setColor(Color.RED);
 			for (EnemyShip enemyShip : enemyShips){
 				//batch.draw(blank, enemyShip.getPosition().x + 30, enemyShip.getPosition().y, 60 * enemyShip.getHealth(), 5);
@@ -328,6 +375,9 @@ public class Unity extends ApplicationAdapter {
 			batch.setColor(Color.WHITE);
 
 			for(Projectile cannonball : cannonballs){
+				cannonball.render(batch);
+			}
+			for(Projectile cannonball : enemyCannonballs){
 				cannonball.render(batch);
 			}
 
@@ -359,7 +409,19 @@ public class Unity extends ApplicationAdapter {
 					}
 				}
 			}
+			for (Projectile cannonball : enemyCannonballs){
+				if (cannonball.getProjectileCollider().collidesWith(player.getProjectileCollider())){
+					cannonballsToRemove.add(cannonball);
+					explosions.add(new Explosion((cannonball.getPosition())));
+					health = Math.round((health-0.2f)*100f)/100f;
+					System.out.println(health);
+					if (health <= 0f){
+						currentScreen = Screen.GameOver;
+					}
+				}
+			}
 			cannonballs.removeAll(cannonballsToRemove);
+			enemyCannonballs.removeAll(cannonballsToRemove);
 			//enemyShips.removeAll(enemyShipsToRemove);
 
 
@@ -393,6 +455,25 @@ public class Unity extends ApplicationAdapter {
 
 			//draw menu
 			gui.drawEndScreen(HUDbatch, SmallFont, LargeFont);
+
+			HUDbatch.end();
+		}
+
+		if (currentScreen == Screen.GameOver){
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+			//draw map
+			tmr.render();
+
+			HUDbatch.begin();
+
+			//draw menu
+			gui.drawGameOverScreen(HUDbatch, SmallFont, LargeFont);
+
+			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+				currentScreen = Screen.DifficultySelection;
+			}
 
 			HUDbatch.end();
 		}
@@ -474,11 +555,11 @@ public class Unity extends ApplicationAdapter {
 		if (currentScreen == Screen.MAIN_GAME) {
 			
 			if(Gdx.input.isKeyPressed(Input.Keys.A)){
-				sprite.setRotation((float) (currentRotation + 0.8));
+				sprite.setRotation((float) (currentRotation + 0.8 * PPM));
 				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(currentRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.D)){
-				sprite.setRotation((float) (currentRotation - 0.8));
+				sprite.setRotation((float) (currentRotation - 0.8 * PPM));
 				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(currentRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.W)){

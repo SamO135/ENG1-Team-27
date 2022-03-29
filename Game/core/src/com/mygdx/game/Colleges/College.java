@@ -26,6 +26,7 @@ public class College {
     float num = 0;
     int collegesNotBoss;
     static float dmgTakenFromBullet = 0.2f;
+    public float shootCooldown;
 
     public College(Vector2 position, String img, boolean boss, World world){
         this.img = new Texture(img);
@@ -35,6 +36,7 @@ public class College {
         if(!isBoss){bossReady = true;}
         this.rect = new ProjectileCollider(position, (int) sprite.getWidth(), (int) sprite.getHeight());
         this.collider = new BaseCollider(position, 128, 64, true, world);
+        this.shootCooldown = 40;
     }
 
     public ProjectileCollider getProjectileCollider(){ return rect;}
