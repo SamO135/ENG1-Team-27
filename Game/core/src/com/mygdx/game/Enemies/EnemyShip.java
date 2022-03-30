@@ -32,12 +32,14 @@ public class EnemyShip {
 	private Vector2 collegePosition;
     static float dmgTakenFromBullet = 0.5f;
     boolean isCaptured = false;
+    public float shootCooldown;
 
     public EnemyShip(Vector2 position, College college, World world, Sprite sprite){
         this.collegePosition = college.getLocation();
         this.position = position;
         this.sprite = sprite;
         this.collider = new BaseCollider(position, 128, 64, true, world);
+        this.shootCooldown = 180;
 
         this.img = new Texture("PirateShipEnemy.png");
         //sprite = new Sprite(this.img);
@@ -92,6 +94,10 @@ public class EnemyShip {
         }
 
         return health;
+    }
+
+    public boolean isCaptured(){
+        return isCaptured;
     }
 
     public float getHealth(){

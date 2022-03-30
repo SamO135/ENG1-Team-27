@@ -140,7 +140,7 @@ public class Unity extends ApplicationAdapter {
 
 		James = new College(new Vector2(3080, 1080), "TowerJames.png", false, world);
 		Collages.add(James);
-		 JamesShip = new EnemyShip(new Vector2(2900, 800), James, world, spriteEnemyJames);
+		JamesShip = new EnemyShip(new Vector2(2900, 800), James, world, spriteEnemyJames);
 		enemyShips.add(JamesShip);
 
 		collagesNotBossCount = Collages.size() - 1;
@@ -260,9 +260,16 @@ public class Unity extends ApplicationAdapter {
 			if (cannonCooldown > 0){
 				cannonCooldown -= cannonCooldownSpeed;
 			}
+			//reduce college shoot cooldown
 			for (College college : Collages){
 				if (college.shootCooldown > 0){
 					college.shootCooldown -= 1;
+				}
+			}
+			//reduce enemy ship shoot cooldown
+			for (EnemyShip enemyShip : enemyShips){
+				if (enemyShip.shootCooldown > 0){
+					enemyShip.shootCooldown -= 1;
 				}
 			}
 			
@@ -308,7 +315,16 @@ public class Unity extends ApplicationAdapter {
 				}
 			}
 
+			for (EnemyShip enemyShip : enemyShips){
+				displacement = new Vector2(player.getBody().getPosition().x + (sprite.getWidth()/2) - enemyShip.getPosition().x, player.getBody().getPosition().y - enemyShip.getPosition().y);
+				if (!enemyShip.isCaptured() && displacement.len() <= 400 && enemyShip.shootCooldown <= 0){
+					enemyCannonballs.add(new Projectile(new Vector2(enemyShip.getPosition()), displacement.nor(), true));
+					enemyShip.shootCooldown = 180;
+				}
+			}
+
 			/*if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
+				AlcuinShip.position = new Vector2(1200, 1000);
 				String message = "";
 				Vector2 direction = new Vector2();
 				for (College college : Collages){
@@ -506,6 +522,7 @@ public class Unity extends ApplicationAdapter {
 					else if (getHealth() > 0 && getHealth() < 0.7f){
 						health += 0.3f;
 					}
+					plunder -= 200;
 				}
 			}
 
@@ -563,16 +580,18 @@ public class Unity extends ApplicationAdapter {
 				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(currentRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.W)){
-				verticalforce += -Math.sin(toRadians(currentRotation)) * 1000;
-				horizontalforce += -Math.cos(toRadians(currentRotation)) * 1000;
+				verticalforce += -Math.sin(toRadians(currentRotation)) * 10;
+				horizontalforce += -Math.cos(toRadians(currentRotation)) * 10;
 				score += 0.005;
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.S)){
-				verticalforce += Math.sin(toRadians(currentRotation)) * 1000;
-				horizontalforce += Math.cos(toRadians(currentRotation)) * 1000;
+				verticalforce += Math.sin(toRadians(currentRotation)) * 10;
+				horizontalforce += Math.cos(toRadians(currentRotation)) * 10;
 				score += 0.005;
 			}
 			player.getBody().setLinearVelocity(horizontalforce * 32, verticalforce * 32);
+			//player.getBody().setTransform(player.getBody().getPosition().x + horizontalforce, player.getBody().getPosition().y + verticalforce, (float) toRadians(currentRotation));
+			//player.def.position.set((player.getBody().getPosition().x + horizontalforce) * PPM, (player.getBody().getPosition().y + verticalforce) * PPM);
 		}
 		if(currentScreen == Screen.MAIN_GAME && Goodricke.isCaptured()){
 			currentScreen = Screen.End;
