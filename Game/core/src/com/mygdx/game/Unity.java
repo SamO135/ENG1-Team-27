@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -89,16 +90,22 @@ public class Unity extends ApplicationAdapter {
 	private ArrayList<EnemyShip> enemyShips;
 	private ArrayList<Explosion> explosions;
 	public enum Screen{
-		DifficultySelection, Home, MAIN_GAME, Shop, End, GameOver
+		NewOrResume, DifficultySelection, Home, MAIN_GAME, Shop, End, GameOver
 	}
-	Screen currentScreen = Screen.DifficultySelection;
+	Screen currentScreen = Screen.NewOrResume;
 	public enum Difficulty{
 		Easy, Normal, Hard
 	}
 	public static Difficulty difficulty = Difficulty.Hard;
 
+	boolean new_game;
+	Preferences prefs;
+
 	@Override
 	public void create () {
+		prefs = Gdx.app.getPreferences("York Pirates");
+
+
 		w = Gdx.graphics.getWidth();
 		h = Gdx.graphics.getHeight();
 		spawnx = 700;
@@ -123,24 +130,24 @@ public class Unity extends ApplicationAdapter {
 		b2dr = new Box2DDebugRenderer();
 
 		//initialise colleges
-		Goodricke = new College(new Vector2(3140, 3110), "TowerGoodricke.png", true, world);
+		Goodricke = new College(new Vector2(3140, 3110), "TowerGoodricke.png", true, world, "Goodricke", prefs);
 		Collages.add(Goodricke);
-		GoodrickeShip = new EnemyShip(new Vector2(2900, 2600), Goodricke, world, spriteEnemyGoodricke);
+		GoodrickeShip = new EnemyShip(new Vector2(2900, 2600), Goodricke, world, spriteEnemyGoodricke, prefs);
 		enemyShips.add(GoodrickeShip);
 
-		Alcuin = new College(new Vector2(1500, 1300), "TowerAlcuin.png", false, world);
+		Alcuin = new College(new Vector2(1500, 1300), "TowerAlcuin.png", false, world, "Alcuin", prefs);
 		Collages.add(Alcuin);
-		AlcuinShip = new EnemyShip(new Vector2(1500, 1000), Alcuin, world, spriteEnemyAlcuin);
+		AlcuinShip = new EnemyShip(new Vector2(1500, 1000), Alcuin, world, spriteEnemyAlcuin, prefs);
 		enemyShips.add(AlcuinShip);
 
-		Derwent = new College(new Vector2(520, 2170), "TowerDerwent.png", false, world);
+		Derwent = new College(new Vector2(520, 2170), "TowerDerwent.png", false, world, "Derwent", prefs);
 		Collages.add(Derwent);
-		DerwentShip = new EnemyShip(new Vector2(520, 1900), Derwent, world, spriteEnemyDerwent);
+		DerwentShip = new EnemyShip(new Vector2(520, 1900), Derwent, world, spriteEnemyDerwent, prefs);
 		enemyShips.add(DerwentShip);
 
-		James = new College(new Vector2(3080, 1080), "TowerJames.png", false, world);
+		James = new College(new Vector2(3080, 1080), "TowerJames.png", false, world, "James", prefs);
 		Collages.add(James);
-		JamesShip = new EnemyShip(new Vector2(2900, 800), James, world, spriteEnemyJames);
+		JamesShip = new EnemyShip(new Vector2(2900, 800), James, world, spriteEnemyJames, prefs);
 		enemyShips.add(JamesShip);
 
 		collagesNotBossCount = Collages.size() - 1;
@@ -215,23 +222,7 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			//Change values based on difficulty
-			switch (difficulty){
-				case Easy:
-					College.setDmgTakenFromBullet(0.3f);
-					EnemyShip.setDmgTakenFromBullet(0.5f);
-					playerDmgFromBullet = 0.1f;
-					break;
-				case Hard:
-					College.setDmgTakenFromBullet(0.1f);
-					EnemyShip.setDmgTakenFromBullet(0.25f);
-					playerDmgFromBullet = 0.25f;
-					break;
-				default:
-					College.setDmgTakenFromBullet(0.2f);
-					EnemyShip.setDmgTakenFromBullet(0.34f);
-					playerDmgFromBullet = 0.2f;
-					break;
-			}
+			applyDifficulty(difficulty);
 
 			HUDbatch.end();
 		}
@@ -505,7 +496,7 @@ public class Unity extends ApplicationAdapter {
 
 
 			//draw Shop
-			gui.drawShopScreen(HUDbatch, SmallFont, LargeFont);
+			gui.drawShopScreen(HUDbatch, SmallFont, LargeFont, difficulty);
 
 			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
 				if (cannonCooldownSpeed < 5 && plunder >= 200) {
@@ -518,17 +509,70 @@ public class Unity extends ApplicationAdapter {
 				if (plunder >= 200){
 					if (getHealth() < 1 && getHealth() >= 0.7f){
 						health = 1f;
+						plunder -= 200;
 					}
 					else if (getHealth() > 0 && getHealth() < 0.7f){
 						health += 0.3f;
+						plunder -= 200;
 					}
-					plunder -= 200;
 				}
+			}
+
+			if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
+				savePreferences(prefs, Collages, enemyShips, plunder, score, player, health, difficulty);
+				Gdx.app.exit();
+				System.exit(0);
 			}
 
 
 			HUDbatch.end();
 
+		}
+
+		if (currentScreen == Screen.NewOrResume){
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+			//draw map
+			tmr.render();
+
+			HUDbatch.begin();
+
+			//draw menu
+			gui.drawNewOrResumeGameScreen(HUDbatch, SmallFont, LargeFont);
+
+			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
+				currentScreen = Screen.DifficultySelection;
+				new_game = true;
+			}
+			else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+				plunder = prefs.getInteger("plunder", 300);
+				score = prefs.getFloat("score", 300);
+				player.getBody().setTransform(prefs.getFloat("playerx", 700), prefs.getFloat("playery", 700), player.getBody().getAngle());
+				int diff = prefs.getInteger("difficulty", 2);
+				if (diff == 1){
+					difficulty = Difficulty.Easy;
+				}
+				else if (diff == 3){
+					difficulty = Difficulty.Hard;
+				}
+				else{
+					difficulty = Difficulty.Normal;
+				}
+				for (College college : Collages){
+					college.updateCollege();
+				}
+				for (EnemyShip enemyShip : enemyShips){
+					enemyShip.updateShip();
+				}
+
+				//Change values based on difficulty
+				applyDifficulty(difficulty);
+
+				currentScreen = Screen.Shop;
+			}
+
+			HUDbatch.end();
 		}
 	}
 
@@ -648,5 +692,82 @@ public class Unity extends ApplicationAdapter {
 
 	public static float getHealth(){
 		return health;
+	}
+
+	private static void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, Difficulty difficulty){
+		prefs.putInteger("plunder", plunder);
+		prefs.putFloat("score", score);
+		prefs.putFloat("player_health", player_health);
+		prefs.putFloat("playerx", player.getBody().getPosition().x);
+		prefs.putFloat("playery", player.getBody().getPosition().y);
+		if (difficulty == Difficulty.Easy)
+			prefs.putInteger("difficulty", 1);
+		else if (difficulty == Difficulty.Normal)
+			prefs.putInteger("difficulty", 2);
+		else if (difficulty == Difficulty.Hard)
+			prefs.putInteger("difficulty", 3);
+
+		for (College college : Colleges){
+			prefs.putFloat(college.getName() + "_health", college.getHealth());
+			prefs.putBoolean(college.getName() + "_isCaptured", college.isCaptured());
+			System.out.println("Captured: " + college.isCaptured());
+			//System.out.println(college.getName() + "_isCaptured" + ": " + prefs.getBoolean(college.getName() + "_isCaptured"));
+		}
+
+		for (EnemyShip enemyShip : enemyShips){
+			prefs.putFloat(enemyShip.getCollege().getName() + "Ship_health", enemyShip.getHealth());
+			prefs.putBoolean(enemyShip.getCollege().getName() + "Ship_isCaptured", enemyShip.isCaptured());
+		}
+		prefs.flush();
+	}
+
+	/*private static Preferences setPreferences(boolean new_game){
+		Preferences prefs = Gdx.app.getPreferences("York Pirates");
+		if (new_game){
+			prefs.putInteger("plunder", 0);
+			prefs.putFloat("score", 0f);
+			prefs.putFloat("player_health", 0.5f);
+
+			prefs.putFloat("Goodrick_health", 1f);
+			prefs.putBoolean("Goodrick_isCaptured", false);
+			prefs.putFloat("Alcuin_health", 1f);
+			prefs.putBoolean("Alcuin_isCaptured", false);
+			prefs.putFloat("Derwent_health", 1f);
+			prefs.putBoolean("Derwent_isCaptured", false);
+			prefs.putFloat("James_health", 1f);
+			prefs.putBoolean("James_isCaptured", false);
+
+			prefs.putFloat("GoodrickShip_health", 1f);
+			prefs.putBoolean("GoodrickShip_isCaptured", false);
+			prefs.putFloat("AlcuinShip_health", 1f);
+			prefs.putBoolean("AlcuinShip_isCaptured", false);
+			prefs.putFloat("DerwentShip_health", 1f);
+			prefs.putBoolean("DerwentShip_isCaptured", false);
+			prefs.putFloat("JamesShip_health", 1f);
+			prefs.putBoolean("JamesShip_isCaptured", false);
+			prefs.flush();
+		}
+		return prefs;
+	}*/
+
+	private void applyDifficulty(Difficulty difficulty){
+		//Change values based on difficulty
+		switch (difficulty) {
+			case Easy:
+				College.setDmgTakenFromBullet(0.3f);
+				EnemyShip.setDmgTakenFromBullet(0.5f);
+				playerDmgFromBullet = 0.1f;
+				break;
+			case Hard:
+				College.setDmgTakenFromBullet(0.1f);
+				EnemyShip.setDmgTakenFromBullet(0.25f);
+				playerDmgFromBullet = 0.25f;
+				break;
+			default:
+				College.setDmgTakenFromBullet(0.2f);
+				EnemyShip.setDmgTakenFromBullet(0.34f);
+				playerDmgFromBullet = 0.2f;
+				break;
+		}
 	}
 }

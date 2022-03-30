@@ -65,6 +65,19 @@ public class gui {
         SmallFont.draw(batch, "Press 3 for HARD", (width-HardTextWidth)/2, height * .4f);
     }
 
+    public static void drawNewOrResumeGameScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont) {
+        GlyphLayout TitleTextLayout = new GlyphLayout(LargeFont, "York Pirates");
+        float TitleTextWidth = TitleTextLayout.width;
+        LargeFont.draw(batch, "York Pirates", (width-TitleTextWidth)/2, height * .75f);
+
+        GlyphLayout NewGameTextLayout = new GlyphLayout(SmallFont, "Press 1 for New Game");
+        GlyphLayout ResumeGameTextLayout = new GlyphLayout(SmallFont, "Press 2 to Resume Game");
+        float NewGameTextWidth = NewGameTextLayout.width;
+        float ResumeGameTextWidth = ResumeGameTextLayout.width;
+        SmallFont.draw(batch, "Press 1 for New Game", (width-NewGameTextWidth)/2, height * .575f);
+        SmallFont.draw(batch, "Press 2 to Resume Game", (width-ResumeGameTextWidth)/2, height * .5f);
+    }
+
     public static void drawEndScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){
         GlyphLayout TitleText = new GlyphLayout(LargeFont, "You Win!");
         float TitleTextWidth = TitleText.width;
@@ -86,7 +99,7 @@ public class gui {
         SmallFont.draw(batch, "Press SPACE to try again", (width - StartTextWidth) / 2, height * .4f);
     }
 
-    public static void drawShopScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){
+    public static void drawShopScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont, Unity.Difficulty difficulty){
         GlyphLayout TitleText = new GlyphLayout(LargeFont, "Shop");
         float TitleTextWidth = TitleText.width;
         LargeFont.draw(batch, "Shop", (width-TitleTextWidth)/2, height * 0.92f);
@@ -102,5 +115,11 @@ public class gui {
         GlyphLayout Upgrade2TextLayout = new GlyphLayout(SmallFont, "Press 2 to repair ship by 30%: ");
         float Upgrade2TextWidth = Upgrade2TextLayout.width;
         SmallFont.draw(batch, "Press 2 to repair ship by 30% (200 plunder) : " + "Current health = " + Unity.getHealth(), (width * 0.35f), height * 0.75f);
+
+        GlyphLayout QuitTextLayout = new GlyphLayout(SmallFont, "Press Q to save and quit");
+        SmallFont.draw(batch, "Press Q to save and quit", (width * 0.025f), (height * 0.1f));
+
+        GlyphLayout DifficultyTextLayout = new GlyphLayout(SmallFont, "Difficulty: " + difficulty);
+        SmallFont.draw(batch, "Difficulty: " + difficulty, (width * 0.025f), (height * 0.95f));
     }
 }

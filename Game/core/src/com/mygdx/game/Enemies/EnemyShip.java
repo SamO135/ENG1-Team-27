@@ -1,5 +1,6 @@
 package com.mygdx.game.Enemies;
 
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -33,13 +34,17 @@ public class EnemyShip {
     static float dmgTakenFromBullet = 0.5f;
     boolean isCaptured = false;
     public float shootCooldown;
+    private College college;
+    private Preferences prefs;
 
-    public EnemyShip(Vector2 position, College college, World world, Sprite sprite){
+    public EnemyShip(Vector2 position, College college, World world, Sprite sprite, Preferences prefs){
         this.collegePosition = college.getLocation();
         this.position = position;
         this.sprite = sprite;
         this.collider = new BaseCollider(position, 128, 64, true, world);
         this.shootCooldown = 180;
+        this.college = college;
+        this.prefs = prefs;
 
         this.img = new Texture("PirateShipEnemy.png");
         //sprite = new Sprite(this.img);
@@ -96,6 +101,10 @@ public class EnemyShip {
         return health;
     }
 
+    public College getCollege(){
+        return this.college;
+    }
+
     public boolean isCaptured(){
         return isCaptured;
     }
@@ -129,5 +138,9 @@ public class EnemyShip {
                 collegePosition.x + (rand.nextInt(1500) - 500),
                 collegePosition.y + (rand.nextInt(1500) - 500)
         );
+    }
+    public void updateShip(){
+        this.isCaptured = prefs.getBoolean(this.college.getName() + "Ship_isCaptured");
+        this.health = prefs.getFloat(this.college.getName() + "Ship_health");
     }
 }

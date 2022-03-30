@@ -1,5 +1,7 @@
 package com.mygdx.game.Colleges;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -12,6 +14,7 @@ import com.mygdx.game.Colliders.ProjectileCollider;
 import com.mygdx.game.Unity;
 
 public class College {
+    private String name;
     private Texture img;
     private Sprite sprite;
     Vector2 position;
@@ -24,11 +27,12 @@ public class College {
     public boolean bossReady = false;
     boolean isCaptured = false;
     float num = 0;
-    int collegesNotBoss;
+    static int collegesNotBoss;
     static float dmgTakenFromBullet = 0.2f;
     public float shootCooldown;
+    private Preferences prefs;
 
-    public College(Vector2 position, String img, boolean boss, World world){
+    public College(Vector2 position, String img, boolean boss, World world, String name, Preferences prefs){
         this.img = new Texture(img);
         sprite = new Sprite(this.img);
         this.position = position;
@@ -37,6 +41,9 @@ public class College {
         this.rect = new ProjectileCollider(position, (int) sprite.getWidth(), (int) sprite.getHeight());
         this.collider = new BaseCollider(position, 128, 64, true, world);
         this.shootCooldown = 40;
+        this.isCaptured = false;
+        this.prefs = prefs;
+        this.name = name;
     }
 
     public ProjectileCollider getProjectileCollider(){ return rect;}
@@ -118,5 +125,17 @@ public class College {
     
     public Body getColliderBody() {
     	return collider.getBody();
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public void updateCollege(){
+        this.isCaptured = prefs.getBoolean(this.name + "_isCaptured");
+        this.health = prefs.getFloat(this.name + "_health");
+        if (this.isCaptured){
+            Unity.collagesNotBossCount -= 1;
+        }
     }
 }
