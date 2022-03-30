@@ -140,7 +140,7 @@ public class EnemyShip {
         );
     }
     public void updateShip(){
-        this.isCaptured = prefs.getBoolean(this.college.getName() + "Ship_isCaptured");
-        this.health = prefs.getFloat(this.college.getName() + "Ship_health");
+        this.isCaptured = prefs.getBoolean(this.college.getName() + "Ship_isCaptured", false);
+        this.health = prefs.getFloat(this.college.getName() + "Ship_health", 1f);
     }
 }

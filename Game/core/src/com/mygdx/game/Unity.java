@@ -77,6 +77,7 @@ public class Unity extends ApplicationAdapter {
 	private int spawny;
 
 	private static float health = 1f;
+	private float playerRotation;
 	private static float playerDmgFromBullet;
 	private int plunder = 0;
 	private float score = 0;
@@ -98,7 +99,6 @@ public class Unity extends ApplicationAdapter {
 	}
 	public static Difficulty difficulty = Difficulty.Hard;
 
-	boolean new_game;
 	Preferences prefs;
 
 	@Override
@@ -479,6 +479,20 @@ public class Unity extends ApplicationAdapter {
 			gui.drawGameOverScreen(HUDbatch, SmallFont, LargeFont);
 
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+				setDefaultPreferences(prefs, Collages, enemyShips, spawnx, spawny);
+				plunder = prefs.getInteger("plunder", 0);
+				score = prefs.getFloat("score", 0);
+				player.getBody().setTransform(prefs.getFloat("playerx", 700), prefs.getFloat("playery", 700), player.getBody().getAngle());
+				health = prefs.getFloat("player_health", 1f);
+				sprite.setRotation(prefs.getFloat("player_rotation", 180f));
+				cannonCooldownSpeed = prefs.getInteger("cannon_cooldown_speed", 1);
+
+				for (College college : Collages){
+					college.updateCollege();
+				}
+				for (EnemyShip enemyShip : enemyShips){
+					enemyShip.updateShip();
+				}
 				currentScreen = Screen.DifficultySelection;
 			}
 
@@ -543,12 +557,14 @@ public class Unity extends ApplicationAdapter {
 
 			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
 				currentScreen = Screen.DifficultySelection;
-				new_game = true;
 			}
 			else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
-				plunder = prefs.getInteger("plunder", 300);
-				score = prefs.getFloat("score", 300);
+				plunder = prefs.getInteger("plunder", 0);
+				score = prefs.getFloat("score", 0);
 				player.getBody().setTransform(prefs.getFloat("playerx", 700), prefs.getFloat("playery", 700), player.getBody().getAngle());
+				health = prefs.getFloat("player_health", 1f);
+				sprite.setRotation(prefs.getFloat("player_rotation", 180f));
+				cannonCooldownSpeed = prefs.getInteger("cannon_cooldown_speed", 1);
 				int diff = prefs.getInteger("difficulty", 2);
 				if (diff == 1){
 					difficulty = Difficulty.Easy;
@@ -607,7 +623,7 @@ public class Unity extends ApplicationAdapter {
 		boolean changedScreen = false;
 		int horizontalforce = 0;
 		int verticalforce = 0;
-		float currentRotation = sprite.getRotation();
+		playerRotation = sprite.getRotation();
 		
 		if(currentScreen == Screen.Home && Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)){
 			currentScreen = Screen.MAIN_GAME;
@@ -616,25 +632,25 @@ public class Unity extends ApplicationAdapter {
 		if (currentScreen == Screen.MAIN_GAME) {
 			
 			if(Gdx.input.isKeyPressed(Input.Keys.A)){
-				sprite.setRotation((float) (currentRotation + 0.8 * PPM));
-				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(currentRotation));
+				sprite.setRotation((float) (playerRotation + 0.8 * PPM));
+				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(playerRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.D)){
-				sprite.setRotation((float) (currentRotation - 0.8 * PPM));
-				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(currentRotation));
+				sprite.setRotation((float) (playerRotation - 0.8 * PPM));
+				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(playerRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.W)){
-				verticalforce += -Math.sin(toRadians(currentRotation)) * 10;
-				horizontalforce += -Math.cos(toRadians(currentRotation)) * 10;
+				verticalforce += -Math.sin(toRadians(playerRotation)) * 10;
+				horizontalforce += -Math.cos(toRadians(playerRotation)) * 10;
 				score += 0.005;
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.S)){
-				verticalforce += Math.sin(toRadians(currentRotation)) * 10;
-				horizontalforce += Math.cos(toRadians(currentRotation)) * 10;
+				verticalforce += Math.sin(toRadians(playerRotation)) * 10;
+				horizontalforce += Math.cos(toRadians(playerRotation)) * 10;
 				score += 0.005;
 			}
 			player.getBody().setLinearVelocity(horizontalforce * 32, verticalforce * 32);
-			//player.getBody().setTransform(player.getBody().getPosition().x + horizontalforce, player.getBody().getPosition().y + verticalforce, (float) toRadians(currentRotation));
+			//player.getBody().setTransform(player.getBody().getPosition().x + horizontalforce, player.getBody().getPosition().y + verticalforce, (float) toRadians(playerRotation));
 			//player.def.position.set((player.getBody().getPosition().x + horizontalforce) * PPM, (player.getBody().getPosition().y + verticalforce) * PPM);
 		}
 		if(currentScreen == Screen.MAIN_GAME && Goodricke.isCaptured()){
@@ -694,12 +710,14 @@ public class Unity extends ApplicationAdapter {
 		return health;
 	}
 
-	private static void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, Difficulty difficulty){
+	private void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, Difficulty difficulty){
 		prefs.putInteger("plunder", plunder);
 		prefs.putFloat("score", score);
 		prefs.putFloat("player_health", player_health);
 		prefs.putFloat("playerx", player.getBody().getPosition().x);
 		prefs.putFloat("playery", player.getBody().getPosition().y);
+		prefs.putFloat("player_rotation", playerRotation);
+		prefs.putInteger("cannon_cooldown_speed", cannonCooldownSpeed);
 		if (difficulty == Difficulty.Easy)
 			prefs.putInteger("difficulty", 1);
 		else if (difficulty == Difficulty.Normal)
@@ -710,8 +728,6 @@ public class Unity extends ApplicationAdapter {
 		for (College college : Colleges){
 			prefs.putFloat(college.getName() + "_health", college.getHealth());
 			prefs.putBoolean(college.getName() + "_isCaptured", college.isCaptured());
-			System.out.println("Captured: " + college.isCaptured());
-			//System.out.println(college.getName() + "_isCaptured" + ": " + prefs.getBoolean(college.getName() + "_isCaptured"));
 		}
 
 		for (EnemyShip enemyShip : enemyShips){
@@ -721,34 +737,28 @@ public class Unity extends ApplicationAdapter {
 		prefs.flush();
 	}
 
-	/*private static Preferences setPreferences(boolean new_game){
-		Preferences prefs = Gdx.app.getPreferences("York Pirates");
-		if (new_game){
-			prefs.putInteger("plunder", 0);
-			prefs.putFloat("score", 0f);
-			prefs.putFloat("player_health", 0.5f);
+	private Preferences setDefaultPreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int spawnx, int spawny){
+		prefs.putInteger("plunder", 0);
+		prefs.putFloat("score", 0f);
+		prefs.putFloat("player_health", 1f);
+		prefs.putFloat("playerx", spawnx);
+		prefs.putFloat("playery", spawny);
+		prefs.putFloat("player_rotation", 180f);
+		prefs.putInteger("cannon_cooldown_speed", 1);
 
-			prefs.putFloat("Goodrick_health", 1f);
-			prefs.putBoolean("Goodrick_isCaptured", false);
-			prefs.putFloat("Alcuin_health", 1f);
-			prefs.putBoolean("Alcuin_isCaptured", false);
-			prefs.putFloat("Derwent_health", 1f);
-			prefs.putBoolean("Derwent_isCaptured", false);
-			prefs.putFloat("James_health", 1f);
-			prefs.putBoolean("James_isCaptured", false);
-
-			prefs.putFloat("GoodrickShip_health", 1f);
-			prefs.putBoolean("GoodrickShip_isCaptured", false);
-			prefs.putFloat("AlcuinShip_health", 1f);
-			prefs.putBoolean("AlcuinShip_isCaptured", false);
-			prefs.putFloat("DerwentShip_health", 1f);
-			prefs.putBoolean("DerwentShip_isCaptured", false);
-			prefs.putFloat("JamesShip_health", 1f);
-			prefs.putBoolean("JamesShip_isCaptured", false);
-			prefs.flush();
+		for (College college : Colleges){
+			prefs.putFloat(college.getName() + "_health", 1f);
+			prefs.putBoolean(college.getName() + "_isCaptured", false);
 		}
+
+		for (EnemyShip enemyShip : enemyShips){
+			prefs.putFloat(enemyShip.getCollege().getName() + "Ship_health", 1f);
+			prefs.putBoolean(enemyShip.getCollege().getName() + "Ship_isCaptured", false);
+		}
+		prefs.flush();
+
 		return prefs;
-	}*/
+	}
 
 	private void applyDifficulty(Difficulty difficulty){
 		//Change values based on difficulty

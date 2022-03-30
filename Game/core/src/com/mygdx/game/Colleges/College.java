@@ -132,8 +132,8 @@ public class College {
     }
 
     public void updateCollege(){
-        this.isCaptured = prefs.getBoolean(this.name + "_isCaptured");
-        this.health = prefs.getFloat(this.name + "_health");
+        this.isCaptured = prefs.getBoolean(this.name + "_isCaptured", false);
+        this.health = prefs.getFloat(this.name + "_health", 1f);
         if (this.isCaptured){
             Unity.collagesNotBossCount -= 1;
         }
