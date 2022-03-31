@@ -493,6 +493,10 @@ public class Unity extends ApplicationAdapter {
 				for (EnemyShip enemyShip : enemyShips){
 					enemyShip.updateShip();
 				}
+				cannonballs.removeAll(cannonballs);
+				enemyCannonballs.removeAll(enemyCannonballs);
+				explosions.removeAll(explosions);
+
 				currentScreen = Screen.DifficultySelection;
 			}
 
