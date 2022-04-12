@@ -25,6 +25,7 @@ import com.mygdx.game.Animations.Explosion;
 import com.mygdx.game.CameraUtils.cam;
 import com.mygdx.game.Colleges.College;
 import com.mygdx.game.Enemies.EnemyShip;
+import com.mygdx.game.Enemies.Hurricane;
 import com.mygdx.game.utils.Projectile;
 import com.mygdx.game.utils.TiledObjectUtil;
 import com.mygdx.game.utils.gui;
@@ -75,6 +76,7 @@ public class Unity extends ApplicationAdapter {
 	private College James;
 	private int spawnx;
 	private int spawny;
+	private Hurricane hurricane;
 
 	private static float health = 1f;
 	private float playerRotation;
@@ -178,6 +180,8 @@ public class Unity extends ApplicationAdapter {
 		camera.setToOrtho(false, w / scale, h / scale);
 
 		player = new BaseCollider(new Vector2(spawnx , spawny), 128, 64, false, world);
+		hurricane = new Hurricane();
+
 		//enemyShips.add(Alcuin.getColliderBody());
 		//enemyShips.add(Derwent.getColliderBody());
 		//enemyShips.add(Goodricke.getColliderBody());
@@ -358,6 +362,10 @@ public class Unity extends ApplicationAdapter {
 			}
 			explosions.removeAll(explosionsToRemove);
 
+			//hurricane render/update
+			hurricane.update();
+			hurricane.render(batch);
+
 
 			//Health bar colour
 			if (health > 0.6f){
@@ -430,6 +438,13 @@ public class Unity extends ApplicationAdapter {
 			cannonballs.removeAll(cannonballsToRemove);
 			enemyCannonballs.removeAll(cannonballsToRemove);
 			//enemyShips.removeAll(enemyShipsToRemove);
+
+			// check for collision with hurricane
+			if (hurricane.collidesWith(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight()) && Hurricane.canDamage){
+				System.out.println("HIT");
+				health -= Hurricane.getDamage();
+				Hurricane.setDamageDelay();
+			}
 
 
 			for(College college: Collages){
