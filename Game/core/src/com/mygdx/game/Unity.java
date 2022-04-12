@@ -180,7 +180,7 @@ public class Unity extends ApplicationAdapter {
 		camera.setToOrtho(false, w / scale, h / scale);
 
 		player = new BaseCollider(new Vector2(spawnx , spawny), 128, 64, false, world);
-		hurricane = new Hurricane();
+		hurricane = new Hurricane(prefs);
 
 		//enemyShips.add(Alcuin.getColliderBody());
 		//enemyShips.add(Derwent.getColliderBody());
@@ -501,6 +501,7 @@ public class Unity extends ApplicationAdapter {
 				health = prefs.getFloat("player_health", 1f);
 				sprite.setRotation(prefs.getFloat("player_rotation", 180f));
 				cannonCooldownSpeed = prefs.getInteger("cannon_cooldown_speed", 1);
+				hurricane.resetHurricane();
 
 				for (College college : Collages){
 					college.updateCollege();
@@ -552,7 +553,7 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
-				savePreferences(prefs, Collages, enemyShips, plunder, score, player, health, difficulty);
+				savePreferences(prefs, Collages, enemyShips, plunder, score, player, health, hurricane, difficulty);
 				Gdx.app.exit();
 				System.exit(0);
 			}
@@ -584,6 +585,8 @@ public class Unity extends ApplicationAdapter {
 				health = prefs.getFloat("player_health", 1f);
 				sprite.setRotation(prefs.getFloat("player_rotation", 180f));
 				cannonCooldownSpeed = prefs.getInteger("cannon_cooldown_speed", 1);
+				hurricane.setDestination(prefs.getFloat("hurricane_destx", 700), prefs.getFloat("hurricane_desty", 700));
+				hurricane.setPosition(prefs.getFloat("hurricanex"), prefs.getFloat("hurricaney"));
 				int diff = prefs.getInteger("difficulty", 2);
 				if (diff == 1){
 					difficulty = Difficulty.Easy;
@@ -729,7 +732,7 @@ public class Unity extends ApplicationAdapter {
 		return health;
 	}
 
-	private void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, Difficulty difficulty){
+	private void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, Hurricane hurricane, Difficulty difficulty){
 		prefs.putInteger("plunder", plunder);
 		prefs.putFloat("score", score);
 		prefs.putFloat("player_health", player_health);
@@ -737,6 +740,10 @@ public class Unity extends ApplicationAdapter {
 		prefs.putFloat("playery", player.getBody().getPosition().y);
 		prefs.putFloat("player_rotation", playerRotation);
 		prefs.putInteger("cannon_cooldown_speed", cannonCooldownSpeed);
+		prefs.putFloat("hurricanex", hurricane.getPosition().x);
+		prefs.putFloat("hurricaney", hurricane.getPosition().y);
+		prefs.putFloat("hurricane_destx", hurricane.getDestination().x);
+		prefs.putFloat("hurricane_desty", hurricane.getDestination().y);
 		if (difficulty == Difficulty.Easy)
 			prefs.putInteger("difficulty", 1);
 		else if (difficulty == Difficulty.Normal)

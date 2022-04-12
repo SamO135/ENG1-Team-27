@@ -1,6 +1,7 @@
 package com.mygdx.game.Enemies;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -23,13 +24,13 @@ public class Hurricane {
     private static float damage = 0.2f;
 
 
-    public Hurricane() {
+    public Hurricane(Preferences prefs) {
         this.image = new Texture("Hurricane_128x82.png");
         this.textureRegion = new TextureRegion(image);
         this.position = generateNewDestination();
         this.rect = new Rectangle(this.position.x, this.position.y, this.image.getWidth(), this.image.getHeight());
         this.direction = new Vector2(0, 0);
-        this.destination = generateNewDestination();
+        this.destination = new Vector2(prefs.getFloat("hurricane_destx", 1000), prefs.getFloat("hurricane_desty", 1000));
         this.velocity = new Vector2(0, 0);
     }
 
@@ -63,6 +64,27 @@ public class Hurricane {
     }
 
     public static float getDamage(){return damage;}
+
+    public Vector2 getPosition() {
+        return position;
+    }
+
+    public void setPosition(float x, float y) {
+        this.position.set(x, y);
+    }
+
+    public Vector2 getDestination() {
+        return destination;
+    }
+
+    public void setDestination(float x, float y) {
+        this.destination.set(destination);
+    }
+
+    public void resetHurricane(){
+        this.position = generateNewDestination();
+        this.destination = generateNewDestination();
+    }
 
     private boolean reachedDestination(){
         if ((this.position.x > this.destination.x - moveSpeed && this.position.x < this.destination.x + moveSpeed) && (this.position.y > this.destination.y - moveSpeed && this.position.y < this.destination.y + moveSpeed)){
