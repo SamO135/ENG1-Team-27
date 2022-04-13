@@ -430,9 +430,6 @@ public class Unity extends ApplicationAdapter {
 					explosions.add(new Explosion((cannonball.getPosition())));
 					health = Math.round((health-0.2f)*100f)/100f;
 					System.out.println(health);
-					if (health <= 0f){
-						currentScreen = Screen.GameOver;
-					}
 				}
 			}
 			cannonballs.removeAll(cannonballsToRemove);
@@ -446,6 +443,10 @@ public class Unity extends ApplicationAdapter {
 				Hurricane.setDamageDelay();
 			}
 
+			// if health reaches 0, game over
+			if (health <= 0f){
+				currentScreen = Screen.GameOver;
+			}
 
 			for(College college: Collages){
 				college.render(batch);
