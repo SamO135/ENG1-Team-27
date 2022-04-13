@@ -511,6 +511,8 @@ public class Unity extends ApplicationAdapter {
 				health = prefs.getFloat("player_health", 1f);
 				sprite.setRotation(prefs.getFloat("player_rotation", 180f));
 				cannonCooldownSpeed = prefs.getInteger("cannon_cooldown_speed", 1);
+				damageUpgrade = prefs.getFloat("damage_upgrade", 0f);
+				weatherResistanceUpgrade = prefs.getFloat("weather_resistance_upgrade", 0f);
 				for(Hurricane hurricane : hurricanes)
 					hurricane.resetHurricane();
 
@@ -579,7 +581,7 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
-				savePreferences(prefs, Collages, enemyShips, plunder, score, player, health, hurricanes, difficulty);
+				savePreferences(prefs, Collages, enemyShips, plunder, score, player, health, hurricanes, damageUpgrade, weatherResistanceUpgrade, difficulty);
 				Gdx.app.exit();
 				System.exit(0);
 			}
@@ -611,6 +613,8 @@ public class Unity extends ApplicationAdapter {
 				health = prefs.getFloat("player_health", 1f);
 				sprite.setRotation(prefs.getFloat("player_rotation", 180f));
 				cannonCooldownSpeed = prefs.getInteger("cannon_cooldown_speed", 1);
+				damageUpgrade = prefs.getFloat("damage_upgrade", 0f);
+				weatherResistanceUpgrade = prefs.getFloat("weather_resistance_upgrade", 0f);
 				for (int count = 0; count < hurricanes.size(); count++){
 					hurricanes.get(count).setDestination(prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "_destx", 700), prefs.getFloat("hurricane"  + hurricanes.get(count).getId() + "_desty", 700));
 					hurricanes.get(count).setPosition(prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "x"), prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "y"));
@@ -765,7 +769,7 @@ public class Unity extends ApplicationAdapter {
 
 	public static float getWeatherResistanceUpgrade(){return weatherResistanceUpgrade;}
 
-	private void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, ArrayList<Hurricane> hurricanes, Difficulty difficulty){
+	private void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, ArrayList<Hurricane> hurricanes, float damageUpgrade, float weatherResistanceUpgrade, Difficulty difficulty){
 		prefs.putInteger("plunder", plunder);
 		prefs.putFloat("score", score);
 		prefs.putFloat("player_health", player_health);
@@ -773,6 +777,8 @@ public class Unity extends ApplicationAdapter {
 		prefs.putFloat("playery", player.getBody().getPosition().y);
 		prefs.putFloat("player_rotation", playerRotation);
 		prefs.putInteger("cannon_cooldown_speed", cannonCooldownSpeed);
+		prefs.putFloat("damage_upgrade", damageUpgrade);
+		prefs.putFloat("weather_resistance_upgrade", weatherResistanceUpgrade);
 		for (int count = 0; count < hurricanes.size(); count++){
 			prefs.putFloat("hurricane" + hurricanes.get(count).getId() + "x", hurricanes.get(count).getPosition().x);
 			prefs.putFloat("hurricane"  + hurricanes.get(count).getId() + "y", hurricanes.get(count).getPosition().y);
@@ -807,6 +813,8 @@ public class Unity extends ApplicationAdapter {
 		prefs.putFloat("playery", spawny);
 		prefs.putFloat("player_rotation", 180f);
 		prefs.putInteger("cannon_cooldown_speed", 1);
+		prefs.putFloat("damage_upgrade", 0f);
+		prefs.putFloat("weather_resistance_upgrade", 0f);
 
 		for (College college : Colleges){
 			prefs.putFloat(college.getName() + "_health", 1f);
