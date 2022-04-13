@@ -79,6 +79,8 @@ public class Unity extends ApplicationAdapter {
 
 	private static float health = 1f;
 	private float playerRotation;
+	private float playerBaseRotationSpeed = 0.8f;
+	private static float playerRotationUpgrade;
 	private static float playerDmgFromBullet;
 	private static float damageUpgrade;
 	private static float weatherResistanceUpgrade;
@@ -513,6 +515,7 @@ public class Unity extends ApplicationAdapter {
 				cannonCooldownSpeed = prefs.getInteger("cannon_cooldown_speed", 1);
 				damageUpgrade = prefs.getFloat("damage_upgrade", 0f);
 				weatherResistanceUpgrade = prefs.getFloat("weather_resistance_upgrade", 0f);
+				playerRotationUpgrade = prefs.getFloat("rotation_upgrade", 0f);
 				for(Hurricane hurricane : hurricanes)
 					hurricane.resetHurricane();
 
@@ -574,9 +577,16 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){
-				if (weatherResistanceUpgrade < 0.5f && plunder > 200f){
+				if (weatherResistanceUpgrade < 0.5f && plunder >= 200f){
 					weatherResistanceUpgrade += 0.1f;
 					plunder -= 200f;
+				}
+			}
+
+			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)){
+				if (playerRotationUpgrade < 0.5f && plunder >= 100f){
+					playerRotationUpgrade += 0.1f;
+					plunder -= 100f;
 				}
 			}
 
@@ -615,6 +625,7 @@ public class Unity extends ApplicationAdapter {
 				cannonCooldownSpeed = prefs.getInteger("cannon_cooldown_speed", 1);
 				damageUpgrade = prefs.getFloat("damage_upgrade", 0f);
 				weatherResistanceUpgrade = prefs.getFloat("weather_resistance_upgrade", 0f);
+				playerRotationUpgrade = prefs.getFloat("rotation_upgrade", 0f);
 				for (int count = 0; count < hurricanes.size(); count++){
 					hurricanes.get(count).setDestination(prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "_destx", 700), prefs.getFloat("hurricane"  + hurricanes.get(count).getId() + "_desty", 700));
 					hurricanes.get(count).setPosition(prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "x"), prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "y"));
@@ -687,11 +698,11 @@ public class Unity extends ApplicationAdapter {
 		if (currentScreen == Screen.MAIN_GAME) {
 			
 			if(Gdx.input.isKeyPressed(Input.Keys.A)){
-				sprite.setRotation((float) (playerRotation + 0.8 * PPM));
+				sprite.setRotation((float) (playerRotation + (playerBaseRotationSpeed * (1+playerRotationUpgrade)) * PPM));
 				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(playerRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.D)){
-				sprite.setRotation((float) (playerRotation - 0.8 * PPM));
+				sprite.setRotation((float) (playerRotation - (playerBaseRotationSpeed * (1+playerRotationUpgrade)) * PPM));
 				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(playerRotation));
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.W)){
@@ -769,6 +780,8 @@ public class Unity extends ApplicationAdapter {
 
 	public static float getWeatherResistanceUpgrade(){return weatherResistanceUpgrade;}
 
+	public static float getPlayerRotationUpgrade(){return playerRotationUpgrade;}
+
 	private void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, ArrayList<Hurricane> hurricanes, float damageUpgrade, float weatherResistanceUpgrade, Difficulty difficulty){
 		prefs.putInteger("plunder", plunder);
 		prefs.putFloat("score", score);
@@ -779,6 +792,7 @@ public class Unity extends ApplicationAdapter {
 		prefs.putInteger("cannon_cooldown_speed", cannonCooldownSpeed);
 		prefs.putFloat("damage_upgrade", damageUpgrade);
 		prefs.putFloat("weather_resistance_upgrade", weatherResistanceUpgrade);
+		prefs.putFloat("rotation_upgrade", playerRotationUpgrade);
 		for (int count = 0; count < hurricanes.size(); count++){
 			prefs.putFloat("hurricane" + hurricanes.get(count).getId() + "x", hurricanes.get(count).getPosition().x);
 			prefs.putFloat("hurricane"  + hurricanes.get(count).getId() + "y", hurricanes.get(count).getPosition().y);
@@ -815,6 +829,7 @@ public class Unity extends ApplicationAdapter {
 		prefs.putInteger("cannon_cooldown_speed", 1);
 		prefs.putFloat("damage_upgrade", 0f);
 		prefs.putFloat("weather_resistance_upgrade", 0f);
+		prefs.putFloat("rotation_upgrade", 0f);
 
 		for (College college : Colleges){
 			prefs.putFloat(college.getName() + "_health", 1f);
