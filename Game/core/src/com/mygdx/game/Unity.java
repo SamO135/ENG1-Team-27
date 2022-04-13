@@ -82,6 +82,7 @@ public class Unity extends ApplicationAdapter {
 	private float playerRotation;
 	private static float playerDmgFromBullet;
 	private static float damageUpgrade;
+	private static float weatherResistanceUpgrade;
 	private int plunder = 0;
 	private float score = 0;
 	
@@ -440,7 +441,7 @@ public class Unity extends ApplicationAdapter {
 			// check for collision with hurricane
 			if (hurricane.collidesWith(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight()) && Hurricane.canDamage){
 				System.out.println("HIT");
-				health -= Hurricane.getDamage();
+				health -= Hurricane.getDamage() * (1-weatherResistanceUpgrade);
 				Hurricane.setDamageDelay();
 			}
 
@@ -559,6 +560,13 @@ public class Unity extends ApplicationAdapter {
 					damageUpgrade += 0.1f;
 					plunder -= 200f;
 					applyDifficulty(difficulty);
+				}
+			}
+
+			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){
+				if (weatherResistanceUpgrade < 0.5f && plunder > 200f){
+					weatherResistanceUpgrade += 0.1f;
+					plunder -= 200f;
 				}
 			}
 
@@ -741,7 +749,10 @@ public class Unity extends ApplicationAdapter {
 	public static float getHealth(){
 		return health;
 	}
+
 	public static float getDamageUpgrade(){return damageUpgrade;}
+
+	public static float getWeatherResistanceUpgrade(){return weatherResistanceUpgrade;}
 
 	private void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, Hurricane hurricane, Difficulty difficulty){
 		prefs.putInteger("plunder", plunder);
