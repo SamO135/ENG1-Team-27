@@ -76,13 +76,13 @@ public class Unity extends ApplicationAdapter {
 	private College James;
 	private int spawnx;
 	private int spawny;
-	private Hurricane hurricane;
 
 	private static float health = 1f;
 	private float playerRotation;
 	private static float playerDmgFromBullet;
 	private static float damageUpgrade;
 	private static float weatherResistanceUpgrade;
+	public static float numOfHurricanes = 2;
 	private int plunder = 0;
 	private float score = 0;
 	
@@ -94,6 +94,7 @@ public class Unity extends ApplicationAdapter {
 	private ArrayList<College> Collages;
 	private ArrayList<EnemyShip> enemyShips;
 	private ArrayList<Explosion> explosions;
+	private ArrayList<Hurricane> hurricanes;
 	public enum Screen{
 		NewOrResume, DifficultySelection, Home, MAIN_GAME, Shop, End, GameOver
 	}
@@ -120,6 +121,7 @@ public class Unity extends ApplicationAdapter {
 		Collages = new ArrayList<College>();
 		explosions = new ArrayList<Explosion>();
 		enemyShips = new ArrayList<EnemyShip>();
+		hurricanes = new ArrayList<Hurricane>();
 
 		//batches
 		batch = new SpriteBatch();
@@ -182,7 +184,11 @@ public class Unity extends ApplicationAdapter {
 		camera.setToOrtho(false, w / scale, h / scale);
 
 		player = new BaseCollider(new Vector2(spawnx , spawny), 128, 64, false, world);
-		hurricane = new Hurricane(prefs);
+
+		for (int i = 0; i < numOfHurricanes; i ++){
+			hurricanes.add(new Hurricane(prefs, i));
+		}
+
 
 		//enemyShips.add(Alcuin.getColliderBody());
 		//enemyShips.add(Derwent.getColliderBody());
@@ -364,9 +370,6 @@ public class Unity extends ApplicationAdapter {
 			}
 			explosions.removeAll(explosionsToRemove);
 
-			//hurricane render/update
-			hurricane.update();
-			hurricane.render(batch);
 
 
 			//Health bar colour
@@ -438,11 +441,15 @@ public class Unity extends ApplicationAdapter {
 			enemyCannonballs.removeAll(cannonballsToRemove);
 			//enemyShips.removeAll(enemyShipsToRemove);
 
-			// check for collision with hurricane
-			if (hurricane.collidesWith(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight()) && Hurricane.canDamage){
-				System.out.println("HIT");
-				health -= Hurricane.getDamage() * (1-weatherResistanceUpgrade);
-				Hurricane.setDamageDelay();
+			// check for collision with hurricane & render/update them
+			for (Hurricane hurricane : hurricanes){
+				if (hurricane.collidesWith(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight()) && Hurricane.canDamage){
+					System.out.println("HIT " + hurricane.getPosition());
+					health -= Hurricane.getDamage() * (1-weatherResistanceUpgrade);
+					Hurricane.setDamageDelay();
+				}
+				hurricane.render(batch);
+				hurricane.update();
 			}
 
 			// if health reaches 0, game over
@@ -504,7 +511,8 @@ public class Unity extends ApplicationAdapter {
 				health = prefs.getFloat("player_health", 1f);
 				sprite.setRotation(prefs.getFloat("player_rotation", 180f));
 				cannonCooldownSpeed = prefs.getInteger("cannon_cooldown_speed", 1);
-				hurricane.resetHurricane();
+				for(Hurricane hurricane : hurricanes)
+					hurricane.resetHurricane();
 
 				for (College college : Collages){
 					college.updateCollege();
@@ -571,7 +579,7 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
-				savePreferences(prefs, Collages, enemyShips, plunder, score, player, health, hurricane, difficulty);
+				savePreferences(prefs, Collages, enemyShips, plunder, score, player, health, hurricanes, difficulty);
 				Gdx.app.exit();
 				System.exit(0);
 			}
@@ -603,8 +611,11 @@ public class Unity extends ApplicationAdapter {
 				health = prefs.getFloat("player_health", 1f);
 				sprite.setRotation(prefs.getFloat("player_rotation", 180f));
 				cannonCooldownSpeed = prefs.getInteger("cannon_cooldown_speed", 1);
-				hurricane.setDestination(prefs.getFloat("hurricane_destx", 700), prefs.getFloat("hurricane_desty", 700));
-				hurricane.setPosition(prefs.getFloat("hurricanex"), prefs.getFloat("hurricaney"));
+				for (int count = 0; count < hurricanes.size(); count++){
+					hurricanes.get(count).setDestination(prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "_destx", 700), prefs.getFloat("hurricane"  + hurricanes.get(count).getId() + "_desty", 700));
+					hurricanes.get(count).setPosition(prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "x"), prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "y"));
+				}
+
 				int diff = prefs.getInteger("difficulty", 2);
 				if (diff == 1){
 					difficulty = Difficulty.Easy;
@@ -754,7 +765,7 @@ public class Unity extends ApplicationAdapter {
 
 	public static float getWeatherResistanceUpgrade(){return weatherResistanceUpgrade;}
 
-	private void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, Hurricane hurricane, Difficulty difficulty){
+	private void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, ArrayList<Hurricane> hurricanes, Difficulty difficulty){
 		prefs.putInteger("plunder", plunder);
 		prefs.putFloat("score", score);
 		prefs.putFloat("player_health", player_health);
@@ -762,10 +773,13 @@ public class Unity extends ApplicationAdapter {
 		prefs.putFloat("playery", player.getBody().getPosition().y);
 		prefs.putFloat("player_rotation", playerRotation);
 		prefs.putInteger("cannon_cooldown_speed", cannonCooldownSpeed);
-		prefs.putFloat("hurricanex", hurricane.getPosition().x);
-		prefs.putFloat("hurricaney", hurricane.getPosition().y);
-		prefs.putFloat("hurricane_destx", hurricane.getDestination().x);
-		prefs.putFloat("hurricane_desty", hurricane.getDestination().y);
+		for (int count = 0; count < hurricanes.size(); count++){
+			prefs.putFloat("hurricane" + hurricanes.get(count).getId() + "x", hurricanes.get(count).getPosition().x);
+			prefs.putFloat("hurricane"  + hurricanes.get(count).getId() + "y", hurricanes.get(count).getPosition().y);
+			prefs.putFloat("hurricane"  + hurricanes.get(count).getId() + "_destx", hurricanes.get(count).getDestination().x);
+			prefs.putFloat("hurricane"  + hurricanes.get(count).getId() + "_desty", hurricanes.get(count).getDestination().y);
+		}
+
 		if (difficulty == Difficulty.Easy)
 			prefs.putInteger("difficulty", 1);
 		else if (difficulty == Difficulty.Normal)

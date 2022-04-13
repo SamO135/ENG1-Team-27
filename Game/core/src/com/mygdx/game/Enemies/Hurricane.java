@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Unity;
 
 public class Hurricane {
     private Rectangle rect;
@@ -18,20 +19,22 @@ public class Hurricane {
     private Vector2 direction;
     private Vector2 destination;
     private Vector2 velocity;
-    private static float maxDamageDelay = 100f;
+    private static float maxDamageDelay = 100f * Unity.numOfHurricanes;
     public static float damageDelay = 0f;
     public static boolean canDamage = true;
     private static float damage = 0.2f;
+    private int id;
 
 
-    public Hurricane(Preferences prefs) {
+    public Hurricane(Preferences prefs, int id) {
         this.image = new Texture("Hurricane_128x82.png");
         this.textureRegion = new TextureRegion(image);
         this.position = generateNewDestination();
         this.rect = new Rectangle(this.position.x, this.position.y, this.image.getWidth(), this.image.getHeight());
         this.direction = new Vector2(0, 0);
-        this.destination = new Vector2(prefs.getFloat("hurricane_destx", 1000), prefs.getFloat("hurricane_desty", 1000));
+        this.destination = new Vector2(prefs.getFloat("hurricane" + id + "_destx", 1000), prefs.getFloat("hurricane" + id + "_desty", 1000));
         this.velocity = new Vector2(0, 0);
+        this.id = id;
     }
 
     public void render(SpriteBatch batch){
@@ -42,7 +45,6 @@ public class Hurricane {
         reduceDamageDelay();
         if (reachedDestination()){
             this.destination = generateNewDestination();
-            System.out.println(this.destination);
         }
         direction.set(this.destination.x - this.position.x, this.destination.y - this.position.y);
         direction.scl(1/direction.len());
@@ -80,6 +82,8 @@ public class Hurricane {
     public void setDestination(float x, float y) {
         this.destination.set(destination);
     }
+
+    public int getId(){return this.id;}
 
     public void resetHurricane(){
         this.position = generateNewDestination();
