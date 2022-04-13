@@ -81,6 +81,7 @@ public class Unity extends ApplicationAdapter {
 	private static float health = 1f;
 	private float playerRotation;
 	private static float playerDmgFromBullet;
+	private static float damageUpgrade;
 	private int plunder = 0;
 	private float score = 0;
 	
@@ -428,7 +429,7 @@ public class Unity extends ApplicationAdapter {
 				if (cannonball.getProjectileCollider().collidesWith(player.getProjectileCollider())){
 					cannonballsToRemove.add(cannonball);
 					explosions.add(new Explosion((cannonball.getPosition())));
-					health = Math.round((health-0.2f)*100f)/100f;
+					health = Math.round((health-playerDmgFromBullet)*100f)/100f;
 					System.out.println(health);
 				}
 			}
@@ -550,6 +551,14 @@ public class Unity extends ApplicationAdapter {
 						health += 0.3f;
 						plunder -= 200;
 					}
+				}
+			}
+
+			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
+				if (damageUpgrade < 1f && plunder >= 200f){
+					damageUpgrade += 0.1f;
+					plunder -= 200f;
+					applyDifficulty(difficulty);
 				}
 			}
 
@@ -732,6 +741,7 @@ public class Unity extends ApplicationAdapter {
 	public static float getHealth(){
 		return health;
 	}
+	public static float getDamageUpgrade(){return damageUpgrade;}
 
 	private void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, Hurricane hurricane, Difficulty difficulty){
 		prefs.putInteger("plunder", plunder);
@@ -788,21 +798,35 @@ public class Unity extends ApplicationAdapter {
 	}
 
 	private void applyDifficulty(Difficulty difficulty){
+		float college_damage_taken;
+		float enemyship_damage_taken;
 		//Change values based on difficulty
 		switch (difficulty) {
 			case Easy:
-				College.setDmgTakenFromBullet(0.3f);
-				EnemyShip.setDmgTakenFromBullet(0.5f);
+				college_damage_taken = 0.3f;
+				enemyship_damage_taken = 0.5f;
+				college_damage_taken += college_damage_taken * damageUpgrade;
+				enemyship_damage_taken += enemyship_damage_taken * damageUpgrade;
+				College.setDmgTakenFromBullet(college_damage_taken);
+				EnemyShip.setDmgTakenFromBullet(enemyship_damage_taken);
 				playerDmgFromBullet = 0.1f;
 				break;
 			case Hard:
-				College.setDmgTakenFromBullet(0.1f);
-				EnemyShip.setDmgTakenFromBullet(0.25f);
+				college_damage_taken = 0.1f;
+				enemyship_damage_taken = 0.25f;
+				college_damage_taken += college_damage_taken * damageUpgrade;
+				enemyship_damage_taken += enemyship_damage_taken * damageUpgrade;
+				College.setDmgTakenFromBullet(college_damage_taken);
+				EnemyShip.setDmgTakenFromBullet(enemyship_damage_taken);
 				playerDmgFromBullet = 0.25f;
 				break;
 			default:
-				College.setDmgTakenFromBullet(0.2f);
-				EnemyShip.setDmgTakenFromBullet(0.34f);
+				college_damage_taken = 0.2f;
+				enemyship_damage_taken = 0.34f;
+				college_damage_taken += college_damage_taken * damageUpgrade;
+				enemyship_damage_taken += enemyship_damage_taken * damageUpgrade;
+				College.setDmgTakenFromBullet(college_damage_taken);
+				EnemyShip.setDmgTakenFromBullet(enemyship_damage_taken);
 				playerDmgFromBullet = 0.2f;
 				break;
 		}

@@ -112,9 +112,11 @@ public class gui {
         float Upgrade1TextWidth = Upgrade1TextLayout.width;
         SmallFont.draw(batch, "Press 1 to increased fire rate (200 plunder) : " + Unity.getCannonCooldownSpeed() + "/5", (width * 0.35f), height * 0.8f);
 
-        GlyphLayout Upgrade2TextLayout = new GlyphLayout(SmallFont, "Press 2 to repair ship by 30%: ");
+        GlyphLayout Upgrade2TextLayout = new GlyphLayout(SmallFont, "Press 2 to repair ship by 30% (200 plunder) : ");
         float Upgrade2TextWidth = Upgrade2TextLayout.width;
         SmallFont.draw(batch, "Press 2 to repair ship by 30% (200 plunder) : " + "Current health = " + Unity.getHealth(), (width * 0.35f), height * 0.75f);
+        
+        SmallFont.draw(batch, "Press 3 to increase player bullet damage (200 plunder) : " + "Additional damage = " + Math.round(Unity.getDamageUpgrade()*100) + "%", (width * 0.35f), height * 0.7f);
 
         GlyphLayout QuitTextLayout = new GlyphLayout(SmallFont, "Press Q to save and quit");
         SmallFont.draw(batch, "Press Q to save and quit", (width * 0.025f), (height * 0.1f));
