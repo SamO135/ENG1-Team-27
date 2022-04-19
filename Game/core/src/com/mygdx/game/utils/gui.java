@@ -11,7 +11,7 @@ public class gui {
     private static float width = Unity.getWidth();
     private static float height = Unity.getHeight();
 
-    public static void drawMainScreen(Batch batch, BitmapFont font, int plunder, float score) {
+    public static void drawMainScreen(Batch batch, BitmapFont font, BitmapFont SmallFont, int plunder, float score) {
     	
         GlyphLayout PlunderInfoTextLayout = new GlyphLayout(font, "Plunder: " + plunder);
         GlyphLayout ScoreInfoTextLayout = new GlyphLayout(font, "Score: " + Math.round(score));
@@ -23,8 +23,9 @@ public class gui {
         batch.begin();
         font.draw(batch, "Plunder: " + plunder, Math.round(width -(PlunderInfoTextWidth*1.2)),
                 Math.round(height-(PlunderInfoTextHeight*1.2)));
-        font.draw(batch, "Score: " + Math.round(score), Math.round(width / 2 -(ScoreInfoTextWidth*1.2)),
-                Math.round(height-(ScoreInfoTextHeight*1.2)));
+        font.draw(batch, "Score: " + Math.round(score), (width-ScoreInfoTextWidth) / 2, Math.round(height-(ScoreInfoTextHeight*1.2)));
+
+        font.draw(batch, "Shop (esc)", (width * 0.025f), (height * 0.1f));
         batch.end();
     }
     
@@ -99,33 +100,32 @@ public class gui {
         SmallFont.draw(batch, "Press SPACE to try again", (width - StartTextWidth) / 2, height * .4f);
     }
 
-    public static void drawShopScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont, Unity.Difficulty difficulty){
+    public static void drawShopScreen(Batch batch, BitmapFont SmallFont, BitmapFont MediumFont, BitmapFont LargeFont, Unity.Difficulty difficulty, int plunder){
         GlyphLayout TitleText = new GlyphLayout(LargeFont, "Shop");
         float TitleTextWidth = TitleText.width;
         LargeFont.draw(batch, "Shop", (width-TitleTextWidth)/2, height * 0.92f);
 
-        GlyphLayout StartTextLayout = new GlyphLayout(SmallFont, "Press esc to exit");
-        float StartTextWidth = StartTextLayout.width;
-        SmallFont.draw(batch, "Press esc to exit", (width-StartTextWidth)/2, height * 0.2f);
+        GlyphLayout ExitTextLayout = new GlyphLayout(SmallFont, "Press esc to exit");
+        float ExitTextWidth = ExitTextLayout.width;
+        SmallFont.draw(batch, "Press esc to exit shop", (width-ExitTextWidth)/2, height * 0.2f);
 
-        GlyphLayout Upgrade1TextLayout = new GlyphLayout(SmallFont, "Press 1 to increased fire rate (200 plunder) : " + Unity.getCannonCooldownSpeed() + "/5");
-        float Upgrade1TextWidth = Upgrade1TextLayout.width;
-        SmallFont.draw(batch, "Press 1 to increased fire rate (200 plunder) : " + Unity.getCannonCooldownSpeed() + "/5", (width * 0.35f), height * 0.8f);
+        GlyphLayout PlunderTextLayout = new GlyphLayout(SmallFont, "Plunder: " + plunder);
+        float PlunderTextWidth = PlunderTextLayout.width;
+        float PlunderTextHeight = PlunderTextLayout.height;
+        MediumFont.draw(batch, "Plunder: " + plunder, Math.round(width -(PlunderTextWidth*1.76)), Math.round(height-(PlunderTextHeight*1.8)));
 
-        GlyphLayout Upgrade2TextLayout = new GlyphLayout(SmallFont, "Press 2 to repair ship by 30% (200 plunder) : ");
-        float Upgrade2TextWidth = Upgrade2TextLayout.width;
-        SmallFont.draw(batch, "Press 2 to repair ship by 30% (200 plunder) : " + "Current health = " + Unity.getHealth(), (width * 0.35f), height * 0.75f);
+        SmallFont.draw(batch, "200 plunder - Press 1 to increased fire rate : " + Unity.getCannonCooldownSpeed() + "/5", (width * 0.35f), height * 0.8f);
 
-        SmallFont.draw(batch, "Press 3 to increase player bullet damage (200 plunder) : " + "+ " + Math.round(Unity.getDamageUpgrade()*100) + "% (Max 100%)", (width * 0.35f), height * 0.7f);
+        SmallFont.draw(batch, "200 plunder - Press 2 to repair ship by 0.3 : " + "Current health = " + Unity.getHealth() + "/1.0", (width * 0.35f), height * 0.75f);
 
-        SmallFont.draw(batch, "Press 4 to increase player weather resistance (200 plunder) : " + "+ " + Math.round(Unity.getWeatherResistanceUpgrade()*100) + "% (Max 50%)", (width * 0.35f), height * 0.65f);
+        SmallFont.draw(batch, "200 plunder - Press 3 to increase player bullet damage : " + "+ " + Math.round(Unity.getDamageUpgrade()*100) + "% (Max 100%)", (width * 0.35f), height * 0.7f);
 
-        SmallFont.draw(batch, "Press 5 to increase player rotation speed (100 plunder) : " + "+ " + Math.round(Unity.getPlayerRotationUpgrade()*100) + "% (Max 50%)", (width * 0.35f), height * 0.6f);
+        SmallFont.draw(batch, "200 plunder - Press 4 to increase player weather resistance : " + "+ " + Math.round(Unity.getWeatherResistanceUpgrade()*100) + "% (Max 50%)", (width * 0.35f), height * 0.65f);
 
-        GlyphLayout QuitTextLayout = new GlyphLayout(SmallFont, "Press Q to save and quit");
-        SmallFont.draw(batch, "Press Q to save and quit", (width * 0.025f), (height * 0.1f));
+        SmallFont.draw(batch, "100 plunder - Press 5 to increase player rotation speed : " + "+ " + Math.round(Unity.getPlayerRotationUpgrade()*100) + "% (Max 50%)", (width * 0.35f), height * 0.6f);
 
-        GlyphLayout DifficultyTextLayout = new GlyphLayout(SmallFont, "Difficulty: " + difficulty);
-        SmallFont.draw(batch, "Difficulty: " + difficulty, (width * 0.025f), (height * 0.95f));
+        MediumFont.draw(batch, "Save & Quit (Q)", (width * 0.025f), (height * 0.1f));
+
+        MediumFont.draw(batch, "Difficulty: " + difficulty, (width * 0.025f), (height * 0.95f));
     }
 }

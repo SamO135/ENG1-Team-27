@@ -163,7 +163,9 @@ public class Unity extends ApplicationAdapter {
 		//initialise fonts
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Oswald-Regular.ttf"));
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-		
+
+		parameter.borderColor = Color.BLACK;
+		parameter.borderWidth = 1.4f;
 		parameter.size = 20;
 		SmallFont = generator.generateFont(parameter);
 		parameter.size = 32;
@@ -474,7 +476,7 @@ public class Unity extends ApplicationAdapter {
 
 			batch.end();
 			
-			gui.drawMainScreen(HUDbatch, SmallFont, plunder, score);
+			gui.drawMainScreen(HUDbatch, MediumFont, SmallFont, plunder, score);
 
 		}
 		if(currentScreen == Screen.End){
@@ -546,7 +548,7 @@ public class Unity extends ApplicationAdapter {
 
 
 			//draw Shop
-			gui.drawShopScreen(HUDbatch, SmallFont, LargeFont, difficulty);
+			gui.drawShopScreen(HUDbatch, SmallFont, MediumFont, LargeFont, difficulty, plunder);
 
 			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
 				if (cannonCooldownSpeed < 5 && plunder >= 200) {
