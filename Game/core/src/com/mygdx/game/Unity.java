@@ -98,12 +98,13 @@ public class Unity extends ApplicationAdapter {
 	private ArrayList<Explosion> explosions;
 	private ArrayList<Hurricane> hurricanes;
 	public enum Screen{
-		NewOrResume, DifficultySelection, Home, MAIN_GAME, Shop, End, GameOver
+		NewOrResume, Help, DifficultySelection, Home, MAIN_GAME, Shop, End, GameOver
 	}
 	Screen currentScreen = Screen.NewOrResume;
 	public enum Difficulty{
 		Easy, Normal, Hard
 	}
+	Screen previousScreen = currentScreen;
 	public static Difficulty difficulty = Difficulty.Hard;
 
 	Preferences prefs;
@@ -598,6 +599,11 @@ public class Unity extends ApplicationAdapter {
 				System.exit(0);
 			}
 
+			if (Gdx.input.isKeyJustPressed(Input.Keys.H)){
+				previousScreen = currentScreen;
+				currentScreen = Screen.Help;
+			}
+
 
 			HUDbatch.end();
 
@@ -654,6 +660,30 @@ public class Unity extends ApplicationAdapter {
 				applyDifficulty(difficulty);
 
 				currentScreen = Screen.Shop;
+			}
+
+			else if (Gdx.input.isKeyJustPressed(Input.Keys.H)){
+				previousScreen = currentScreen;
+				currentScreen = Screen.Help;
+			}
+
+			HUDbatch.end();
+		}
+
+		if (currentScreen == Screen.Help){
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+			//draw map
+			tmr.render();
+
+			HUDbatch.begin();
+
+			//draw menu
+			gui.drawHelpScreen(HUDbatch, SmallFont, LargeFont);
+
+			if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
+				currentScreen = previousScreen;
 			}
 
 			HUDbatch.end();

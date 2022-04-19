@@ -73,10 +73,13 @@ public class gui {
 
         GlyphLayout NewGameTextLayout = new GlyphLayout(SmallFont, "Press 1 for New Game");
         GlyphLayout ResumeGameTextLayout = new GlyphLayout(SmallFont, "Press 2 to Resume Game");
+        GlyphLayout HelpTextLayout = new GlyphLayout(SmallFont, "Press H for Help");
         float NewGameTextWidth = NewGameTextLayout.width;
         float ResumeGameTextWidth = ResumeGameTextLayout.width;
+        float HelpTextWidth = HelpTextLayout.width;
         SmallFont.draw(batch, "Press 1 for New Game", (width-NewGameTextWidth)/2, height * .575f);
         SmallFont.draw(batch, "Press 2 to Resume Game", (width-ResumeGameTextWidth)/2, height * .5f);
+        SmallFont.draw(batch, "Press H for Help", (width-HelpTextWidth)/2, height * .425f);
     }
 
     public static void drawEndScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){
@@ -101,9 +104,9 @@ public class gui {
     }
 
     public static void drawShopScreen(Batch batch, BitmapFont SmallFont, BitmapFont MediumFont, BitmapFont LargeFont, Unity.Difficulty difficulty, int plunder){
-        GlyphLayout TitleText = new GlyphLayout(LargeFont, "Shop");
-        float TitleTextWidth = TitleText.width;
-        LargeFont.draw(batch, "Shop", (width-TitleTextWidth)/2, height * 0.92f);
+        GlyphLayout ShopTitleText = new GlyphLayout(LargeFont, "Shop");
+        float ShopTitleTextWidth = ShopTitleText.width;
+        LargeFont.draw(batch, "Shop", (width-ShopTitleTextWidth)/2, height * 0.92f);
 
         GlyphLayout ExitTextLayout = new GlyphLayout(SmallFont, "Press esc to exit");
         float ExitTextWidth = ExitTextLayout.width;
@@ -127,5 +130,30 @@ public class gui {
         MediumFont.draw(batch, "Save & Quit (Q)", (width * 0.025f), (height * 0.1f));
 
         MediumFont.draw(batch, "Difficulty: " + difficulty, (width * 0.025f), (height * 0.95f));
+
+        GlyphLayout HelpTextLayout = new GlyphLayout(MediumFont, "Help (H)");
+        float HelpTextWidth = HelpTextLayout.width;
+        MediumFont.draw(batch, "Help (H)", (width*0.975f - HelpTextWidth), height * 0.1f);
+    }
+
+    public static void drawHelpScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont) {
+        GlyphLayout HelpTitleText = new GlyphLayout(LargeFont, "Help");
+        float HelpTitleTextWidth = HelpTitleText.width;
+        LargeFont.draw(batch, "Help", (width-HelpTitleTextWidth)/2, height * 0.92f);
+
+        GlyphLayout HelpText = new GlyphLayout(SmallFont, "- Increasing the difficulty increases enemy health and enemy damage \n \n" +
+                "- Only 1 game can be saved at a time, starting a new game will not overwrite a previous save, only \n" +
+                "when you 'Save & Quit (Q)' does a previous save get overwritten. \n \n" +
+                "- Entering the shop pauses the game.");
+        float HelpTextWidth = HelpText.width;
+        SmallFont.draw(batch, "- Increasing the difficulty increases enemy health and enemy damage \n \n" +
+                "- Only 1 game can be saved at a time, starting a new game will not overwrite \n" +
+                "a previous save, only when you 'Save & Quit (Q)' does a previous save get overwritten. \n \n" +
+                "- Entering the shop pauses the game.", (width-HelpTextWidth*.75f)/2, height*.75f);
+
+
+        GlyphLayout ExitText = new GlyphLayout(SmallFont, "Exit (esc)");
+        float ExitTextWidth = HelpTitleText.width;
+        SmallFont.draw(batch, "Exit (esc)", (width-ExitTextWidth)/2, height * 0.2f);
     }
 }
