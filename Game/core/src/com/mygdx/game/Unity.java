@@ -81,7 +81,7 @@ public class Unity extends ApplicationAdapter {
 	private float playerRotation;
 	private float playerBaseRotationSpeed = 0.8f;
 	private static float playerRotationUpgrade;
-	private static float playerDmgFromBullet;
+	public static float playerDmgFromBullet;
 	public static float damageUpgrade;
 	private static float weatherResistanceUpgrade;
 	public static float numOfHurricanes = 2;
