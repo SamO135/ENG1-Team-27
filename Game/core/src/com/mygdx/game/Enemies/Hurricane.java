@@ -54,7 +54,7 @@ public class Hurricane {
     }
 
     public boolean collidesWith(float x, float y, float width, float height){
-        if (this.rect.x > x && this.rect.x < x + width && this.rect.y > y && this.rect.y < y + height){
+        if (this.rect.x >= x && this.rect.x <= x + width && this.rect.y >= y && this.rect.y <= y + height){
             return true;
         }
         return false;
@@ -90,7 +90,7 @@ public class Hurricane {
         this.destination = generateNewDestination();
     }
 
-    private boolean reachedDestination(){
+    public boolean reachedDestination(){
         if ((this.position.x > this.destination.x - moveSpeed && this.position.x < this.destination.x + moveSpeed) && (this.position.y > this.destination.y - moveSpeed && this.position.y < this.destination.y + moveSpeed)){
             return true;
         }
@@ -103,7 +103,7 @@ public class Hurricane {
         return new Vector2(x, y);
     }
 
-    private void reduceDamageDelay(){
+    public void reduceDamageDelay(){
         if (damageDelay > 0){
             damageDelay -= 1;
         }

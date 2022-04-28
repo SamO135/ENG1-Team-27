@@ -82,7 +82,7 @@ public class Unity extends ApplicationAdapter {
 	private float playerBaseRotationSpeed = 0.8f;
 	private static float playerRotationUpgrade;
 	private static float playerDmgFromBullet;
-	private static float damageUpgrade;
+	public static float damageUpgrade;
 	private static float weatherResistanceUpgrade;
 	public static float numOfHurricanes = 2;
 	private int plunder = 0;
@@ -877,7 +877,7 @@ public class Unity extends ApplicationAdapter {
 		return prefs;
 	}
 
-	private void applyDifficulty(Difficulty difficulty){
+	public void applyDifficulty(Difficulty difficulty){
 		float college_damage_taken;
 		float enemyship_damage_taken;
 		//Change values based on difficulty
