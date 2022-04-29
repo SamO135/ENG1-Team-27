@@ -52,7 +52,7 @@ public class Unity extends ApplicationAdapter {
 	private Sprite spriteEnemyJames;
 	private Sprite spriteEnemyDerwent;
 	private EnemyShip AlcuinShip;
-	private EnemyShip GoodrickeShip;
+	public EnemyShip GoodrickeShip;
 	private EnemyShip JamesShip;
 	private EnemyShip DerwentShip;
 	private BitmapFont SmallFont;
@@ -68,7 +68,7 @@ public class Unity extends ApplicationAdapter {
 	public static int mapHeight = 0;
 
 	private Box2DDebugRenderer b2dr;
-	private static World world;
+	public static World world;
 	private BaseCollider player;
 	public College Goodricke;
 	private College Alcuin;
@@ -599,11 +599,6 @@ public class Unity extends ApplicationAdapter {
 				System.exit(0);
 			}
 
-			if (Gdx.input.isKeyJustPressed(Input.Keys.H)){
-				previousScreen = currentScreen;
-				currentScreen = Screen.Help;
-			}
-
 
 			HUDbatch.end();
 
@@ -662,10 +657,10 @@ public class Unity extends ApplicationAdapter {
 				currentScreen = Screen.Shop;
 			}
 
-			else if (Gdx.input.isKeyJustPressed(Input.Keys.H)){
-				previousScreen = currentScreen;
-				currentScreen = Screen.Help;
-			}
+			//else if (Gdx.input.isKeyJustPressed(Input.Keys.H)){
+			//	previousScreen = currentScreen;
+			//	currentScreen = Screen.Help;
+			//}
 
 			HUDbatch.end();
 		}
@@ -765,6 +760,13 @@ public class Unity extends ApplicationAdapter {
 			}
 			if (currentScreen == Screen.Shop && !changedScreen){
 				currentScreen = Screen.MAIN_GAME;
+			}
+		}
+
+		if (Gdx.input.isKeyJustPressed(Input.Keys.H)){
+			if (currentScreen == Screen.MAIN_GAME || currentScreen == Screen.NewOrResume || currentScreen == Screen.Shop) {
+				previousScreen = currentScreen;
+				currentScreen = Screen.Help;
 			}
 		}
 	}

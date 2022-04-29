@@ -15,10 +15,12 @@ public class gui {
     	
         GlyphLayout PlunderInfoTextLayout = new GlyphLayout(font, "Plunder: " + plunder);
         GlyphLayout ScoreInfoTextLayout = new GlyphLayout(font, "Score: " + Math.round(score));
+        GlyphLayout HelpTextLayout = new GlyphLayout(font, "Help (H)");
         float PlunderInfoTextWidth = PlunderInfoTextLayout.width;
         float PlunderInfoTextHeight = PlunderInfoTextLayout.height;
         float ScoreInfoTextWidth = ScoreInfoTextLayout.width;
         float ScoreInfoTextHeight = ScoreInfoTextLayout.height;
+        float HelpTextWidth = HelpTextLayout.width;
 
         batch.begin();
         font.draw(batch, "Plunder: " + plunder, Math.round(width -(PlunderInfoTextWidth*1.2)),
@@ -26,6 +28,7 @@ public class gui {
         font.draw(batch, "Score: " + Math.round(score), (width-ScoreInfoTextWidth) / 2, Math.round(height-(ScoreInfoTextHeight*1.2)));
 
         font.draw(batch, "Shop (esc)", (width * 0.025f), (height * 0.1f));
+        font.draw(batch, "Help (H)", (width*0.975f - HelpTextWidth), height * 0.1f);
         batch.end();
     }
     
@@ -141,15 +144,16 @@ public class gui {
         float HelpTitleTextWidth = HelpTitleText.width;
         LargeFont.draw(batch, "Help", (width-HelpTitleTextWidth)/2, height * 0.92f);
 
-        GlyphLayout HelpText = new GlyphLayout(SmallFont, "- Increasing the difficulty increases enemy health and enemy damage \n \n" +
+        String text1 = "- Increasing the difficulty increases enemy health and enemy damage \n \n" +
                 "- Only 1 game can be saved at a time, starting a new game will not overwrite a previous save, only \n" +
                 "when you 'Save & Quit (Q)' does a previous save get overwritten. \n \n" +
-                "- Entering the shop pauses the game.");
+                "- Entering the shop pauses the game. \n \n \n \n \n" +
+                "CONTROLS: \n" +
+                "- WASD = move \n" +
+                "- Left mouse click = shoot";
+        GlyphLayout HelpText = new GlyphLayout(SmallFont, text1);
         float HelpTextWidth = HelpText.width;
-        SmallFont.draw(batch, "- Increasing the difficulty increases enemy health and enemy damage \n \n" +
-                "- Only 1 game can be saved at a time, starting a new game will not overwrite \n" +
-                "a previous save, only when you 'Save & Quit (Q)' does a previous save get overwritten. \n \n" +
-                "- Entering the shop pauses the game.", (width-HelpTextWidth*.75f)/2, height*.75f);
+        SmallFont.draw(batch, text1, (width-HelpTextWidth*.75f)/2, height*.75f);
 
 
         GlyphLayout ExitText = new GlyphLayout(SmallFont, "Exit (esc)");
