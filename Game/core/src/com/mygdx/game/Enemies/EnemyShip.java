@@ -31,7 +31,7 @@ public class EnemyShip {
     Body body;
 	private Vector2 position;
 	private Vector2 collegePosition;
-    static float dmgTakenFromBullet = 0.5f;
+    public static float dmgTakenFromBullet = 0.5f;
     boolean isCaptured = false;
     public float shootCooldown;
     private College college;

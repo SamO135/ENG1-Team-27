@@ -28,7 +28,7 @@ public class College {
     boolean isCaptured = false;
     float num = 0;
     static int collegesNotBoss;
-    static float dmgTakenFromBullet = 0.2f;
+    public static float dmgTakenFromBullet = 0.2f;
     public float shootCooldown;
     private Preferences prefs;
 

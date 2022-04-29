@@ -70,7 +70,7 @@ public class Unity extends ApplicationAdapter {
 	private Box2DDebugRenderer b2dr;
 	private static World world;
 	private BaseCollider player;
-	private College Goodricke;
+	public College Goodricke;
 	private College Alcuin;
 	private College Derwent;
 	private College James;
