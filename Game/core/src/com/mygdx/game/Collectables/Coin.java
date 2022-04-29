@@ -32,9 +32,6 @@ public class Coin {
         batch.draw(textureRegion, this.position.x - this.image.getWidth()/2f, this.position.y - this.image.getHeight()/2f);
     }
 
-    public void update(){
-        this.collected = this.alreadyCollected();
-    }
 
     public boolean collidesWith(float x, float y, float width, float height){
         if (this.rect.x >= x && this.rect.x <= x + width && this.rect.y >= y && this.rect.y <= y + height){
@@ -53,6 +50,10 @@ public class Coin {
 
     public int getValue() {
         return value;
+    }
+
+    public void setValue(int val){
+        this.value = val;
     }
 
     public Vector2 getPosition(){

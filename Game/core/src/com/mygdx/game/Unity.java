@@ -126,7 +126,7 @@ public class Unity extends ApplicationAdapter {
 		cannonballs = new ArrayList<Projectile>();
 		enemyCannonballs = new ArrayList<Projectile>();
 		Collages = new ArrayList<College>();
-		explosions = new ArrayList<Explosion>();
+		explosions = new ArrayList<Explosion>();		// Instantiating all the arrays for the different game objects
 		enemyShips = new ArrayList<EnemyShip>();
 		hurricanes = new ArrayList<Hurricane>();
 		coins = new ArrayList<Coin>();
@@ -169,7 +169,6 @@ public class Unity extends ApplicationAdapter {
 		//initialise fonts
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Oswald-Regular.ttf"));
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-
 		parameter.borderColor = Color.BLACK;
 		parameter.borderWidth = 1.4f;
 		parameter.size = 20;
@@ -193,13 +192,16 @@ public class Unity extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, w / scale, h / scale);
 
+		//initialise player
 		player = new BaseCollider(new Vector2(spawnx , spawny), 128, 64, false, world);
 
+		//initialise coins
 		coins.add(new Coin(new Vector2(1000, 500), 200, 1, prefs));
 		coins.add(new Coin(new Vector2(2500, 1500), 200, 2, prefs));
 		coins.add(new Coin(new Vector2(2900, 450), 200, 3, prefs));
 		coins.add(new Coin(new Vector2(1000, 2500), 200, 4, prefs));
 
+		//initialise hurricanes
 		for (int i = 0; i < numOfHurricanes; i ++){
 			hurricanes.add(new Hurricane(prefs, i));
 		}
@@ -318,12 +320,12 @@ public class Unity extends ApplicationAdapter {
 			spriteEnemyJames.draw(batch);
 
 
-			//Shooting code
+			//Shooting code -- player shooting
 			if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && cannonCooldown <= 0){
 				cannonballs.add(new Projectile(new Vector2(player.getBody().getPosition().x, player.getBody().getPosition().y), mousePos(Gdx.input.getX(), Gdx.input.getY()).nor(), false));
 				cannonCooldown = 40;
 			}
-
+			//Enemy college shooting
 			Vector2 displacement;
 			for (College college : Collages){
 				displacement = new Vector2(player.getBody().getPosition().x + (sprite.getWidth()/2) - college.getLocation().x, player.getBody().getPosition().y - college.getLocation().y);
@@ -332,7 +334,7 @@ public class Unity extends ApplicationAdapter {
 					college.shootCooldown = 120;
 				}
 			}
-
+			//Enemy ship shooting
 			for (EnemyShip enemyShip : enemyShips){
 				displacement = new Vector2(player.getBody().getPosition().x + (sprite.getWidth()/2) - enemyShip.getPosition().x, player.getBody().getPosition().y - enemyShip.getPosition().y);
 				if (!enemyShip.isCaptured() && displacement.len() <= 400 && enemyShip.shootCooldown <= 0){
@@ -360,18 +362,25 @@ public class Unity extends ApplicationAdapter {
 				//System.out.println("Direction: " + direction);
 			}*/
 
-			//Update projectiles
+			//Update projectiles -- player cannonballs
 			ArrayList<Projectile> cannonballsToRemove = new ArrayList<Projectile>();
 			for(Projectile cannonball : cannonballs){
 				cannonball.update(Gdx.graphics.getDeltaTime());
 				if(cannonball.remove){
 					cannonballsToRemove.add(cannonball);
 				}
+				else{
+					cannonball.render(batch);
+				}
 			}
+			//update all enemy cannonnalls (both college and enemy ship)
 			for(Projectile cannonball : enemyCannonballs){
 				cannonball.update(Gdx.graphics.getDeltaTime());
 				if(cannonball.remove){
 					cannonballsToRemove.add(cannonball);
+				}
+				else{
+					cannonball.render(batch);
 				}
 			}
 
@@ -387,7 +396,7 @@ public class Unity extends ApplicationAdapter {
 
 
 
-			//Health bar colour
+			//Health bar colour -- change colour depending on the amount of health
 			if (health > 0.6f){
 				batch.setColor(Color.GREEN);
 			}else if(health > 0.2f){
@@ -397,7 +406,6 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			//Health bar position of ships
-			//batch.draw(blank, player.getBody().getPosition().x * PPM + 30, player.getBody().getPosition().y * PPM - 10, 60 * health, 5);
 			batch.draw(blank, player.getBody().getPosition().x + 30, player.getBody().getPosition().y - 10, 60 * health, 5);
 			batch.setColor(Color.RED);
 			for (EnemyShip enemyShip : enemyShips){
@@ -409,12 +417,7 @@ public class Unity extends ApplicationAdapter {
 			//batch.draw(blank, spriteEnemyJames.getX() + 30, spriteEnemyJames.getY(), 60 * health, 5);
 			batch.setColor(Color.WHITE);
 
-			for(Projectile cannonball : cannonballs){
-				cannonball.render(batch);
-			}
-			for(Projectile cannonball : enemyCannonballs){
-				cannonball.render(batch);
-			}
+
 
 			//After all updates, checking for collisions
 			ArrayList<EnemyShip> enemyShipsToRemove = new ArrayList<EnemyShip>();
@@ -469,15 +472,10 @@ public class Unity extends ApplicationAdapter {
 
 
 			//Check if the player has collided with a coin
-			Iterator<Coin> i = coins.iterator();
-			while (i.hasNext()) {            //loop through all coins
-				Coin c = i.next();
-				if (c.collidesWith(player.getBody().getPosition().x, player.getBody().getPosition().y, sprite.getWidth(), sprite.getHeight())) {    //if player overlaps coin
-					plunder += c.getValue();
-					c.collected = true;
-					i.remove();
-					//coins.remove(c);
-					c.dispose();
+			for (Coin coin : coins){
+				if (coin.collidesWith(player.getBody().getPosition().x, player.getBody().getPosition().y, sprite.getWidth(), sprite.getHeight()) && !coin.collected){
+					plunder += coin.getValue();
+					coin.collected = true;
 				}
 			}
 
@@ -501,7 +499,10 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			for (Coin coin: coins){
-				coin.render(batch);
+				if (!coin.collected){
+					coin.render(batch);
+				}
+
 			}
 
 			batch.end();
@@ -538,7 +539,7 @@ public class Unity extends ApplicationAdapter {
 			gui.drawGameOverScreen(HUDbatch, SmallFont, LargeFont);
 
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-				setDefaultPreferences(prefs, Collages, enemyShips, spawnx, spawny);
+				setDefaultPreferences(prefs, Collages, enemyShips, coins, spawnx, spawny);
 				plunder = prefs.getInteger("plunder", 0);
 				score = prefs.getFloat("score", 0);
 				player.getBody().setTransform(prefs.getFloat("playerx", 700), prefs.getFloat("playery", 700), player.getBody().getAngle());
@@ -548,6 +549,10 @@ public class Unity extends ApplicationAdapter {
 				damageUpgrade = prefs.getFloat("damage_upgrade", 0f);
 				weatherResistanceUpgrade = prefs.getFloat("weather_resistance_upgrade", 0f);
 				playerRotationUpgrade = prefs.getFloat("rotation_upgrade", 0f);
+				for (Coin coin : coins){
+					coin.collected = prefs.getBoolean("coin" + coin.getId() + "collected");
+					coin.setValue(prefs.getInteger("coin" + coin.getId() + "value"));
+				}
 				for(Hurricane hurricane : hurricanes)
 					hurricane.resetHurricane();
 
@@ -663,14 +668,8 @@ public class Unity extends ApplicationAdapter {
 					hurricanes.get(count).setPosition(prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "x"), prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "y"));
 				}
 				// Check if any coins have already been collected when the user resumes a game, and remove them if so.
-				Iterator<Coin> j = coins.iterator();
-				while (j.hasNext()) {            //loop through all coins
-					Coin c = j.next();
-					if (c.alreadyCollected()) {    //if coin was collected
-						j.remove();
-						coins.remove(c);
-						c.dispose();
-					}
+				for (Coin coin : coins){
+					coin.collected = prefs.getBoolean("coin" + coin.getId() + "collected", true);
 				}
 
 				int diff = prefs.getInteger("difficulty", 2);
@@ -900,7 +899,7 @@ public class Unity extends ApplicationAdapter {
 		prefs.flush();
 	}
 
-	private Preferences setDefaultPreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int spawnx, int spawny){
+	private Preferences setDefaultPreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, ArrayList<Coin> coins, int spawnx, int spawny){
 		prefs.putInteger("plunder", 0);
 		prefs.putFloat("score", 0f);
 		prefs.putFloat("player_health", 1f);
@@ -920,6 +919,13 @@ public class Unity extends ApplicationAdapter {
 		for (EnemyShip enemyShip : enemyShips){
 			prefs.putFloat(enemyShip.getCollege().getName() + "Ship_health", 1f);
 			prefs.putBoolean(enemyShip.getCollege().getName() + "Ship_isCaptured", false);
+		}
+		for (int count = 0; count < coins.size(); count++){
+			System.out.println("coin: " + coins.get(count).getId());
+			prefs.putFloat("coin" + coins.get(count).getId() + "x", coins.get(count).getPosition().x);
+			prefs.putFloat("coin" + coins.get(count).getId() + "y", coins.get(count).getPosition().y);
+			prefs.putInteger("coin" + coins.get(count).getId() + "value", 200);
+			prefs.putBoolean(("coin" + coins.get(count).getId() + "collected"), false);
 		}
 		prefs.flush();
 
