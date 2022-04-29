@@ -44,16 +44,6 @@ public class Coin {
     }
 
     public boolean alreadyCollected(){
-        /*try{
-            int savedValue = prefs.getInteger("coin" + this.id + "value");
-            if (savedValue == this.value){
-                return false;
-            }
-        }
-        catch (Exception NullPointerException){
-            return true;
-        }
-        return true;*/
         return prefs.getBoolean("coin" + this.id + "collected");
     }
 
