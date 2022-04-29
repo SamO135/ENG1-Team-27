@@ -23,6 +23,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.Animations.Explosion;
 import com.mygdx.game.CameraUtils.cam;
+import com.mygdx.game.Collectables.Coin;
 import com.mygdx.game.Colleges.College;
 import com.mygdx.game.Enemies.EnemyShip;
 import com.mygdx.game.Enemies.Hurricane;
@@ -32,6 +33,8 @@ import com.mygdx.game.utils.gui;
 import com.mygdx.game.Colliders.BaseCollider;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import static com.mygdx.game.utils.Constants.PPM;
 import static java.lang.Math.toRadians;
 
@@ -69,7 +72,7 @@ public class Unity extends ApplicationAdapter {
 
 	private Box2DDebugRenderer b2dr;
 	public static World world;
-	private BaseCollider player;
+	public BaseCollider player;
 	public College Goodricke;
 	private College Alcuin;
 	private College Derwent;
@@ -91,6 +94,7 @@ public class Unity extends ApplicationAdapter {
 	private int cannonCooldown = 0;
 	private static int cannonCooldownSpeed = 1;
 
+	private ArrayList<Coin> coins;
 	private ArrayList<Projectile> cannonballs;
 	private ArrayList<Projectile> enemyCannonballs;
 	private ArrayList<College> Collages;
@@ -125,6 +129,7 @@ public class Unity extends ApplicationAdapter {
 		explosions = new ArrayList<Explosion>();
 		enemyShips = new ArrayList<EnemyShip>();
 		hurricanes = new ArrayList<Hurricane>();
+		coins = new ArrayList<Coin>();
 
 		//batches
 		batch = new SpriteBatch();
@@ -189,6 +194,11 @@ public class Unity extends ApplicationAdapter {
 		camera.setToOrtho(false, w / scale, h / scale);
 
 		player = new BaseCollider(new Vector2(spawnx , spawny), 128, 64, false, world);
+
+		coins.add(new Coin(new Vector2(1000, 500), 200, 1, prefs));
+		coins.add(new Coin(new Vector2(2500, 1500), 200, 2, prefs));
+		coins.add(new Coin(new Vector2(2900, 450), 200, 3, prefs));
+		coins.add(new Coin(new Vector2(1000, 2500), 200, 4, prefs));
 
 		for (int i = 0; i < numOfHurricanes; i ++){
 			hurricanes.add(new Hurricane(prefs, i));
@@ -457,6 +467,21 @@ public class Unity extends ApplicationAdapter {
 				hurricane.update();
 			}
 
+
+			//Check if the player has collided with a coin
+			Iterator<Coin> i = coins.iterator();
+			while (i.hasNext()) {            //loop through all coins
+				Coin c = i.next();
+				if (c.collidesWith(player.getBody().getPosition().x, player.getBody().getPosition().y, sprite.getWidth(), sprite.getHeight())) {    //if player overlaps coin
+					plunder += c.getValue();
+					c.collected = true;
+					i.remove();
+					//coins.remove(c);
+					c.dispose();
+				}
+			}
+
+
 			// if health reaches 0, game over
 			if (health <= 0f){
 				currentScreen = Screen.GameOver;
@@ -473,6 +498,10 @@ public class Unity extends ApplicationAdapter {
 
 			for(Explosion explosion: explosions){
 				explosion.render(batch);
+			}
+
+			for (Coin coin: coins){
+				coin.render(batch);
 			}
 
 			batch.end();
@@ -594,7 +623,7 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
-				savePreferences(prefs, Collages, enemyShips, plunder, score, player, health, hurricanes, damageUpgrade, weatherResistanceUpgrade, difficulty);
+				savePreferences(prefs, Collages, enemyShips, plunder, score, player, health, hurricanes, coins, damageUpgrade, weatherResistanceUpgrade, difficulty);
 				Gdx.app.exit();
 				System.exit(0);
 			}
@@ -632,6 +661,16 @@ public class Unity extends ApplicationAdapter {
 				for (int count = 0; count < hurricanes.size(); count++){
 					hurricanes.get(count).setDestination(prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "_destx", 700), prefs.getFloat("hurricane"  + hurricanes.get(count).getId() + "_desty", 700));
 					hurricanes.get(count).setPosition(prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "x"), prefs.getFloat("hurricane" + hurricanes.get(count).getId() + "y"));
+				}
+				// Check if any coins have already been collected when the user resumes a game, and remove them if so.
+				Iterator<Coin> j = coins.iterator();
+				while (j.hasNext()) {            //loop through all coins
+					Coin c = j.next();
+					if (c.alreadyCollected()) {    //if coin was collected
+						j.remove();
+						coins.remove(c);
+						c.dispose();
+					}
 				}
 
 				int diff = prefs.getInteger("difficulty", 2);
@@ -783,6 +822,7 @@ public class Unity extends ApplicationAdapter {
 		Vector2 mouseLoc = new Vector2(worldCoordinates.x, worldCoordinates.y);
 
 		Vector2 direction = mouseLoc.sub(centerPosition);
+		System.out.println(mouseLoc);
 		return mouseLoc;
 	}
 
@@ -816,7 +856,7 @@ public class Unity extends ApplicationAdapter {
 
 	public static float getPlayerRotationUpgrade(){return playerRotationUpgrade;}
 
-	private void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, ArrayList<Hurricane> hurricanes, float damageUpgrade, float weatherResistanceUpgrade, Difficulty difficulty){
+	public void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, ArrayList<Hurricane> hurricanes, ArrayList<Coin> coins, float damageUpgrade, float weatherResistanceUpgrade, Difficulty difficulty){
 		prefs.putInteger("plunder", plunder);
 		prefs.putFloat("score", score);
 		prefs.putFloat("player_health", player_health);
@@ -832,6 +872,13 @@ public class Unity extends ApplicationAdapter {
 			prefs.putFloat("hurricane"  + hurricanes.get(count).getId() + "y", hurricanes.get(count).getPosition().y);
 			prefs.putFloat("hurricane"  + hurricanes.get(count).getId() + "_destx", hurricanes.get(count).getDestination().x);
 			prefs.putFloat("hurricane"  + hurricanes.get(count).getId() + "_desty", hurricanes.get(count).getDestination().y);
+		}
+		for (int count = 0; count < coins.size(); count++){
+			System.out.println("coin: " + coins.get(count).getId());
+			prefs.putFloat("coin" + coins.get(count).getId() + "x", coins.get(count).getPosition().x);
+			prefs.putFloat("coin" + coins.get(count).getId() + "y", coins.get(count).getPosition().y);
+			prefs.putInteger("coin" + coins.get(count).getId() + "value", coins.get(count).getValue());
+			prefs.putBoolean(("coin" + coins.get(count).getId() + "collected"), coins.get(count).collected);
 		}
 
 		if (difficulty == Difficulty.Easy)
