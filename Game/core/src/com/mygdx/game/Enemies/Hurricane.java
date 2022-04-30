@@ -25,7 +25,9 @@ public class Hurricane {
     private static float damage = 0.2f;
     private int id;
 
-
+    /** Constructs a new hurricane
+     * @param prefs The preferences file the hurricane gets saved to
+     * @param id A unique integer value to identify the hurricane*/
     public Hurricane(Preferences prefs, int id) {
         this.image = new Texture("Hurricane_128x82.png");
         this.textureRegion = new TextureRegion(image);
@@ -37,10 +39,13 @@ public class Hurricane {
         this.id = id;
     }
 
+    /** Renders the hurricane
+     * @param batch A SpriteBatch instance*/
     public void render(SpriteBatch batch){
         batch.draw(textureRegion, this.position.x - this.image.getWidth()/2f, this.position.y - this.image.getHeight()/2f);
     }
 
+    /** Updates The hurricane's position, direction and destination, and reduces the damage delay*/
     public void update(){
         reduceDamageDelay();
         if (reachedDestination()){
@@ -53,6 +58,7 @@ public class Hurricane {
         this.rect.setPosition(this.position);
     }
 
+    /** @return True if the hurricane object overlaps with the provided coordinates and dimensions, False otherwise*/
     public boolean collidesWith(float x, float y, float width, float height){
         if (this.rect.x >= x && this.rect.x <= x + width && this.rect.y >= y && this.rect.y <= y + height){
             return true;
@@ -60,36 +66,45 @@ public class Hurricane {
         return false;
     }
 
+    /** Sets the damage delay of all hurricanes*/
     public static void setDamageDelay() {
         damageDelay = maxDamageDelay;
         canDamage = false;
     }
 
+    /** @return The damage the hurricane deals*/
     public static float getDamage(){return damage;}
 
+    /** @return The Vector2 position of the hurricane object*/
     public Vector2 getPosition() {
         return position;
     }
 
+    /** Sets the position of the hurricane object*/
     public void setPosition(float x, float y) {
         this.position.set(x, y);
     }
 
+    /** @return The Vector2 destination of the hurricane*/
     public Vector2 getDestination() {
         return destination;
     }
 
+    /** Sets the destination of the hurricane*/
     public void setDestination(float x, float y) {
         this.destination.set(destination);
     }
 
+    /** @return The unique integer value of the hurricane*/
     public int getId(){return this.id;}
 
+    /** Resets the position and destination of the hurricane*/
     public void resetHurricane(){
         this.position = generateNewDestination();
         this.destination = generateNewDestination();
     }
 
+    /** @return True if the hurricane has reached its destination, False otherwise*/
     public boolean reachedDestination(){
         if ((this.position.x > this.destination.x - moveSpeed && this.position.x < this.destination.x + moveSpeed) && (this.position.y > this.destination.y - moveSpeed && this.position.y < this.destination.y + moveSpeed)){
             return true;
@@ -97,12 +112,14 @@ public class Hurricane {
         return false;
     }
 
+    /** Generates a random new Vector2 position between the map boundaries*/
     private Vector2 generateNewDestination(){
         int x = MathUtils.random.nextInt(3420);
         int y = MathUtils.random.nextInt(3460);
         return new Vector2(x, y);
     }
 
+    /** Reduces the remaining delay of the hurricane's damage*/
     public void reduceDamageDelay(){
         if (damageDelay > 0){
             damageDelay -= 1;

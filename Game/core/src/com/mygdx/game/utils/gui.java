@@ -11,6 +11,12 @@ public class gui {
     private static float width = Unity.getWidth();
     private static float height = Unity.getHeight();
 
+    /** Draws the GUI of the main screen
+     * @param batch A SpriteBatch instance
+     * @param font A font to write text using
+     * @param SmallFont A small font to write text using
+     * @param plunder The amount of plunder the player has
+     * @param score the player's score*/
     public static void drawMainScreen(Batch batch, BitmapFont font, BitmapFont SmallFont, int plunder, float score) {
     	
         GlyphLayout PlunderInfoTextLayout = new GlyphLayout(font, "Plunder: " + plunder);
@@ -31,7 +37,13 @@ public class gui {
         font.draw(batch, "Help (H)", (width*0.975f - HelpTextWidth), height * 0.1f);
         batch.end();
     }
-    
+
+    /** Draw the GUI of the menu screen
+     * @param batch A SpriteBatch instance
+     * @param SmallFont A small font to write text using
+     * @param LargeFont A large font to write text using
+     * @param MediumFont A medium sized font to write text using
+     * @param difficulty The difficulty setting of the game*/
     public static void drawMenuScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont, BitmapFont MediumFont, Unity.Difficulty difficulty){
     	//title
     	GlyphLayout TitleTextLayout = new GlyphLayout(LargeFont, "York Pirates");
@@ -49,6 +61,11 @@ public class gui {
 		SmallFont.draw(batch, "Press any key to start", (width-StartTextWidth)/2, height * .4f);
     }
 
+    /** Draw the GUI of the difficulty selection screen
+     * @param batch A SpriteBatch instance
+     * @param SmallFont A small font to write text using
+     * @param LargeFont A large font to write text using
+     */
     public static void drawDifficultySelectionScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){
         //title
         GlyphLayout TitleTextLayout = new GlyphLayout(LargeFont, "York Pirates");
@@ -69,6 +86,11 @@ public class gui {
         SmallFont.draw(batch, "Press 3 for HARD", (width-HardTextWidth)/2, height * .4f);
     }
 
+    /** Draw the GUI of the new game or resume game screen
+     * @param batch A SpriteBatch instance
+     * @param SmallFont A small font to write text using
+     * @param LargeFont A large font to write text using
+     */
     public static void drawNewOrResumeGameScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont) {
         GlyphLayout TitleTextLayout = new GlyphLayout(LargeFont, "York Pirates");
         float TitleTextWidth = TitleTextLayout.width;
@@ -85,6 +107,11 @@ public class gui {
         SmallFont.draw(batch, "Press H for Help", (width-HelpTextWidth)/2, height * .425f);
     }
 
+    /** Draw the GUI of the end screen
+     * @param batch A SpriteBatch instance
+     * @param SmallFont A small font to write text using
+     * @param LargeFont A large font to write text using
+     */
     public static void drawEndScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont){
         GlyphLayout TitleText = new GlyphLayout(LargeFont, "You Win!");
         float TitleTextWidth = TitleText.width;
@@ -95,7 +122,11 @@ public class gui {
         SmallFont.draw(batch, "Press esc to exit", (width-StartTextWidth)/2, height * .4f);
     }
 
-
+    /** Draw the GUI of the game over screen
+     * @param batch A SpriteBatch instance
+     * @param SmallFont A small font to write text using
+     * @param LargeFont A large font to write text using
+     */
     public static void drawGameOverScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont) {
         GlyphLayout TitleText = new GlyphLayout(LargeFont, "Game Over!");
         float TitleTextWidth = TitleText.width;
@@ -106,6 +137,14 @@ public class gui {
         SmallFont.draw(batch, "Press SPACE to try again", (width - StartTextWidth) / 2, height * .4f);
     }
 
+    /** Draw the GUI of the shop screen
+     * @param batch A SpriteBatch instance
+     * @param SmallFont A small font to write text using
+     * @param MediumFont A medium sized font to write text using
+     * @param LargeFont A large font to write text using
+     * @param difficulty The difficulty setting of the game
+     * @param plunder The amount of plunder the player has
+     * */
     public static void drawShopScreen(Batch batch, BitmapFont SmallFont, BitmapFont MediumFont, BitmapFont LargeFont, Unity.Difficulty difficulty, int plunder){
         GlyphLayout ShopTitleText = new GlyphLayout(LargeFont, "Shop");
         float ShopTitleTextWidth = ShopTitleText.width;
@@ -139,6 +178,11 @@ public class gui {
         MediumFont.draw(batch, "Help (H)", (width*0.975f - HelpTextWidth), height * 0.1f);
     }
 
+    /** Draw the GUI of the help screen
+     * @param batch A SpriteBatch instance
+     * @param SmallFont A small font to write text using
+     * @param LargeFont A large font to write text using
+     */
     public static void drawHelpScreen(Batch batch, BitmapFont SmallFont, BitmapFont LargeFont) {
         GlyphLayout HelpTitleText = new GlyphLayout(LargeFont, "Help");
         float HelpTitleTextWidth = HelpTitleText.width;

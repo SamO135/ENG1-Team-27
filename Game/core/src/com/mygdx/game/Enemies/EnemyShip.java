@@ -37,6 +37,12 @@ public class EnemyShip {
     private College college;
     private Preferences prefs;
 
+    /** Constructs a new enemy ship
+     * @param position The position of the enemy ship
+     * @param college The college that the ship belongs to
+     * @param world The world to create the enemy ship in
+     * @param sprite The sprite of the enemy ship
+     * @param prefs The save file the enemy ship data if saved to*/
     public EnemyShip(Vector2 position, College college, World world, Sprite sprite, Preferences prefs){
         this.collegePosition = college.getLocation();
         this.position = position;
@@ -68,10 +74,13 @@ public class EnemyShip {
         }*/
     }
 
+    /** Deals damage to the enemy ship*/
     public void hit(){
         takeDamage(dmgTakenFromBullet);
     }
 
+    /** Renders the enemy ship at its x and y position
+     * @param batch A SpriteBatch instance*/
     public void render(SpriteBatch batch){
         //sprite.setPosition(position.x, position.y);
         //sprite.draw(batch);
@@ -85,8 +94,12 @@ public class EnemyShip {
         batch.setColor(Color.WHITE);
     }
 
+    /** @return The ships rect*/
     public ProjectileCollider getProjectileCollider(){ return rect;}
 
+    /** Deals damage to the ship
+     * @param dmg The damage the ship will take
+     * @return The health of the ship after it has been damaged*/
     public float takeDamage(float dmg){
         if (!isCaptured){
             if (health > dmg){
@@ -101,44 +114,59 @@ public class EnemyShip {
         return health;
     }
 
+    /** @return The college the ship belongs to*/
     public College getCollege(){
         return this.college;
     }
 
+    /** @return True if the ship is captured, false otherwise*/
     public boolean isCaptured(){
         return isCaptured;
     }
 
+    /** @return The health of the ship*/
     public float getHealth(){
         return health;
     }
 
+    /** @return the position of the ship*/
     public Vector2 getPosition(){
         return this.position;
     }
 
+    /** @return The ship's sprite*/
     public Sprite getSprite(){
         return this.sprite;
     }
 
+    /** @return The width of the ship's image*/
     public int getWidth(){
         return img.getWidth();
     }
 
+    /** @return the height of the ship's image*/
     public int getHeight(){
         return img.getHeight();
     }
 
+    /** Sets the damage the ship takes from the player's cannonballs
+     * @param dmg The damage the ship will take
+     * */
     public static void setDmgTakenFromBullet(float dmg){
         dmgTakenFromBullet = dmg;
     }
 
+    /** Generates and returns a new random location
+     * @return A Vector2 location
+     */
     private Vector2 getRandomLocation(){
         return new Vector2(
                 collegePosition.x + (rand.nextInt(1500) - 500),
                 collegePosition.y + (rand.nextInt(1500) - 500)
         );
     }
+
+    /** Updates the ships's capture state and health based on the values saved in the game's save file*/
     public void updateShip(){
         this.isCaptured = prefs.getBoolean(this.college.getName() + "Ship_isCaptured", false);
         this.health = prefs.getFloat(this.college.getName() + "Ship_health", 1f);

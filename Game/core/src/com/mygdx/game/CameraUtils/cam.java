@@ -11,6 +11,11 @@ import static com.mygdx.game.utils.Constants.PPM;
 
 public class cam {
 
+    /** Updates the camera
+     * @param delta The time in seconds since the last update
+     * @param camera The camera to update
+     * @param position The position of the camera
+     * */
     public static void cameraUpdate(float delta, OrthographicCamera camera, Vector2 position) {
         Vector3 cameraPosition = camera.position;
 

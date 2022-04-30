@@ -16,7 +16,9 @@ public class Explosion {
     float statetime;
     public boolean remove = false;
 	private Vector2 position;
-    
+
+    /** Constructs a new explosion object
+     * @param loc A Vector2 location of the explosion*/
 	public Explosion(Vector2 loc){
         this.position = new Vector2(loc.x - offset, loc.y - offset);
         statetime = 0;
@@ -27,6 +29,8 @@ public class Explosion {
         }
     }
 
+    /** Animates the explosion
+     * @param deltatime The time in seconds since the last update*/
     public void update(float deltatime){
         statetime += deltatime;
         if(anim.isAnimationFinished(statetime)){
@@ -34,6 +38,9 @@ public class Explosion {
         }
     }
 
+    /** Renders the explosion
+     * @param batch A SpriteBatch instance
+     * */
     public void render(SpriteBatch batch){
         batch.draw((TextureRegion) anim.getKeyFrame(statetime), position.x, position.y);
     }

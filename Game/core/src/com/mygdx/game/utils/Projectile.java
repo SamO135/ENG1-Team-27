@@ -21,6 +21,9 @@ public class Projectile {
 
     public boolean remove = false;
 
+    /** Constructs a new projectile
+     * @param position A Vector2 position of the projectile
+     * @param enemy True if the bullet belongs to an enemy, False otherwise*/
     public Projectile(Vector2 position, Vector2 target, boolean enemy){
         if (!enemy){
             SPEED = 1000;
@@ -34,6 +37,7 @@ public class Projectile {
         }
     }
 
+    /** Updates the projectile's position, removes object after 5 seconds*/
     public void update(float deltaTime){
         num += deltaTime;
 
@@ -45,18 +49,22 @@ public class Projectile {
         }
     }
 
+    /** Renders the projectile object*/
     public void render(SpriteBatch batch){
         batch.draw(texture, position.x, position.y);
     }
 
+    /** @return The position of the projectile*/
     public Vector2 getPosition(){
         return this.position;
     }
 
+    /** Sets the position of the projectile*/
     public void setPosition(Vector2 Position){
         this.position = Position;
     }
 
+    /** @return The projectile rect*/
     public ProjectileCollider getProjectileCollider(){ return rect;}
 
 }

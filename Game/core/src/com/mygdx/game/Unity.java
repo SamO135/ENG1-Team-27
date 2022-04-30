@@ -113,6 +113,7 @@ public class Unity extends ApplicationAdapter {
 
 	Preferences prefs;
 
+	/** Instantiates game objects*/
 	@Override
 	public void create () {
 		prefs = Gdx.app.getPreferences("York Pirates");
@@ -134,7 +135,8 @@ public class Unity extends ApplicationAdapter {
 		//batches
 		batch = new SpriteBatch();
 		HUDbatch = new SpriteBatch();
-		
+
+		//creating some textures
 		img = new Texture("PirateShip3Mast.png");
 		imgenemy = new Texture("PirateShipEnemy.png");
 		blank = new Texture("Blank.png");
@@ -221,10 +223,14 @@ public class Unity extends ApplicationAdapter {
 		TiledObjectUtil.parseTiledObjectLayer(world, map.getLayers().get("Collision-layer").getObjects());
 	}
 
+	/**
+	 * The main method where the game logic is written
+	 */
 	@Override
 	public void render () {
 		update(Gdx.graphics.getDeltaTime());  // deltaTime is time between a frame refresh
 
+		//game logic during the difficulty selection screen
 		if (currentScreen == Screen.DifficultySelection){
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -234,7 +240,7 @@ public class Unity extends ApplicationAdapter {
 
 			HUDbatch.begin();
 
-			//draw menu
+			//draw the difficulty selection screen GUI
 			gui.drawDifficultySelectionScreen(HUDbatch, SmallFont, LargeFont);
 
 			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
@@ -256,7 +262,7 @@ public class Unity extends ApplicationAdapter {
 			HUDbatch.end();
 		}
 
-		//menu screen
+		//game logic during the home screen
 		if(currentScreen == Screen.Home){
 
 			Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -267,13 +273,14 @@ public class Unity extends ApplicationAdapter {
 			
 			HUDbatch.begin();
 			
-			//draw menu
+			//draw the home screen GUI
 			gui.drawMenuScreen(HUDbatch, SmallFont, LargeFont, MediumFont, difficulty);
 
 
 			HUDbatch.end();
 		}
-    
+
+		//game logic during the main game
 		if(currentScreen == Screen.MAIN_GAME){
 			
 			//reduce cannon cooldown
@@ -419,13 +426,13 @@ public class Unity extends ApplicationAdapter {
 
 
 
-			//After all updates, checking for collisions
+			//After all updates, checking for collisions -- player -> college
 			ArrayList<EnemyShip> enemyShipsToRemove = new ArrayList<EnemyShip>();
 			for (Projectile cannonball: cannonballs){
 				for (College college: Collages){
-					if(cannonball.getProjectileCollider().collidesWith(college.getProjectileCollider())){
+					if(cannonball.getProjectileCollider().collidesWith(college.getProjectileCollider())){ // if player cannonball hits college
 						cannonballsToRemove.add(cannonball);
-						explosions.add(new Explosion(cannonball.getPosition()));
+						explosions.add(new Explosion(cannonball.getPosition())); //create explosion
 						plunder = college.hit(plunder);
 						if(!college.isCaptured() && college.bossReady){
 							plunder += 50f;
@@ -435,10 +442,11 @@ public class Unity extends ApplicationAdapter {
 
 					}
 				}
+				// player cannonball -> enemy ship collision
 				for (EnemyShip enemyShip : enemyShips){
-					if (cannonball.getProjectileCollider().collidesWith(enemyShip.getProjectileCollider())){
+					if (cannonball.getProjectileCollider().collidesWith(enemyShip.getProjectileCollider())){ //if player cannonball hits enemy ship
 						cannonballsToRemove.add(cannonball);
-						explosions.add(new Explosion((cannonball.getPosition())));
+						explosions.add(new Explosion((cannonball.getPosition()))); //create explosion
 						enemyShip.hit();
 						if (enemyShip.getHealth() == 0f){
 							plunder += 50;
@@ -447,23 +455,21 @@ public class Unity extends ApplicationAdapter {
 					}
 				}
 			}
+			// enemy cannonball -> player collision
 			for (Projectile cannonball : enemyCannonballs){
-				if (cannonball.getProjectileCollider().collidesWith(player.getProjectileCollider())){
+				if (cannonball.getProjectileCollider().collidesWith(player.getProjectileCollider())){ // if player gets hit by an enemy cannonball
 					cannonballsToRemove.add(cannonball);
-					explosions.add(new Explosion((cannonball.getPosition())));
-					health = Math.round((health-playerDmgFromBullet)*100f)/100f;
-					System.out.println(health);
+					explosions.add(new Explosion((cannonball.getPosition()))); // create explosion
+					health = Math.round((health-playerDmgFromBullet)*100f)/100f; // reduce player health and round the result.
 				}
 			}
 			cannonballs.removeAll(cannonballsToRemove);
 			enemyCannonballs.removeAll(cannonballsToRemove);
-			//enemyShips.removeAll(enemyShipsToRemove);
 
 			// check for collision with hurricane & render/update them
 			for (Hurricane hurricane : hurricanes){
-				if (hurricane.collidesWith(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight()) && Hurricane.canDamage){
-					System.out.println("HIT " + hurricane.getPosition());
-					health -= Hurricane.getDamage() * (1-weatherResistanceUpgrade);
+				if (hurricane.collidesWith(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight()) && Hurricane.canDamage){ // if hurricane collides with player
+					health -= Hurricane.getDamage() * (1-weatherResistanceUpgrade); // damage player based on hurricane's damage and weather resistance upgrade
 					Hurricane.setDamageDelay();
 				}
 				hurricane.render(batch);
@@ -473,6 +479,7 @@ public class Unity extends ApplicationAdapter {
 
 			//Check if the player has collided with a coin
 			for (Coin coin : coins){
+				//if player collides with coin and the coin has not already been collected
 				if (coin.collidesWith(player.getBody().getPosition().x, player.getBody().getPosition().y, sprite.getWidth(), sprite.getHeight()) && !coin.collected){
 					plunder += coin.getValue();
 					coin.collected = true;
@@ -485,19 +492,23 @@ public class Unity extends ApplicationAdapter {
 				currentScreen = Screen.GameOver;
 			}
 
+			//render colleges
 			for(College college: Collages){
 				college.render(batch);
 				score = college.captured(score, Gdx.graphics.getDeltaTime());
 			}
 
+			//render enemy ships
 			for(EnemyShip enemyShip: enemyShips){
 				enemyShip.render(batch);
 			}
 
+			// render explosions
 			for(Explosion explosion: explosions){
 				explosion.render(batch);
 			}
 
+			//render coins only if they have not been collected
 			for (Coin coin: coins){
 				if (!coin.collected){
 					coin.render(batch);
@@ -506,10 +517,13 @@ public class Unity extends ApplicationAdapter {
 			}
 
 			batch.end();
-			
+
+			// Draw the GUI for the main game screen
 			gui.drawMainScreen(HUDbatch, MediumFont, SmallFont, plunder, score);
 
 		}
+
+		//game logic during the end screen
 		if(currentScreen == Screen.End){
 
 			Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -520,12 +534,13 @@ public class Unity extends ApplicationAdapter {
 
 			HUDbatch.begin();
 
-			//draw menu
+			//draw end screen GUI
 			gui.drawEndScreen(HUDbatch, SmallFont, LargeFont);
 
 			HUDbatch.end();
 		}
 
+		//game logic during the game over screen
 		if (currentScreen == Screen.GameOver){
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -538,6 +553,7 @@ public class Unity extends ApplicationAdapter {
 			//draw menu
 			gui.drawGameOverScreen(HUDbatch, SmallFont, LargeFont);
 
+			// if user pressed space (to restart the game), then reset all values to their default
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
 				setDefaultPreferences(prefs, Collages, enemyShips, coins, spawnx, spawny);
 				plunder = prefs.getInteger("plunder", 0);
@@ -572,6 +588,7 @@ public class Unity extends ApplicationAdapter {
 			HUDbatch.end();
 		}
 
+		//game logic during the shop screen
 		if (currentScreen == Screen.Shop){
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -582,9 +599,10 @@ public class Unity extends ApplicationAdapter {
 			HUDbatch.begin();
 
 
-			//draw Shop
+			//draw Shop GUI
 			gui.drawShopScreen(HUDbatch, SmallFont, MediumFont, LargeFont, difficulty, plunder);
 
+			// increase fire rate upgrade
 			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
 				if (cannonCooldownSpeed < 5 && plunder >= 200) {
 					cannonCooldownSpeed += 1;
@@ -592,6 +610,7 @@ public class Unity extends ApplicationAdapter {
 				}
 			}
 
+			// repair ship upgrade
 			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
 				if (plunder >= 200){
 					if (getHealth() < 1 && getHealth() >= 0.7f){
@@ -605,6 +624,7 @@ public class Unity extends ApplicationAdapter {
 				}
 			}
 
+			// increase damage upgrade
 			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
 				if (damageUpgrade < 1f && plunder >= 200f){
 					damageUpgrade += 0.1f;
@@ -613,6 +633,7 @@ public class Unity extends ApplicationAdapter {
 				}
 			}
 
+			// increase weather resistance upgrade
 			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){
 				if (weatherResistanceUpgrade < 0.5f && plunder >= 200f){
 					weatherResistanceUpgrade += 0.1f;
@@ -620,6 +641,7 @@ public class Unity extends ApplicationAdapter {
 				}
 			}
 
+			// increase rotation speed upgrade
 			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)){
 				if (playerRotationUpgrade < 0.5f && plunder >= 100f){
 					playerRotationUpgrade += 0.1f;
@@ -627,6 +649,7 @@ public class Unity extends ApplicationAdapter {
 				}
 			}
 
+			// save and quit game
 			if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
 				savePreferences(prefs, Collages, enemyShips, plunder, score, player, health, hurricanes, coins, damageUpgrade, weatherResistanceUpgrade, difficulty);
 				Gdx.app.exit();
@@ -638,6 +661,7 @@ public class Unity extends ApplicationAdapter {
 
 		}
 
+		// game logic during the new game or resume game selection screen
 		if (currentScreen == Screen.NewOrResume){
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -647,12 +671,15 @@ public class Unity extends ApplicationAdapter {
 
 			HUDbatch.begin();
 
-			//draw menu
+			//draw new game or resume game screen GUI
 			gui.drawNewOrResumeGameScreen(HUDbatch, SmallFont, LargeFont);
 
+			//Press 1 for new game
 			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
 				currentScreen = Screen.DifficultySelection;
 			}
+
+			//Press 2 for resume game - load values from save file
 			else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
 				plunder = prefs.getInteger("plunder", 0);
 				score = prefs.getFloat("score", 0);
@@ -703,6 +730,7 @@ public class Unity extends ApplicationAdapter {
 			HUDbatch.end();
 		}
 
+		// game logic during the help screen
 		if (currentScreen == Screen.Help){
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -712,9 +740,10 @@ public class Unity extends ApplicationAdapter {
 
 			HUDbatch.begin();
 
-			//draw menu
+			//draw help screen GUI
 			gui.drawHelpScreen(HUDbatch, SmallFont, LargeFont);
 
+			// Press escape to return
 			if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
 				currentScreen = previousScreen;
 			}
@@ -723,6 +752,10 @@ public class Unity extends ApplicationAdapter {
 		}
 	}
 
+	/** Enables the game window to be resized accurately
+	 * @param width The width of the game screen
+	 * @param height The height of the game screen
+	 * */
 	@Override
 	public void resize(int width, int height){
 		camera.setToOrtho(false, width / scale, height / scale);
@@ -739,6 +772,9 @@ public class Unity extends ApplicationAdapter {
 		blank.dispose();
 	}
 
+	/** Update the world and camera
+	 * @param delta The time in seconds since the last update
+	 * */
 	private void update (float delta){
 		world.step(1/60f, 6, 2);
 
@@ -750,6 +786,9 @@ public class Unity extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 	}
 
+	/** A method to handle some user input
+	 * @param delta The time in seconds since the last update
+	 */
 	private void inputUpdate(float delta){
 		boolean changedScreen = false;
 		int horizontalforce = 0;
@@ -761,7 +800,8 @@ public class Unity extends ApplicationAdapter {
 		}
 		
 		if (currentScreen == Screen.MAIN_GAME) {
-			
+
+			// Player ship movement code
 			if(Gdx.input.isKeyPressed(Input.Keys.A)){
 				sprite.setRotation((float) (playerRotation + (playerBaseRotationSpeed * (1+playerRotationUpgrade)) * PPM));
 				player.getBody().setTransform(player.getBody().getPosition().x, player.getBody().getPosition().y, (float) toRadians(playerRotation));
@@ -781,8 +821,6 @@ public class Unity extends ApplicationAdapter {
 				score += 0.005;
 			}
 			player.getBody().setLinearVelocity(horizontalforce * 32, verticalforce * 32);
-			//player.getBody().setTransform(player.getBody().getPosition().x + horizontalforce, player.getBody().getPosition().y + verticalforce, (float) toRadians(playerRotation));
-			//player.def.position.set((player.getBody().getPosition().x + horizontalforce) * PPM, (player.getBody().getPosition().y + verticalforce) * PPM);
 		}
 		if(currentScreen == Screen.MAIN_GAME && Goodricke.isCaptured()){
 			currentScreen = Screen.End;
@@ -809,6 +847,9 @@ public class Unity extends ApplicationAdapter {
 		}
 	}
 
+	/** A method to return the position of the mouse cursor in relation to the player ship
+	 * @param screenX The x position of the mouse cursor
+	 * @param screenY The y position of the mouse cursor*/
 	private Vector2 mousePos(int screenX, int screenY) {
 
 		//screenX, screenY - Mouse Coords
@@ -825,36 +866,48 @@ public class Unity extends ApplicationAdapter {
 		return mouseLoc;
 	}
 
+	/** @return the height of the game screen*/
 	public static float getHeight(){
 		return h;
 	}
 
+	/** @return the width of the game screen*/
 	public static float getWidth(){
 		return w;
 	}
 
-	public static float getMapWidth(){
-		return mapWidth;
-	}
-
-	public static float getMapHeight(){
-		return mapHeight;
-	}
-
+	/** @return the player's cannon cooldown speed*/
 	public static int getCannonCooldownSpeed(){
 		return cannonCooldownSpeed;
 	}
 
+	/** @return the player's health*/
 	public static float getHealth(){
 		return health;
 	}
 
+	/** @return the number of times the player's damage has been upgraded*/
 	public static float getDamageUpgrade(){return damageUpgrade;}
 
+	/** @return the number of time the player's weather resistance has been upgraded*/
 	public static float getWeatherResistanceUpgrade(){return weatherResistanceUpgrade;}
 
+	/** @return the number of times the player's rotation speed has been upgraded*/
 	public static float getPlayerRotationUpgrade(){return playerRotationUpgrade;}
 
+	/** Saves all the necessary game data to a file
+	 * @param prefs The preferences file to write to
+	 * @param Colleges An array containing all the colleges
+	 * @param enemyShips An array containing all the enemy ships
+	 * @param plunder The plunder the player has collected
+	 * @param score The player's score
+	 * @param player The player object
+	 * @param player_health The health of the player
+	 * @param hurricanes An array containg all the hurricanes
+	 * @param coins An array containing all the coins
+	 * @param damageUpgrade The number of times the player's damage has been upgraded
+	 * @param weatherResistanceUpgrade The number of time the player's weather resistance has been upgraded
+	 * @param difficulty The difficulty setting of the game*/
 	public void savePreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, int plunder, float score, BaseCollider player, float player_health, ArrayList<Hurricane> hurricanes, ArrayList<Coin> coins, float damageUpgrade, float weatherResistanceUpgrade, Difficulty difficulty){
 		prefs.putInteger("plunder", plunder);
 		prefs.putFloat("score", score);
@@ -899,6 +952,13 @@ public class Unity extends ApplicationAdapter {
 		prefs.flush();
 	}
 
+	/** Saves all the necessary game data as their default to a file
+	 * @param prefs The preferences file to write to
+	 * @param Colleges An array containing all the colleges
+	 * @param enemyShips An array containing all the enemy ships
+	 * @param coins An array containing all the coins
+	 * @param spawnx The player's spawn x coordinates
+	 * @param spawny The player's spawn y coordinates*/
 	private Preferences setDefaultPreferences(Preferences prefs, ArrayList<College> Colleges, ArrayList<EnemyShip> enemyShips, ArrayList<Coin> coins, int spawnx, int spawny){
 		prefs.putInteger("plunder", 0);
 		prefs.putFloat("score", 0f);
@@ -932,6 +992,8 @@ public class Unity extends ApplicationAdapter {
 		return prefs;
 	}
 
+	/** Sets certain values based on a provided difficulty level to change the difficulty of the game
+	 * @param difficulty The difficulty setting of the game*/
 	public void applyDifficulty(Difficulty difficulty){
 		float college_damage_taken;
 		float enemyship_damage_taken;

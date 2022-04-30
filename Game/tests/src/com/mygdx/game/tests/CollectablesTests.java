@@ -13,16 +13,6 @@ import static org.junit.Assert.*;
 public class CollectablesTests {
 
     @Test
-    public void testCoinAlreadyCollected(){
-        Preferences prefs = Gdx.app.getPreferences("test prefs");
-        Coin coin = new Coin(new Vector2(1000, 1000), 200, 1, prefs);
-        prefs.putBoolean("coin" + coin.getId() + "collected", false);
-        assertFalse(coin.alreadyCollected());
-        prefs.putBoolean("coin" + coin.getId() + "collected", true);
-        assertTrue(coin.alreadyCollected());
-    }
-
-    @Test
     public void testGetId(){
         Preferences prefs = Gdx.app.getPreferences("test prefs");
         Coin coin = new Coin(new Vector2(1000, 1000), 200, 1, prefs);
@@ -60,15 +50,5 @@ public class CollectablesTests {
         x = coin.getPosition().x + (width*2);
         y = coin.getPosition().y + (width*2);
         assertFalse(coin.collidesWith(x, y, width, height));
-    }
-
-    @Test
-    public void testUpdate(){
-        Preferences prefs = Gdx.app.getPreferences("test prefs");
-        Coin coin = new Coin(new Vector2(1000, 2000), 200, 1, prefs);
-        coin.collected = false;
-        prefs.putBoolean("coin" + coin.getId() + "collected", true);
-        coin.update();
-        assertTrue(coin.collected);
     }
 }
