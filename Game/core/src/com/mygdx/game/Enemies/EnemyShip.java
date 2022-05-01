@@ -55,23 +55,6 @@ public class EnemyShip {
         this.img = new Texture("PirateShipEnemy.png");
         //sprite = new Sprite(this.img);
         this.rect = new ProjectileCollider(position, img.getWidth(), img.getHeight());
-
-        /*Body pBody;
-        BodyDef def = new BodyDef();
-        def.position.set(position.x / PPM, position.y / PPM);
-        pBody = world.createBody(def);
-
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(img.getWidth() / 2 / PPM,img.getHeight() / 2 / PPM);
-
-        pBody.createFixture(shape, 1.0f);
-        this.body = pBody;
-        shape.dispose();
-
-        /*while(x < 0 || x > Unity.getMapWidth() * 32 || y < 0 || y > Unity.getMapHeight() * 32){
-            randomLocation = getRandomLocation(collegePosition);
-        }*/
     }
 
     /** Deals damage to the enemy ship*/
@@ -82,8 +65,6 @@ public class EnemyShip {
     /** Renders the enemy ship at its x and y position
      * @param batch A SpriteBatch instance*/
     public void render(SpriteBatch batch){
-        //sprite.setPosition(position.x, position.y);
-        //sprite.draw(batch);
         if(!isCaptured){
             batch.setColor(Color.RED);
         }else{

@@ -11,7 +11,7 @@ import static com.mygdx.game.utils.Constants.PPM;
 
 public class cam {
 
-    /** Updates the camera
+    /** Updates the camera position to keep it centred on the player
      * @param delta The time in seconds since the last update
      * @param camera The camera to update
      * @param position The position of the camera

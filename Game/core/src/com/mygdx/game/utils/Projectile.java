@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Colliders.ProjectileCollider;
 
-import static com.mygdx.game.utils.Constants.PPM;
-
 public class Projectile {
     public int SPEED = 300;
     private static Texture texture;

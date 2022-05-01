@@ -33,7 +33,6 @@ import com.mygdx.game.utils.gui;
 import com.mygdx.game.Colliders.BaseCollider;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import static com.mygdx.game.utils.Constants.PPM;
 import static java.lang.Math.toRadians;
@@ -208,12 +207,6 @@ public class Unity extends ApplicationAdapter {
 			hurricanes.add(new Hurricane(prefs, i));
 		}
 
-
-		//enemyShips.add(Alcuin.getColliderBody());
-		//enemyShips.add(Derwent.getColliderBody());
-		//enemyShips.add(Goodricke.getColliderBody());
-		//enemyShips.add(James.getColliderBody());
-
 		map = new TmxMapLoader().load("MapAssets/GameMap.tmx");
 		MapProperties props = map.getProperties();
 		mapWidth = props.get("width", Integer.class);
@@ -230,7 +223,7 @@ public class Unity extends ApplicationAdapter {
 	public void render () {
 		update(Gdx.graphics.getDeltaTime());  // deltaTime is time between a frame refresh
 
-		//game logic during the difficulty selection screen
+		//game logic during the difficulty selection screen -- New section of code
 		if (currentScreen == Screen.DifficultySelection){
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -308,7 +301,6 @@ public class Unity extends ApplicationAdapter {
 			tmr.render();
 
 			//Update the position of the player's image
-			//sprite.setPosition(player.getBody().getPosition().x * PPM, player.getBody().getPosition().y * PPM);
 			sprite.setPosition(player.getBody().getPosition().x, player.getBody().getPosition().y);
 			player.update();
 			//Update the position of the enemy ships' image
@@ -341,7 +333,7 @@ public class Unity extends ApplicationAdapter {
 					college.shootCooldown = 120;
 				}
 			}
-			//Enemy ship shooting
+			//Enemy ship shooting -- New section of code
 			for (EnemyShip enemyShip : enemyShips){
 				displacement = new Vector2(player.getBody().getPosition().x + (sprite.getWidth()/2) - enemyShip.getPosition().x, player.getBody().getPosition().y - enemyShip.getPosition().y);
 				if (!enemyShip.isCaptured() && displacement.len() <= 400 && enemyShip.shootCooldown <= 0){
@@ -350,24 +342,6 @@ public class Unity extends ApplicationAdapter {
 				}
 			}
 
-			/*if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
-				AlcuinShip.position = new Vector2(1200, 1000);
-				String message = "";
-				Vector2 direction = new Vector2();
-				for (College college : Collages){
-					direction = new Vector2(player.getBody().getPosition().x + (sprite.getWidth()/2) - college.getLocation().x, player.getBody().getPosition().y - college.getLocation().y);
-					message += college.getLocation() + ", ";
-					//enemyCannonballs.add(new Projectile(new Vector2(college.getColliderBody().getPosition().x, college.getColliderBody().getPosition().y), direction));
-					enemyCannonballs.add(new Projectile(new Vector2(college.getLocation()), direction));
-				}
-				//System.out.println("BaseCollider: " + player.getBody().getPosition());
-				//System.out.println("Sprite: " + sprite.getX() + ", " + sprite.getY());
-				//System.out.println("Projectile Collider: " + player.getProjectileCollider().position);
-				System.out.println(direction.len());
-				System.out.println("");
-				//System.out.println("Colleges: " + message);
-				//System.out.println("Direction: " + direction);
-			}*/
 
 			//Update projectiles -- player cannonballs
 			ArrayList<Projectile> cannonballsToRemove = new ArrayList<Projectile>();
@@ -415,13 +389,6 @@ public class Unity extends ApplicationAdapter {
 			//Health bar position of ships
 			batch.draw(blank, player.getBody().getPosition().x + 30, player.getBody().getPosition().y - 10, 60 * health, 5);
 			batch.setColor(Color.RED);
-			for (EnemyShip enemyShip : enemyShips){
-				//batch.draw(blank, enemyShip.getPosition().x + 30, enemyShip.getPosition().y, 60 * enemyShip.getHealth(), 5);
-			}
-			//batch.draw(blank, spriteEnemyGoodricke.getX() + 30, spriteEnemyGoodricke.getY(), 60 * health, 5);
-			//batch.draw(blank, spriteEnemyDerwent.getX() + 30, spriteEnemyDerwent.getY(), 60 * health, 5);
-			//batch.draw(blank, spriteEnemyAlcuin.getX() + 30, spriteEnemyAlcuin.getY(), 60 * health, 5);
-			//batch.draw(blank, spriteEnemyJames.getX() + 30, spriteEnemyJames.getY(), 60 * health, 5);
 			batch.setColor(Color.WHITE);
 
 
@@ -442,7 +409,7 @@ public class Unity extends ApplicationAdapter {
 
 					}
 				}
-				// player cannonball -> enemy ship collision
+				// player cannonball -> enemy ship collision -- New section of code
 				for (EnemyShip enemyShip : enemyShips){
 					if (cannonball.getProjectileCollider().collidesWith(enemyShip.getProjectileCollider())){ //if player cannonball hits enemy ship
 						cannonballsToRemove.add(cannonball);
@@ -466,7 +433,7 @@ public class Unity extends ApplicationAdapter {
 			cannonballs.removeAll(cannonballsToRemove);
 			enemyCannonballs.removeAll(cannonballsToRemove);
 
-			// check for collision with hurricane & render/update them
+			// check for collision with hurricane & render/update them -- New section of code
 			for (Hurricane hurricane : hurricanes){
 				if (hurricane.collidesWith(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight()) && Hurricane.canDamage){ // if hurricane collides with player
 					health -= Hurricane.getDamage() * (1-weatherResistanceUpgrade); // damage player based on hurricane's damage and weather resistance upgrade
@@ -540,7 +507,7 @@ public class Unity extends ApplicationAdapter {
 			HUDbatch.end();
 		}
 
-		//game logic during the game over screen
+		//game logic during the game over screen -- New section of code
 		if (currentScreen == Screen.GameOver){
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -588,7 +555,7 @@ public class Unity extends ApplicationAdapter {
 			HUDbatch.end();
 		}
 
-		//game logic during the shop screen
+		//game logic during the shop screen -- New section of code
 		if (currentScreen == Screen.Shop){
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -629,7 +596,6 @@ public class Unity extends ApplicationAdapter {
 				if (damageUpgrade < 1f && plunder >= 200f){
 					damageUpgrade += 0.1f;
 					plunder -= 200f;
-					applyDifficulty(difficulty);
 				}
 			}
 
@@ -661,7 +627,7 @@ public class Unity extends ApplicationAdapter {
 
 		}
 
-		// game logic during the new game or resume game selection screen
+		// game logic during the new game or resume game selection screen -- New section of code
 		if (currentScreen == Screen.NewOrResume){
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -722,15 +688,11 @@ public class Unity extends ApplicationAdapter {
 				currentScreen = Screen.Shop;
 			}
 
-			//else if (Gdx.input.isKeyJustPressed(Input.Keys.H)){
-			//	previousScreen = currentScreen;
-			//	currentScreen = Screen.Help;
-			//}
 
 			HUDbatch.end();
 		}
 
-		// game logic during the help screen
+		// game logic during the help screen -- New section of code
 		if (currentScreen == Screen.Help){
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -862,7 +824,6 @@ public class Unity extends ApplicationAdapter {
 		Vector2 mouseLoc = new Vector2(worldCoordinates.x, worldCoordinates.y);
 
 		Vector2 direction = mouseLoc.sub(centerPosition);
-		System.out.println(mouseLoc);
 		return mouseLoc;
 	}
 
@@ -876,6 +837,7 @@ public class Unity extends ApplicationAdapter {
 		return w;
 	}
 
+	// New method
 	/** @return the player's cannon cooldown speed*/
 	public static int getCannonCooldownSpeed(){
 		return cannonCooldownSpeed;
@@ -886,15 +848,19 @@ public class Unity extends ApplicationAdapter {
 		return health;
 	}
 
+	// New method
 	/** @return the number of times the player's damage has been upgraded*/
 	public static float getDamageUpgrade(){return damageUpgrade;}
 
+	// New method
 	/** @return the number of time the player's weather resistance has been upgraded*/
 	public static float getWeatherResistanceUpgrade(){return weatherResistanceUpgrade;}
 
+	// New method
 	/** @return the number of times the player's rotation speed has been upgraded*/
 	public static float getPlayerRotationUpgrade(){return playerRotationUpgrade;}
 
+	// New method
 	/** Saves all the necessary game data to a file
 	 * @param prefs The preferences file to write to
 	 * @param Colleges An array containing all the colleges
@@ -926,7 +892,6 @@ public class Unity extends ApplicationAdapter {
 			prefs.putFloat("hurricane"  + hurricanes.get(count).getId() + "_desty", hurricanes.get(count).getDestination().y);
 		}
 		for (int count = 0; count < coins.size(); count++){
-			System.out.println("coin: " + coins.get(count).getId());
 			prefs.putFloat("coin" + coins.get(count).getId() + "x", coins.get(count).getPosition().x);
 			prefs.putFloat("coin" + coins.get(count).getId() + "y", coins.get(count).getPosition().y);
 			prefs.putInteger("coin" + coins.get(count).getId() + "value", coins.get(count).getValue());
@@ -952,6 +917,7 @@ public class Unity extends ApplicationAdapter {
 		prefs.flush();
 	}
 
+	// New method
 	/** Saves all the necessary game data as their default to a file
 	 * @param prefs The preferences file to write to
 	 * @param Colleges An array containing all the colleges
@@ -981,7 +947,6 @@ public class Unity extends ApplicationAdapter {
 			prefs.putBoolean(enemyShip.getCollege().getName() + "Ship_isCaptured", false);
 		}
 		for (int count = 0; count < coins.size(); count++){
-			System.out.println("coin: " + coins.get(count).getId());
 			prefs.putFloat("coin" + coins.get(count).getId() + "x", coins.get(count).getPosition().x);
 			prefs.putFloat("coin" + coins.get(count).getId() + "y", coins.get(count).getPosition().y);
 			prefs.putInteger("coin" + coins.get(count).getId() + "value", 200);
@@ -992,6 +957,7 @@ public class Unity extends ApplicationAdapter {
 		return prefs;
 	}
 
+	// New method
 	/** Sets certain values based on a provided difficulty level to change the difficulty of the game
 	 * @param difficulty The difficulty setting of the game*/
 	public void applyDifficulty(Difficulty difficulty){

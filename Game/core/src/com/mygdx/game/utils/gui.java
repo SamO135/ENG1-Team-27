@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.mygdx.game.Unity;
-import jdk.internal.org.jline.utils.DiffHelper;
 
 public class gui {
 
@@ -61,6 +60,7 @@ public class gui {
 		SmallFont.draw(batch, "Press any key to start", (width-StartTextWidth)/2, height * .4f);
     }
 
+    // New gui method
     /** Draw the GUI of the difficulty selection screen
      * @param batch A SpriteBatch instance
      * @param SmallFont A small font to write text using
@@ -86,6 +86,7 @@ public class gui {
         SmallFont.draw(batch, "Press 3 for HARD", (width-HardTextWidth)/2, height * .4f);
     }
 
+    // New gui method
     /** Draw the GUI of the new game or resume game screen
      * @param batch A SpriteBatch instance
      * @param SmallFont A small font to write text using
@@ -122,6 +123,7 @@ public class gui {
         SmallFont.draw(batch, "Press esc to exit", (width-StartTextWidth)/2, height * .4f);
     }
 
+    // New gui method
     /** Draw the GUI of the game over screen
      * @param batch A SpriteBatch instance
      * @param SmallFont A small font to write text using
@@ -137,6 +139,7 @@ public class gui {
         SmallFont.draw(batch, "Press SPACE to try again", (width - StartTextWidth) / 2, height * .4f);
     }
 
+    // New gui method
     /** Draw the GUI of the shop screen
      * @param batch A SpriteBatch instance
      * @param SmallFont A small font to write text using
@@ -178,6 +181,7 @@ public class gui {
         MediumFont.draw(batch, "Help (H)", (width*0.975f - HelpTextWidth), height * 0.1f);
     }
 
+    // New gui method
     /** Draw the GUI of the help screen
      * @param batch A SpriteBatch instance
      * @param SmallFont A small font to write text using
